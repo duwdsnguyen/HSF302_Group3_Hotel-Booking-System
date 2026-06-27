@@ -60,6 +60,7 @@ echo %DB_PASSWORD%
 CREATE DATABASE hotel_booking_system;
 ```
 
-<p>open Itellij:</p>
-<p>run file: DatabaseInitializerApplication.java first</p>
+<p>go to `docs/database/schema.sql`   to see how schema should be initialized</p>
+
+
 
