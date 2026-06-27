@@ -60,7 +60,7 @@ echo %DB_PASSWORD%
 CREATE DATABASE hotel_booking_system;
 ```
 
-<p>go to `docs/database` to see how schema should be initialized</p>
+<p>go to `docs/database/schema.sql`   to see how schema should be initialized</p>
 
 
 
