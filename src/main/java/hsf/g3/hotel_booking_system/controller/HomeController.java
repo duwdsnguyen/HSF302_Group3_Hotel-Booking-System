@@ -10,4 +10,14 @@ public class HomeController {
     public String home() {
         return "pages/home";
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "redirect:/v1/auth/login";
+    }
+
+    @GetMapping("/register")
+    public String register() {
+        return "redirect:/v1/auth/register";
+    }
 }

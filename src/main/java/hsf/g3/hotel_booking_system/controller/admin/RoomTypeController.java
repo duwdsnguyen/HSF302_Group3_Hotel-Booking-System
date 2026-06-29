@@ -2,7 +2,7 @@ package hsf.g3.hotel_booking_system.controller.admin;
 
 import hsf.g3.hotel_booking_system.dto.room.RoomTypeRequestDTO;
 import hsf.g3.hotel_booking_system.enums.user.RoomTypeStatus;
-import hsf.g3.hotel_booking_system.service.room.RoomTypeService;
+import hsf.g3.hotel_booking_system.service.admin.AdminRoomTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/admin/room-types")
 public class RoomTypeController {
-    private final RoomTypeService roomTypeService;
+    private final AdminRoomTypeService roomTypeService;
 
     @GetMapping
     public String listRoomType(@RequestParam(required = false) String search,
