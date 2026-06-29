@@ -1,34 +1,36 @@
 package hsf.g3.hotel_booking_system.entity.room;
 
+
+import hsf.g3.hotel_booking_system.enums.user.RoomTypeStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "room_types")
-@Getter
-@Setter
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RoomType {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "room_type_id")
-    Long roomTypeId;
+    private Integer roomTypeId;
 
-    @Column(name = "type_name", nullable = false, columnDefinition = "NVARCHAR(100)")
-    String typeName;
+    @Column(name = "type_name", nullable = false, unique = true,  length = 100)
+    private String typeName;
 
-    @Column(name = "description", columnDefinition = "NVARCHAR(500)")
-    String description;
+    @Column(name = "description", length = 500)
+    private String description;
 
-    @Column(name = "max_guests", nullable = false)
-    Integer maxGuests;
+    @Column(name = "max_guests",  nullable = false)
+    private int maxGuests;
 
-    @Column(name = "base_price", nullable = false)
-    BigDecimal basePrice;
+    @Column(name = "base_price", nullable = false, precision = 18, scale = 2)
+    private BigDecimal basePrice;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status",  nullable = false, length = 30)
+    private RoomTypeStatus status = RoomTypeStatus.ACTIVE;
 }
