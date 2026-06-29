@@ -37,6 +37,7 @@ public class AuthController {
             return "pages/auth/login";
         }
         else{
+            System.out.println("redirect to role dashboard");
             if(userInfoDTO.getRoles().stream().anyMatch(role -> role.getRoleCode().equals(AppRole.ADMIN))){
                 LOGGER.info("Already at admin dashboard for role {}",userInfoDTO.getRoles().stream().filter((role -> role.getRoleCode().equals(AppRole.ADMIN))));
                 return "redirect:/v1/admin/dashboard";

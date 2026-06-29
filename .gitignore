@@ -42,7 +42,6 @@ logs/
 *.local.properties
 application-local.properties
 application-secret.properties
-src/main/resources/application.properties
 
 ### OS files ###
 .DS_Store

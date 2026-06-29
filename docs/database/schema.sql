@@ -33,7 +33,8 @@ CREATE TABLE room_types (
                             type_name NVARCHAR(100) NOT NULL,
                             description NVARCHAR(500),
                             max_guests INT NOT NULL,
-                            base_price DECIMAL(18,2) NOT NULL
+                            base_price DECIMAL(18,2) NOT NULL,
+                            status VARCHAR(30) NOT NULL DEFAULT 'ACTIVE'
 );
 
 CREATE TABLE rooms (

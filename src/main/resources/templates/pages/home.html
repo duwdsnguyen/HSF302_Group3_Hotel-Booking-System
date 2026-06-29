@@ -1,50 +1,25 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <title>Hotel Booking System</title>
 
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-
 <body>
 
-    <div th:replace="~{layout/header :: header}"></div>
+<div class="container">
+    <h1>Hotel Booking System</h1>
 
-    <div class="container">
-        <h1>Hotel Booking System</h1>
+    <p>Welcome to G3 HSF302 Hotel Booking System.</p>
 
-        <p>Welcome to G3 HSF302 Hotel Booking System.</p>
+    <ul>
+        <li><a th:href="@{/login}">Login</a></li>
+        <li><a th:href="@{/register}">Register</a></li>
+    </ul>
+</div>
 
-        <hr>
-        <h3>Search</h3>
-
-        <p th:if="${error != null}" th:text="${error}" style="color: red; font-weight: bold;"></p>
-
-        <form th:action="@{/v1/guest/search-rooms}" method="GET"
-            style="margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 5px;">
-            <label for="checkInDate">Check-in:</label>
-            <input type="date" id="checkInDate" name="checkInDate" th:value="${checkIn}" required>
-
-            <label for="checkOutDate" style="margin-left: 15px;">Check-out:</label>
-            <input type="date" id="checkOutDate" name="checkOutDate" th:value="${checkOut}" required>
-
-            <label for="numberOfGuests" style="margin-left: 15px;">Guests:</label>
-            <input type="number" id="numberOfGuests" name="numberOfGuests" th:value="${guests}" min="1" required style="width: 60px;">
-
-            <button type="submit" style="margin-left: 15px;">Search</button>
-        </form>
-        <hr>
-
-        <ul>
-            <li><a th:href="@{/login}">Login</a></li>
-            <li><a th:href="@{/rooms}">View Rooms</a></li>
-        </ul>
-    </div>
-
-    <div th:replace="~{layout/footer :: footer}"></div>
+<div th:replace="~{layout/footer :: footer}"></div>
 
 </body>
-
 </html>

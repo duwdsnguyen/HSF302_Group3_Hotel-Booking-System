@@ -46,7 +46,7 @@ public class Booking {
     private BigDecimal totalAmount;
 
     @Column(name = "status", nullable = false, length = 30)
-    private String status = "Pending";
+    private String status = "PENDING";
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Rooms</title>
+    <link rel="stylesheet" th:href="@{/css/admin-room.css}">
+</head>
+<body>
+<div th:replace="~{layout/header :: header}"></div>
+<main>
+    <h1>Room Management</h1>
+
+    <div class="page-actions">
+        <a class="btn" th:href="@{/admin/rooms/create}">Add Room</a>
+        <a class="btn secondary" th:href="@{/admin/dashboard}">Back to Dashboard</a>
+    </div>
+
+    <form class="filter-form" th:action="@{/admin/rooms}" method="get">
+        <input type="text" name="search" placeholder="Search room, type, description" th:value="${search}">
+
+        <select name="status">
+            <option value="">All statuses</option>
+            <option th:each="status : ${statuses}"
+                    th:value="${status}"
+                    th:text="${status}"
+                    th:selected="${status == selectedStatus}">
+            </option>
+        </select>
+
+        <select name="roomTypeId">
+            <option value="">All room types</option>
+            <option th:each="roomType : ${roomTypes}"
+                    th:value="${roomType.roomTypeId}"
+                    th:text="${roomType.typeName}"
+                    th:selected="${roomType.roomTypeId == selectedRoomTypeId}">
+            </option>
+        </select>
+
+        <select name="sort">
+            <option value="number_asc" th:selected="${selectedSort == 'number_asc'}">Number A-Z</option>
+            <option value="number_desc" th:selected="${selectedSort == 'number_desc'}">Number Z-A</option>
+            <option value="floor_asc" th:selected="${selectedSort == 'floor_asc'}">Floor low to high</option>
+            <option value="floor_desc" th:selected="${selectedSort == 'floor_desc'}">Floor high to low</option>
+            <option value="type_asc" th:selected="${selectedSort == 'type_asc'}">Type A-Z</option>
+            <option value="type_desc" th:selected="${selectedSort == 'type_desc'}">Type Z-A</option>
+        </select>
+
+        <button class="btn" type="submit">Apply</button>
+        <a class="btn secondary" th:href="@{/admin/rooms}">Reset</a>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Room Number</th>
+            <th>Room Type</th>
+            <th>Floor</th>
+            <th>Status</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="room : ${rooms}">
+            <td th:text="${room.roomId}"></td>
+            <td th:text="${room.roomNumber}"></td>
+            <td th:text="${room.roomTypeName}"></td>
+            <td th:text="${room.floorNumber}"></td>
+            <td th:text="${room.status}"></td>
+            <td th:text="${room.description}"></td>
+            <td>
+                <a th:href="@{/admin/rooms/edit/{id}(id=${room.roomId})}">Edit</a>
+                |
+                <a th:href="@{/admin/rooms/delete/{id}(id=${room.roomId})}"
+                   onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+
+</body>
+</html>

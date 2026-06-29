@@ -1,8 +1,8 @@
 package hsf.g3.hotel_booking_system.controller.guest;
 
 import org.springframework.ui.Model;
-import hsf.g3.hotel_booking_system.entity.guest.Room;
-import hsf.g3.hotel_booking_system.service.guest.RoomService;
+import hsf.g3.hotel_booking_system.entity.room.Room;
+import hsf.g3.hotel_booking_system.service.guest.GuestRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/v1/guest")
 @RequiredArgsConstructor
 public class GuestController {
-    private final RoomService roomService;
+    private final GuestRoomService guestRoomService;
 
     @GetMapping("/search-rooms")
     public String searchAvailableRooms(
@@ -26,14 +26,14 @@ public class GuestController {
             @RequestParam Integer numberOfGuests,
             Model model) {
         try {
-            List<Room> availableRooms = roomService.searchAvailableRooms(checkInDate, checkOutDate, numberOfGuests);
+            List<Room> availableRooms = guestRoomService.searchAvailableRooms(checkInDate, checkOutDate, numberOfGuests);
 
             model.addAttribute("rooms", availableRooms);
             model.addAttribute("checkIn", checkInDate);
             model.addAttribute("checkOut", checkOutDate);
             model.addAttribute("guests", numberOfGuests);
 
-            return "guest/search_results";
+            return "pages/guest/search_results";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
             return "pages/home";
