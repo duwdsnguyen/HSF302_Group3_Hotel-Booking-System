@@ -43,8 +43,10 @@ public class AuthController {
             return "pages/auth/login";
         }
         else{
+            System.out.println("redirect to role dashboard");
             if(userInfoDTO.getRoles().stream().anyMatch(role -> role.getRoleCode().equals(AppRole.ADMIN))){
-                return "pages/admin/dashboard";
+//                System.out.println("redirect to admin dashboard");
+                return "redirect:/admin/dashboard";
             }
 
             if(userInfoDTO.getRoles().stream().anyMatch(role -> role.getRoleCode().equals(AppRole.GUEST))){

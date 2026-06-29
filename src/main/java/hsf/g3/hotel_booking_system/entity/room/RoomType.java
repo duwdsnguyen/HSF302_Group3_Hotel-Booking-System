@@ -1,6 +1,7 @@
-package hsf.g3.hotel_booking_system.entity;
+package hsf.g3.hotel_booking_system.entity.room;
 
 
+import hsf.g3.hotel_booking_system.enums.user.RoomTypeStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +30,7 @@ public class RoomType {
     @Column(name = "base_price", nullable = false, precision = 18, scale = 2)
     private BigDecimal basePrice;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status",  nullable = false, length = 30)
-    private String status = "ACTIVE";
+    private RoomTypeStatus status = RoomTypeStatus.ACTIVE;
 }

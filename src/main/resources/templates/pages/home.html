@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Hotel Booking System</title>
-
+    <link rel="shortcut icon" th:href="@{/images/Screenshot 2026-01-04 152940.png}" type="image/x-icon">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-
-<div th:replace="~{layout/header :: header}"></div>
 
 <div class="container">
     <h1>Hotel Booking System</h1>
@@ -16,8 +14,7 @@
     <p>Welcome to G3 HSF302 Hotel Booking System.</p>
 
     <ul>
-        <li><a th:href="@{/login}">Login</a></li>
-        <li><a th:href="@{/rooms}">View Rooms</a></li>
+        <li><a th:href="@{/v1/auth/login}">Login</a></li>
     </ul>
 </div>
 

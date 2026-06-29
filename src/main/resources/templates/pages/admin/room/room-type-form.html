@@ -3,36 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <title>Room Type Form</title>
+    <link rel="stylesheet" th:href="@{/css/admin-room.css}">
 </head>
 <body>
 
-<h1>Room Type Form</h1>
+<div th:replace="~{layout/header :: header}"></div>
+<main>
+    <h1>Room Type Form</h1>
 
-<form th:action="@{${formAction}}"
+    <div class="page-actions">
+        <a class="btn secondary" th:href="@{/admin/dashboard}">Back to Dashboard</a>
+    </div>
+
+<form class="room-form"
+      th:action="@{${formAction}}"
       th:object="${roomType}"
       method="post">
 
-    <div>
+    <div class="form-group">
         <label>Type Name:</label>
         <input type="text" th:field="*{typeName}">
     </div>
 
-    <div>
+    <div class="form-group">
         <label>Description:</label>
         <textarea th:field="*{description}"></textarea>
     </div>
 
-    <div>
+    <div class="form-group">
         <label>Max Guests:</label>
         <input type="number" th:field="*{maxGuests}">
     </div>
 
-    <div>
+    <div class="form-group">
         <label>Base Price:</label>
         <input type="number" th:field="*{basePrice}">
     </div>
 
-    <div>
+    <div class="form-group">
         <label>Status:</label>
         <select th:field="*{status}">
             <option value="ACTIVE">ACTIVE</option>
@@ -40,10 +48,14 @@
         </select>
     </div>
 
-    <button type="submit">Save</button>
-    <a th:href="@{/admin/room-types}">Back</a>
+    <div class="form-actions">
+        <button class="btn" type="submit">Save</button>
+        <a class="btn secondary" th:href="@{/admin/room-types}">Back</a>
+    </div>
 
 </form>
+</main>
+<div th:replace="~{layout/footer :: footer}"></div>
 
 </body>
 </html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Room Types</title>
+    <link rel="stylesheet" th:href="@{/css/admin-room.css}">
+</head>
+<body>
+<div th:replace="~{layout/header :: header}"></div>
+<main>
+    <h1>Room Type Management</h1>
+
+    <div class="page-actions">
+        <a class="btn" th:href="@{/admin/room-types/create}">Add Room Type</a>
+        <a class="btn secondary" th:href="@{/admin/dashboard}">Back to Dashboard</a>
+    </div>
+
+    <form class="filter-form" th:action="@{/admin/room-types}" method="get">
+        <input type="text" name="search" placeholder="Search name or description" th:value="${search}">
+
+        <select name="status">
+            <option value="">All statuses</option>
+            <option th:each="status : ${statuses}"
+                    th:value="${status}"
+                    th:text="${status}"
+                    th:selected="${status == selectedStatus}">
+            </option>
+        </select>
+
+        <select name="sort">
+            <option value="name_asc" th:selected="${selectedSort == 'name_asc'}">Name A-Z</option>
+            <option value="name_desc" th:selected="${selectedSort == 'name_desc'}">Name Z-A</option>
+            <option value="price_asc" th:selected="${selectedSort == 'price_asc'}">Price low to high</option>
+            <option value="price_desc" th:selected="${selectedSort == 'price_desc'}">Price high to low</option>
+            <option value="guests_asc" th:selected="${selectedSort == 'guests_asc'}">Guests low to high</option>
+            <option value="guests_desc" th:selected="${selectedSort == 'guests_desc'}">Guests high to low</option>
+        </select>
+
+        <button class="btn" type="submit">Apply</button>
+        <a class="btn secondary" th:href="@{/admin/room-types}">Reset</a>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Type Name</th>
+            <th>Description</th>
+            <th>Max Guests</th>
+            <th>Base Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="roomType : ${roomTypes}">
+            <td th:text="${roomType.roomTypeId}"></td>
+            <td th:text="${roomType.typeName}"></td>
+            <td th:text="${roomType.description}"></td>
+            <td th:text="${roomType.maxGuests}"></td>
+            <td th:text="${roomType.basePrice}"></td>
+            <td th:text="${roomType.status}"></td>
+            <td>
+                <a th:href="@{/admin/room-types/edit/{id}(id=${roomType.roomTypeId})}">Edit</a>
+                |
+                <a th:href="@{/admin/room-types/delete/{id}(id=${roomType.roomTypeId})}"
+                   onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+<div th:replace="~{layout/footer :: footer}"></div>
+
+</body>
+</html>
