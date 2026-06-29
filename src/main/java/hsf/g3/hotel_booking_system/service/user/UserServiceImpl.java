@@ -1,22 +1,26 @@
 package hsf.g3.hotel_booking_system.service.user;
 
-import hsf.g3.hotel_booking_system.controller.user.AuthController;
-import hsf.g3.hotel_booking_system.dto.auth.LoginRequestDTO;
-import hsf.g3.hotel_booking_system.dto.auth.RegisterRequestDTO;
+import hsf.g3.hotel_booking_system.dto.auth.*;
 import hsf.g3.hotel_booking_system.dto.user.UserInfoDTO;
+import hsf.g3.hotel_booking_system.entity.user.ResetToken;
 import hsf.g3.hotel_booking_system.entity.user.Role;
 import hsf.g3.hotel_booking_system.entity.user.User;
 import hsf.g3.hotel_booking_system.enums.user.AppRole;
+import hsf.g3.hotel_booking_system.repository.user.ResetTokenRepository;
 import hsf.g3.hotel_booking_system.repository.user.RoleRepository;
 import hsf.g3.hotel_booking_system.repository.user.UserRepository;
+import hsf.g3.hotel_booking_system.service.external.MailService;
 import hsf.g3.hotel_booking_system.util.PasswordUtil;
+import org.antlr.v4.runtime.Token;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,12 +29,20 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final ResetTokenRepository resetTokenRepository;
+    private final MailService mailService ;
 
-    public UserServiceImpl(ModelMapper modelMapper, UserRepository userRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(ModelMapper modelMapper, UserRepository userRepository, RoleRepository roleRepository, ResetTokenRepository resetTokenRepository, MailService mailService) {
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.resetTokenRepository = resetTokenRepository;
+        this.mailService = mailService;
     }
+
+
+
+
 
 
     @Override
@@ -53,10 +65,53 @@ public class UserServiceImpl implements UserService {
         user.setEmail(registerRequestDTO.getEmail());
         user.setPassword(PasswordUtil.hashPassword(registerRequestDTO.getPassword()));
         user.setPhone(registerRequestDTO.getPhone());
-        Role role = roleRepository.findRoleByRoleCode(AppRole.GUEST).orElseGet( () -> roleRepository.save(new Role(AppRole.GUEST)));
+        Role guestRole = Role.builder().roleCode(AppRole.GUEST).build();
+        Role role = roleRepository.findRoleByRoleCode(AppRole.GUEST).orElseGet( () -> roleRepository.save(guestRole));
         Set<Role> roles = Set.of(role);
         user.setRoles(roles);
         userRepository.save(user);
         return modelMapper.map(user, UserInfoDTO.class);
     }
+    
+    @Override
+    public ForgetPasswordResponse forgetPassword(ForgetPasswordRequest forgetPasswordRequest) {
+        ResetToken resetToken = createResetToken(forgetPasswordRequest.getEmail());
+        if(resetToken != null){
+            mailService.sendResetPasswordEmail(forgetPasswordRequest.getEmail(),"http://localhost:8080/v1/auth/reset-password?token="+resetToken.getToken());
+        }
+        return modelMapper.map(resetToken, ForgetPasswordResponse.class);
+    }
+
+    private ResetToken createResetToken(String email){
+        if(!userRepository.existsUserByEmail(email)){
+            return null;
+        }
+        ResetToken resetToken = new ResetToken();
+        resetToken.setToken(UUID.randomUUID().toString());
+        resetToken.setEmail(email);
+        User user = userRepository.findUserByEmail(email).orElse(null);
+        resetToken.setUser(user);
+        resetToken.setExpiredAt(LocalDateTime.now().plusHours(24));
+        return resetTokenRepository.save(resetToken);
+    }
+    @Override
+    public boolean isValidToken(String token) {
+        return resetTokenRepository.existsByTokenAndUsedFalseAndExpiredAtAfter(token,LocalDateTime.now()) ;
+    }
+
+    @Transactional
+    @Override
+    public boolean resetPassword(ResetPasswordRequest resetPasswordRequest,String token) {
+        User userInDB = userRepository.findUserByResetToken(token).orElse(null);
+        ResetToken resetToken = resetTokenRepository.findByToken(token).orElse(null);
+        if(userInDB != null && resetToken != null){
+            userInDB.setPassword(PasswordUtil.hashPassword(resetPasswordRequest.getNewPassword()));
+            resetToken.setUsed(true);
+            userRepository.save(userInDB);
+            resetTokenRepository.save(resetToken);
+            return true;
+        }
+        return false;
+    }
+
 }
