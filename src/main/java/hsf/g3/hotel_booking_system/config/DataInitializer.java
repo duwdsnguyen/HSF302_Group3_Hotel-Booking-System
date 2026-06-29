@@ -18,25 +18,25 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner init(RoleRepository roleRepository, UserRepository userRepository) {
         return args -> {
-            Role adminRole = roleRepository.findRoleByRoleCode(AppRole.ADMIN).orElseGet(() -> roleRepository.save(new Role(AppRole.ADMIN)));
-            Role receptionistRole = roleRepository.findRoleByRoleCode(AppRole.RECEPTIONIST).orElseGet(() -> roleRepository.save(new Role((AppRole.RECEPTIONIST))));
-            Role guestRole = roleRepository.findRoleByRoleCode(AppRole.GUEST).orElseGet(() -> roleRepository.save(new Role(AppRole.GUEST)));
+            Role adminRole = roleRepository.findRoleByRoleCode(AppRole.ADMIN).orElseGet(() -> roleRepository.save(Role.builder().roleCode(AppRole.ADMIN).build()));
+            Role receptionistRole = roleRepository.findRoleByRoleCode(AppRole.RECEPTIONIST).orElseGet(() -> roleRepository.save(Role.builder().roleCode(AppRole.RECEPTIONIST).build()));
+            Role guestRole = roleRepository.findRoleByRoleCode(AppRole.GUEST).orElseGet(() -> roleRepository.save(Role.builder().roleCode(AppRole.GUEST).build()));
             Set<Role> adRole = Set.of(adminRole);
             Set<Role> recepRole = Set.of(receptionistRole);
             Set<Role> gRole = Set.of(guestRole);
 
             if (!userRepository.existsUserByEmail("admin123@gmail.com")) {
-                User user = new User("Nguyễn Văn Admin", "admin123@gmail.com", PasswordUtil.hashPassword("admin123"), "123456789");
+                User user = User.builder().fullName("Nguyễn Văn Admin").email("admin123@gmail.com").password(PasswordUtil.hashPassword("admin123")).phone("123456789").build();
                 userRepository.save(user);
             }
 
             if (!userRepository.existsUserByEmail("recept123@gmail.com")) {
-                User user = new User("Nguyễn Văn Lễ Tân", "recept123@gmail.com", PasswordUtil.hashPassword("recept123"), "0914505521");
+                User user = User.builder().fullName("Nguyễn Văn Thư Ký").email("recept123@gmail.com").password(PasswordUtil.hashPassword("recept123")).phone("0914652315").build();
                 userRepository.save(user);
             }
 
             if (!userRepository.existsUserByEmail("guest123@gmail.com")) {
-                User user = new User("Nguyễn Văn Khách", "guest123@gmail.com", PasswordUtil.hashPassword("guest123"), "0914505521");
+                User user = User.builder().fullName("Nguyễn Văn Khách").email("guest123@gmail.com").password(PasswordUtil.hashPassword("guest123")).phone("0914561656").build();
                 userRepository.save(user);
             }
 

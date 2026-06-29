@@ -12,6 +12,10 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email= :email")
     Optional<User> findUserByEmailWithRoles(String email);
+    Optional<User> findUserByEmail(String email);
 
     Boolean existsUserByEmail(String email);
+
+    @Query("SELECT u FROM User u JOIN u.resetTokens rt WHERE rt.token= :resetToken ")
+    Optional<User> findUserByResetToken(String resetToken);
 }
