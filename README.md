@@ -38,19 +38,12 @@ docs
 └── requirements
 ```
 <h3>For Contributors, database initialize:</h3><br>
-<p>open CMD or PowerShell:</p><br>
+<p>create hotel-booking-system/.env.properties file:</p><br>
 
 ```
-setx DB_URL "jdbc:sqlserver://localhost:1433;databaseName=hotel_booking_system;encrypt=true;trustServerCertificate=true"
-setx DB_USERNAME "your_username"
-setx DB_PASSWORD "your_password"
-```
-reopen and check:
-
-```
-echo %DB_URL%
-echo %DB_USERNAME%
-echo %DB_PASSWORD%
+DB_URL=jdbc:sqlserver://localhost:xxxx;databaseName=hotel_booking_system;encrypt=true;trustServerCertificate=true
+DB_USERNAME=
+DB_PASSWORD=
 ```
 
 
