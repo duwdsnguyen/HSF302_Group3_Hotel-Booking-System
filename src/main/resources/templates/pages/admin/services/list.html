@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Service Management</title>
+</head>
+<body>
+<h1>Service Management</h1>
+<a th:href="@{/v1/admin/services/add}">Add New Service</a>
+<form th:action="@{/v1/admin/services/list}" method="get">
+    <label>
+        Search by service name: <input type="text" name="keyword" th:value="${keyword}">
+    </label>
+
+    <label>
+        Filter by status:
+        <select name="status">
+            <option value="">All</option>
+            <option value="ACTIVE" th:selected="${selectedStatus != null and selectedStatus.name() == 'ACTIVE'}">
+                ACTIVE
+            </option>
+            <option value="INACTIVE" th:selected="${selectedStatus != null and selectedStatus.name() == 'INACTIVE'}">
+                INACTIVE
+            </option>
+        </select>
+    </label>
+
+    <button type="submit">Search</button>
+    <a th:href="@{/v1/admin/services/list}">Reset</a>
+</form>
+
+<br>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Service Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="service : ${services}">
+        <td th:text="${service.serviceId}">1</td>
+        <td th:text="${service.serviceName}">Breakfast</td>
+        <td th:text="${service.description}">Morning meal</td>
+        <td th:text="${service.price}">100</td>
+        <td th:text="${service.status}">ACTIVE</td>
+        <td>
+            <a th:href="@{/v1/admin/services/edit/{id}(id=${service.serviceId})}">Edit</a>
+            <form th:if="${service.status.name() == 'ACTIVE'}"
+                  th:action="@{/v1/admin/services/deactivate/{id}(id=${service.serviceId})}"
+                  method="post"
+                  style="display:inline;">
+                <button type="submit">Deactive</button>
+            </form>
+
+            <form th:if="${service.status.name() == 'INACTIVE'}"
+                  th:action="@{/v1/admin/services/activate/{id}(id=${service.serviceId})}"
+                  method="post"
+                  style="display:inline;">
+                <button type="submit">Active</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
