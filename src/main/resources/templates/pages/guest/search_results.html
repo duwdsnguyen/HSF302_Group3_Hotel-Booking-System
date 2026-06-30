@@ -22,7 +22,7 @@
     to <b th:text="${checkOut}"></b> for <b th:text="${guests}"></b> guest(s).
 </p>
 
-<a th:href="@{/}">Back to Home</a>
+<a th:href="@{/v1/guest/dashboard}">Back to Dashboard</a>
 
 <hr>
 
@@ -43,9 +43,11 @@
         <label for="roomTypeId" style="margin-left: 15px;">Room Type:</label>
         <select id="roomTypeId" name="roomTypeId">
             <option value="">-- All Types --</option>
-            <option value="1" th:selected="${roomTypeId == 1}">Standard</option>
-            <option value="2" th:selected="${roomTypeId == 2}">Deluxe</option>
-            <option value="3" th:selected="${roomTypeId == 3}">Suite</option>
+            <option th:each="type : ${roomTypes}"
+                    th:value="${type.roomTypeId}"
+                    th:selected="${roomTypeId == type.roomTypeId}"
+                    th:text="${type.typeName}">
+            </option>
         </select>
 
         <button type="submit" style="margin-left: 15px; background-color: #28a745; color: white; padding: 5px 15px; border: none; border-radius: 3px;">
@@ -71,7 +73,8 @@
         <p><b>Base Price:</b> $<span th:text="${room.roomType.basePrice}"></span></p>
         <p><b>Description:</b> <span th:text="${room.description}"></span></p>
 
-        <button style="background-color: #007bff; color: white; padding: 10px;">Book Now</button>
+        <a th:href="@{/v1/guest/room/{id}(id=${room.roomId},checkInDate=${checkIn},checkOutDate=${checkOut},numberOfGuests=${guests})}" style="display: inline-block; background-color: #17a2b8; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; margin-right: 10px;">View Details</a>
+        <button style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer;">Book Now</button>
     </div>
 </div>
 
