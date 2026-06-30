@@ -4,6 +4,8 @@ import hsf.g3.hotel_booking_system.dto.auth.*;
 import hsf.g3.hotel_booking_system.dto.user.UserInfoDTO;
 import hsf.g3.hotel_booking_system.enums.user.AppRole;
 import hsf.g3.hotel_booking_system.service.user.UserService;
+import jakarta.servlet.http.HttpSession;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -29,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(Model model, @ModelAttribute("loginRequestDTO")LoginRequestDTO loginRequestDTO){
+    public String login(Model model, @ModelAttribute("loginRequestDTO")LoginRequestDTO loginRequestDTO,HttpSession session){
         UserInfoDTO userInfoDTO = userService.login(loginRequestDTO);
         LOGGER.info("User login with email: {} and password: {}",loginRequestDTO.getEmail(),loginRequestDTO.getPassword());
         if(userInfoDTO == null){
@@ -37,7 +39,7 @@ public class AuthController {
             return "pages/auth/login";
         }
         else{
-            System.out.println("redirect to role dashboard");
+            session.setAttribute("loggedInUser",userInfoDTO);
             if(userInfoDTO.getRoles().stream().anyMatch(role -> role.getRoleCode().equals(AppRole.ADMIN))){
                 LOGGER.info("Already at admin dashboard for role {}",userInfoDTO.getRoles().stream().filter((role -> role.getRoleCode().equals(AppRole.ADMIN))));
                 return "redirect:/v1/admin/dashboard";
@@ -52,6 +54,13 @@ public class AuthController {
                 return  "redirect:/v1/receptionist/dashboard";
             }
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout (HttpSession session){
+        LOGGER.info("Logout successfully");
+        session.invalidate();
+        return "redirect:/v1/auth/login";
     }
 
     @GetMapping("/register")
