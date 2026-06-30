@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+import hsf.g3.hotel_booking_system.entity.Base;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 @Table(name = "bookings")
-public class Booking {
+public class Booking extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_id")
@@ -47,8 +47,4 @@ public class Booking {
 
     @Column(name = "status", nullable = false, length = 30)
     private String status = "PENDING";
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
 }
