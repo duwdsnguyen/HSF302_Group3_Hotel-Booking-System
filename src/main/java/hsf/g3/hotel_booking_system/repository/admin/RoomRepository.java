@@ -20,7 +20,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             "WHERE r.status = :roomStatus " +
             "AND r.roomType.maxGuests >= :numberOfGuests " +
             "AND r.roomId NOT IN (" +
-            "    SELECT b.roomId FROM Booking b " +
+            "    SELECT b.room.roomId FROM Booking b " +
             "    WHERE b.checkInDate < :checkOutDate " +
             "    AND b.checkOutDate > :checkInDate " +
             "    AND b.status IN :bookingStatuses" +
