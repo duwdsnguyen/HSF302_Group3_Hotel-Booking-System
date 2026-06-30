@@ -31,7 +31,7 @@
     <div class="dashboard-container">
         <div class="header">
             <h2>Guest Dashboard</h2>
-            <form th:action="@{/logout}" method="post">
+            <form th:action="@{/v1/auth/logout}" method="get">
                 <button type="submit" style="background-color: #dc3545;">Logout</button>
             </form>
         </div>
