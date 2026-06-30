@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/admin/room-types")
+@RequestMapping("/v1/admin/room-types")
 public class RoomTypeController {
     private final AdminRoomTypeService roomTypeService;
 
@@ -37,7 +37,7 @@ public class RoomTypeController {
     @PostMapping("/create")
     public String createRoomType(@ModelAttribute RoomTypeRequestDTO request){
         roomTypeService.createRoomType(request);
-        return "redirect:/admin/room-types";
+        return "redirect:/v1/admin/room-types";
     }
 
     @GetMapping("/edit/{id}")
@@ -50,13 +50,13 @@ public class RoomTypeController {
     @PostMapping("/edit/{id}")
     public String updateRoomType(@PathVariable Integer id, @ModelAttribute RoomTypeRequestDTO request){
         roomTypeService.updateRoomType(id, request);
-        return "redirect:/admin/room-types";
+        return "redirect:/v1/admin/room-types";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteRoomType(@PathVariable Integer id){
         roomTypeService.deleteRoomType(id);
-        return "redirect:/admin/room-types";
+        return "redirect:/v1/admin/room-types";
     }
 
 }
