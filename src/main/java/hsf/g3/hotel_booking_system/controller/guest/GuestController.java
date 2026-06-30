@@ -36,7 +36,24 @@ public class GuestController {
             return "pages/guest/search_results";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
-            return "pages/home";
+            return "pages/guest/dashboard";
+        }
+    }
+
+    @GetMapping("/dashboard")
+    public String showDashboard() {
+        return "pages/guest/dashboard";
+    }
+
+    @GetMapping("/room/{id}")
+    public String viewRoomDetail(@org.springframework.web.bind.annotation.PathVariable Integer id, Model model) {
+        try {
+            Room room = guestRoomService.getRoomById(id);
+            model.addAttribute("room", room);
+            return "pages/guest/room_detail";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return "pages/guest/search_results";
         }
     }
 }
