@@ -3,70 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <title>Service Management</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .service-page {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .page-header p {
+            margin: 8px 0 0;
+            color: #6b7280;
+        }
+
+        .filter-card,
+        .table-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 16px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #0f766e;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #115e59;;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;;
+            color: #111827;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .table-card {
+            overflow-x: auto;
+        }
+
+        .service-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .service-table thead {
+            background: #f8fafc;
+        }
+
+        .service-table th,
+        .service-table td {
+            padding: 14px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
+
+        .service-table th {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #6b7280;
+        }
+
+        .service-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-cell {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-edit {
+            background: #e0f2fe;
+            color: #075985;
+        }
+
+        .btn-edit:hover {
+            background: #bae6fd;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .btn-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .btn-success:hover {
+            background: #bbf7d0;
+        }
+    </style>
 </head>
+
 <body>
-<h1>Service Management</h1>
-<a th:href="@{/v1/admin/services/add}">Add New Service</a>
-<form th:action="@{/v1/admin/services/list}" method="get">
-    <label>
-        Search by service name: <input type="text" name="keyword" th:value="${keyword}">
-    </label>
+<div class="service-page">
+    <div class="page-header">
+        <div>
+            <h1>Service Management</h1>
+            <p>Manage hotel services, pricing, and availability status.</p>
+        </div>
+        <a th:href="@{/v1/admin/services/add}" class="btn btn-primary">Add New Service</a>
+    </div>
 
-    <label>
-        Filter by status:
-        <select name="status">
-            <option value="">All</option>
-            <option value="ACTIVE" th:selected="${selectedStatus != null and selectedStatus.name() == 'ACTIVE'}">
-                ACTIVE
-            </option>
-            <option value="INACTIVE" th:selected="${selectedStatus != null and selectedStatus.name() == 'INACTIVE'}">
-                INACTIVE
-            </option>
-        </select>
-    </label>
+    <div class="filter-card">
+        <form th:action="@{/v1/admin/services/list}" method="get" class="filter-form">
+            <div class="form-group">
+                <label for="keyword"> Search by service name:</label>
+                <input id="keyword" type="text" name="keyword" th:value="${keyword}" placeholder="Enter service name">
+            </div>
 
-    <button type="submit">Search</button>
-    <a th:href="@{/v1/admin/services/list}">Reset</a>
-</form>
+            <div class="form-group">
+                <label for="status">Filter by status:</label>
+                <select id="status" name="status">
+                    <option value="">All</option>
+                    <option value="ACTIVE"
+                            th:selected="${selectedStatus != null and selectedStatus.name() == 'ACTIVE'}">ACTIVE
+                    </option>
+                    <option value="INACTIVE"
+                            th:selected="${selectedStatus != null and selectedStatus.name() == 'INACTIVE'}">INACTIVE
+                    </option>
+                </select>
+            </div>
 
-<br>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a th:href="@{/v1/admin/services/list}" class="btn btn-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Service Name</th>
-        <th>Description</th>
-        <th>Price</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="service : ${services}">
-        <td th:text="${service.serviceId}">1</td>
-        <td th:text="${service.serviceName}">Breakfast</td>
-        <td th:text="${service.description}">Morning meal</td>
-        <td th:text="${service.price}">100</td>
-        <td th:text="${service.status}">ACTIVE</td>
-        <td>
-            <a th:href="@{/v1/admin/services/edit/{id}(id=${service.serviceId})}">Edit</a>
-            <form th:if="${service.status.name() == 'ACTIVE'}"
-                  th:action="@{/v1/admin/services/deactivate/{id}(id=${service.serviceId})}"
-                  method="post"
-                  style="display:inline;">
-                <button type="submit">Deactive</button>
-            </form>
+    <div class="table-card">
+        <table class="service-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Service Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="service : ${services}">
+                <td th:text="${service.serviceId}">1</td>
+                <td th:text="${service.serviceName}">Breakfast</td>
+                <td th:text="${service.description}">Morning meal</td>
+                <td th:text="${service.price}">100</td>
+                <td>
+                    <span class="status-badge"
+                          th:classappend="${service.status.name() == 'ACTIVE'} ? ' status-active' : ' status-inactive' "
+                          th:text="${service.status}">
+                    ACTIVE
+                    </span>
+                </td>
+                <td class="action-cell">
+                    <a th:href="@{/v1/admin/services/edit/{id}(id=${service.serviceId})}" class="btn btn-edit">Edit</a>
 
-            <form th:if="${service.status.name() == 'INACTIVE'}"
-                  th:action="@{/v1/admin/services/activate/{id}(id=${service.serviceId})}"
-                  method="post"
-                  style="display:inline;">
-                <button type="submit">Active</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+                    <form th:if="${service.status.name() == 'ACTIVE'}"
+                          th:action="@{/v1/admin/services/deactivate/{id}(id=${service.serviceId})}"
+                          method="post"
+                          style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Deactivate</button>
+                    </form>
+
+                    <form th:if="${service.status.name() == 'INACTIVE'}"
+                          th:action="@{/v1/admin/services/activate/{id}(id=${service.serviceId})}"
+                          method="post"
+                          style="display:inline;">
+                        <button type="submit" class="btn btn-success">Activate</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>
