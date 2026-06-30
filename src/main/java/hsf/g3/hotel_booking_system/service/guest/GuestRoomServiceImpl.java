@@ -6,6 +6,7 @@ import hsf.g3.hotel_booking_system.repository.admin.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class GuestRoomServiceImpl implements GuestRoomService {
     private final hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository roomTypeRepository;
 
     @Override
-    public List<Room> searchAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfGuests) {
+    public List<Room> searchAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfGuests, BigDecimal minPrice, BigDecimal maxPrice, Integer roomTypeId) {
         if (checkInDate == null || checkOutDate == null) {
             throw new IllegalArgumentException("Please select both check-in and check-out dates.");
         }
@@ -34,13 +35,33 @@ public class GuestRoomServiceImpl implements GuestRoomService {
             throw new IllegalArgumentException("Number of guests must be greater than 0.");
         }
 
-        return roomRepository.findAvailableRooms(
+        List<Room> availableRooms = roomRepository.findAvailableRooms(
                 checkInDate,
                 checkOutDate,
                 numberOfGuests,
                 RoomStatus.AVAILABLE,
                 List.of("PENDING", "CONFIRMED")
         );
+
+        if (minPrice != null) {
+            availableRooms = availableRooms.stream()
+                    .filter(room -> room.getRoomType().getBasePrice().compareTo(minPrice) >= 0)
+                    .toList();
+        }
+
+        if (maxPrice != null) {
+            availableRooms = availableRooms.stream()
+                    .filter(room -> room.getRoomType().getBasePrice().compareTo(maxPrice) <= 0)
+                    .toList();
+        }
+
+        if (roomTypeId != null) {
+            availableRooms = availableRooms.stream()
+                    .filter(room -> room.getRoomType().getRoomTypeId().equals(roomTypeId))
+                    .toList();
+        }
+
+        return availableRooms;
     }
 
     @Override
