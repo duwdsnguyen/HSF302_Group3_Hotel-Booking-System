@@ -43,6 +43,7 @@ logs/
 *.local.properties
 application-local.properties
 application-secret.properties
+application.properties
 
 ### OS files ###
 .DS_Store
