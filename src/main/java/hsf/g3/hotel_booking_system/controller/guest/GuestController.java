@@ -29,6 +29,7 @@ public class GuestController {
             List<Room> availableRooms = guestRoomService.searchAvailableRooms(checkInDate, checkOutDate, numberOfGuests);
 
             model.addAttribute("rooms", availableRooms);
+            model.addAttribute("roomTypes", guestRoomService.getAllRoomTypes());
             model.addAttribute("checkIn", checkInDate);
             model.addAttribute("checkOut", checkOutDate);
             model.addAttribute("guests", numberOfGuests);

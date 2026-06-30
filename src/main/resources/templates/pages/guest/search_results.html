@@ -43,9 +43,11 @@
         <label for="roomTypeId" style="margin-left: 15px;">Room Type:</label>
         <select id="roomTypeId" name="roomTypeId">
             <option value="">-- All Types --</option>
-            <option value="1" th:selected="${roomTypeId == 1}">Standard</option>
-            <option value="2" th:selected="${roomTypeId == 2}">Deluxe</option>
-            <option value="3" th:selected="${roomTypeId == 3}">Suite</option>
+            <option th:each="type : ${roomTypes}"
+                    th:value="${type.roomTypeId}"
+                    th:selected="${roomTypeId == type.roomTypeId}"
+                    th:text="${type.typeName}">
+            </option>
         </select>
 
         <button type="submit" style="margin-left: 15px; background-color: #28a745; color: white; padding: 5px 15px; border: none; border-radius: 3px;">

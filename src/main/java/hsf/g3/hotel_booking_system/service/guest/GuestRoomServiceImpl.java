@@ -14,6 +14,7 @@ import java.util.List;
 public class GuestRoomServiceImpl implements GuestRoomService {
 
     private final RoomRepository roomRepository;
+    private final hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository roomTypeRepository;
 
     @Override
     public List<Room> searchAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfGuests) {
@@ -46,5 +47,10 @@ public class GuestRoomServiceImpl implements GuestRoomService {
     public Room getRoomById(Integer roomId) {
         return roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with ID: " + roomId));
+    }
+
+    @Override
+    public List<hsf.g3.hotel_booking_system.entity.room.RoomType> getAllRoomTypes() {
+        return roomTypeRepository.findAll();
     }
 }

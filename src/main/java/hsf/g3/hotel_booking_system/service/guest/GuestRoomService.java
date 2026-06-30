@@ -7,4 +7,5 @@ import java.util.List;
 public interface GuestRoomService {
     List<Room> searchAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfGuests);
     Room getRoomById(Integer roomId);
+    List<hsf.g3.hotel_booking_system.entity.room.RoomType> getAllRoomTypes();
 }
