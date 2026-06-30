@@ -27,7 +27,7 @@ public class AuthController {
     @GetMapping("/login")
     public String login(Model model){
         model.addAttribute("loginRequestDTO",new LoginRequestDTO());
-        return "pages/auth/login";
+        return "/pages/auth/login";
     }
 
     @PostMapping("/login")
@@ -36,7 +36,7 @@ public class AuthController {
         LOGGER.info("User login with email: {} and password: {}",loginRequestDTO.getEmail(),loginRequestDTO.getPassword());
         if(userInfoDTO == null){
             model.addAttribute("error", "Mật khẩu hoặc email đã sai");
-            return "pages/auth/login";
+            return "/pages/auth/login";
         }
         else{
             session.setAttribute("loggedInUser",userInfoDTO);
@@ -67,7 +67,7 @@ public class AuthController {
     public String register(Model model){
         LOGGER.info("Display register page");
         model.addAttribute("registerRequestDTO",new RegisterRequestDTO());
-        return "pages/auth/register";
+        return "/pages/auth/register";
     }
 
     @PostMapping("/register")
@@ -76,7 +76,7 @@ public class AuthController {
         if(userInfoDTO == null){
             model.addAttribute("error", "Không thể tạo tài khoản");
             model.addAttribute("registerRequestDTO",registerRequestDTO);
-            return "pages/auth/register";
+            return "/pages/auth/register";
         }
         else{
             redirectAttributes.addFlashAttribute("success","Tạo tài khoản thành công");
@@ -88,7 +88,7 @@ public class AuthController {
     public String forgetPassword(Model model){
         LOGGER.info("Display forget password page");
         model.addAttribute("forgetPasswordRequest",new ForgetPasswordRequest());
-        return "pages/auth/forget_password";
+        return "/pages/auth/forget_password";
     }
 
     @PostMapping("/forget-password")
@@ -101,7 +101,7 @@ public class AuthController {
             LOGGER.info("Link hasn't sent to your email: {}",forgetPasswordRequest.getEmail());
             model.addAttribute("error", "Nếu email bạn tồn tại thì sẽ nhận được mail trong giây lát");
         }
-        return "pages/auth/forget_password";
+        return "/pages/auth/forget_password";
     }
 
     @GetMapping("/reset-password")
@@ -113,7 +113,7 @@ public class AuthController {
         }else{
             model.addAttribute("resetPasswordRequest",new ResetPasswordRequest());
             model.addAttribute("token",token);
-            return "pages/auth/reset_password";
+            return "/pages/auth/reset_password";
         }
     }
 

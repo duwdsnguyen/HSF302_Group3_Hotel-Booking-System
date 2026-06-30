@@ -42,7 +42,7 @@ public class RoomController {
     public String showCreateForm(Model model) {
         model.addAttribute("room", new RoomRequestDTO());
         model.addAttribute("roomTypes", roomTypeService.getAllRoomTypes());
-        model.addAttribute("formAction", "/admin/rooms/create");
+        model.addAttribute("formAction", "/v1/admin/rooms/create");
         return "/pages/admin/room/room-form";
     }
 
@@ -56,7 +56,7 @@ public class RoomController {
     public String showUpdateForm(@PathVariable Integer id, Model model) {
         model.addAttribute("room", roomService.getRoomById(id));
         model.addAttribute("roomTypes", roomTypeService.getAllRoomTypes());
-        model.addAttribute("formAction", "/admin/rooms/edit/" + id);
+        model.addAttribute("formAction", "/v1/admin/rooms/edit/" + id);
         return "/pages/admin/room/room-form";
     }
 
