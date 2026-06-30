@@ -2,7 +2,7 @@ package hsf.g3.hotel_booking_system.service.guest;
 
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
-import hsf.g3.hotel_booking_system.repository.room.RoomRepository;
+import hsf.g3.hotel_booking_system.repository.admin.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,20 +17,28 @@ public class GuestRoomServiceImpl implements GuestRoomService {
 
     @Override
     public List<Room> searchAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfGuests) {
-        if (checkInDate.isAfter(checkOutDate) || checkInDate.isEqual(checkOutDate)) {
-            throw new IllegalArgumentException("Check-in date must be before check-out date.");
+        if (checkInDate == null || checkOutDate == null) {
+            throw new IllegalArgumentException("Please select both check-in and check-out dates.");
         }
-        if (numberOfGuests <= 0) {
+
+        if (checkInDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Check-in date cannot be in the past.");
+        }
+
+        if (!checkOutDate.isAfter(checkInDate)) {
+            throw new IllegalArgumentException("Check-out date must be after check-in date.");
+        }
+
+        if (numberOfGuests == null || numberOfGuests <= 0) {
             throw new IllegalArgumentException("Number of guests must be greater than 0.");
         }
 
-        List<String> activeBookingStatuses = List.of("PENDING", "CONFIRMED", "CHECKED_IN");
         return roomRepository.findAvailableRooms(
                 checkInDate,
                 checkOutDate,
                 numberOfGuests,
                 RoomStatus.AVAILABLE,
-                activeBookingStatuses
+                List.of("PENDING", "CONFIRMED")
         );
     }
 

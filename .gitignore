@@ -38,6 +38,7 @@ logs/
 
 ### Environment & secrets ###
 .env
+.env.properties
 .env.local
 *.local.properties
 application-local.properties

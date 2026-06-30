@@ -11,11 +11,11 @@
     <h1>Room Type Management</h1>
 
     <div class="page-actions">
-        <a class="btn" th:href="@{/admin/room-types/create}">Add Room Type</a>
-        <a class="btn secondary" th:href="@{/admin/dashboard}">Back to Dashboard</a>
+        <a class="btn" th:href="@{/v1/admin/room-types/create}">Add Room Type</a>
+        <a class="btn secondary" th:href="@{/v1/admin/dashboard}">Back to Dashboard</a>
     </div>
 
-    <form class="filter-form" th:action="@{/admin/room-types}" method="get">
+    <form class="filter-form" th:action="@{/v1/admin/room-types}" method="get">
         <input type="text" name="search" placeholder="Search name or description" th:value="${search}">
 
         <select name="status">
@@ -37,7 +37,7 @@
         </select>
 
         <button class="btn" type="submit">Apply</button>
-        <a class="btn secondary" th:href="@{/admin/room-types}">Reset</a>
+        <a class="btn secondary" th:href="@{/v1/admin/room-types}">Reset</a>
     </form>
 
     <table>
@@ -62,9 +62,9 @@
             <td th:text="${roomType.basePrice}"></td>
             <td th:text="${roomType.status}"></td>
             <td>
-                <a th:href="@{/admin/room-types/edit/{id}(id=${roomType.roomTypeId})}">Edit</a>
+                <a th:href="@{/v1/admin/room-types/edit/{id}(id=${roomType.roomTypeId})}">Edit</a>
                 |
-                <a th:href="@{/admin/room-types/delete/{id}(id=${roomType.roomTypeId})}"
+                <a th:href="@{/v1/admin/room-types/delete/{id}(id=${roomType.roomTypeId})}"
                    onclick="return confirm('Are you sure?')">Delete</a>
             </td>
         </tr>
