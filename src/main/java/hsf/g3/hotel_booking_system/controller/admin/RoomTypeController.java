@@ -30,7 +30,7 @@ public class RoomTypeController {
     @GetMapping("/create")
     public String showCreateForm(Model model){
         model.addAttribute("roomType", new RoomTypeRequestDTO());
-        model.addAttribute("formAction", "/admin/room-types/create");
+        model.addAttribute("formAction", "/v1/admin/room-types/create");
         return "/pages/admin/room/room-type-form";
     }
 
@@ -43,7 +43,7 @@ public class RoomTypeController {
     @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable Integer id, Model model){
         model.addAttribute("roomType", roomTypeService.getRoomTypeById(id));
-        model.addAttribute("formAction", "/admin/room-types/edit/" + id);
+        model.addAttribute("formAction", "/v1/admin/room-types/edit/" + id);
         return "/pages/admin/room/room-type-form";
     }
 
