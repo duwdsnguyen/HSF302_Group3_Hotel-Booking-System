@@ -3,9 +3,11 @@ package hsf.g3.hotel_booking_system.controller.admin;
 import hsf.g3.hotel_booking_system.dto.admin.RoomTypeRequestDTO;
 import hsf.g3.hotel_booking_system.enums.user.RoomTypeStatus;
 import hsf.g3.hotel_booking_system.service.admin.AdminRoomTypeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -30,12 +32,12 @@ public class RoomTypeController {
     @GetMapping("/create")
     public String showCreateForm(Model model){
         model.addAttribute("roomType", new RoomTypeRequestDTO());
-        model.addAttribute("formAction", "/admin/room-types/create");
+        model.addAttribute("formAction", "/v1/admin/room-types/create");
         return "/pages/admin/room/room-type-form";
     }
 
     @PostMapping("/create")
-    public String createRoomType(@ModelAttribute RoomTypeRequestDTO request){
+    public String createRoomType(@Valid @ModelAttribute RoomTypeRequestDTO request, BindingResult result, Model model){
         roomTypeService.createRoomType(request);
         return "redirect:/v1/admin/room-types";
     }
@@ -43,7 +45,7 @@ public class RoomTypeController {
     @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable Integer id, Model model){
         model.addAttribute("roomType", roomTypeService.getRoomTypeById(id));
-        model.addAttribute("formAction", "/admin/room-types/edit/" + id);
+        model.addAttribute("formAction", "/v1/admin/room-types/edit/" + id);
         return "/pages/admin/room/room-type-form";
     }
 
