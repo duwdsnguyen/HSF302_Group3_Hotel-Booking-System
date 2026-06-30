@@ -1,4 +1,4 @@
-package hsf.g3.hotel_booking_system.repository.room;
+package hsf.g3.hotel_booking_system.repository.admin;
 
 import hsf.g3.hotel_booking_system.entity.room.RoomType;
 import java.util.List;
