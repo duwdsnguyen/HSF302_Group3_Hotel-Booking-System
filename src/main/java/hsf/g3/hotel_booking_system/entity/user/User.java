@@ -51,7 +51,7 @@ public class User {
     LocalDateTime updatedAt;
 
     @ToString.Exclude
-    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.DETACH,CascadeType.PERSIST})
+    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.DETACH})
     @JoinTable(name = "user_roles",joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<Role>roles = new HashSet<>();
 
