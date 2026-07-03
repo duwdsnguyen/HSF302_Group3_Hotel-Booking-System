@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hotel Management - Login</title>
+</head>
+<body>
+<div th:if="${param.error}" th:text="${param.error}"></div>
+<form th:action="@{/v1/auth/login}" method="post">
+    <table>
+        <tr>
+            <td>Email: </td>
+            <td><input type="email" ></td>
+        </tr>
+        <tr>
+            <td>Password: </td>
+            <td><input type="password" ></td>
+        </tr>
+        <tr>
+
+            <td><button type="submit">LOGIN</button></td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>
