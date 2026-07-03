@@ -60,13 +60,7 @@ echo %DB_PASSWORD%
 CREATE DATABASE hotel_booking_system;
 ```
 
-<p>open Itellij:</p>
-<p>run file: DatabaseInitializerApplication.java first</p>
+<p>go to `docs/database/schema.sql`   to see how schema should be initialized</p>
 
-| Member          | Module                           | Branch                                                                |
-| ----------------| -------------------------------- | --------------------------------------------------------------------- |
-| duwdsnguyen     | User/Auth Management             | `feature/auth`                                                        |
-| Member 2        | Room Management/Search           | `feature/admin-room-management` + `feature/guest-room-search`         |
-| Member 3        | Booking Management               | `feature/guest-booking` + `feature/receptionist-booking`              |
-| Member 4        | Check-in/Check-out + Room Change | `feature/receptionist-checkin-checkout` + `feature/guest-room-change` |
-| Member 5        | Service + Report                 | `feature/admin-service-management` + `feature/admin-report`           |
+
+
