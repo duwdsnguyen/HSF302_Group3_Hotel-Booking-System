@@ -2,7 +2,7 @@ package hsf.g3.hotel_booking_system.controller.admin;
 
 
 import hsf.g3.hotel_booking_system.dto.admin.RoomRequestDTO;
-import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import hsf.g3.hotel_booking_system.service.admin.AdminRoomService;
 import hsf.g3.hotel_booking_system.service.admin.AdminRoomTypeService;
 import jakarta.validation.Valid;

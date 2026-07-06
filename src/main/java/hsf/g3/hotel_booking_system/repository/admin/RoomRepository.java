@@ -1,7 +1,7 @@
 package hsf.g3.hotel_booking_system.repository.admin;
 
 import hsf.g3.hotel_booking_system.entity.room.Room;
-import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,6 +1,5 @@
-package hsf.g3.hotel_booking_system.dto.admin;
+package hsf.g3.hotel_booking_system.dto.guest;
 
-import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,13 +9,12 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RoomResponseDTO {
+public class SearchRoomResponseDTO {
     private Integer roomId;
     private String roomNumber;
-    private Integer roomTypeId;
-    private String roomTypeName;
-    private Integer floorNumber;
-    private RoomStatus status;
+    private String typeName;
+    private Integer maxGuests;
     private BigDecimal basePrice;
+    private Integer floorNumber;
     private String description;
 }

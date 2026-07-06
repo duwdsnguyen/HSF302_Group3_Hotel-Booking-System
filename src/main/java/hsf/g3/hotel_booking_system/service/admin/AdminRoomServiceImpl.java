@@ -4,7 +4,7 @@ import hsf.g3.hotel_booking_system.dto.admin.RoomRequestDTO;
 import hsf.g3.hotel_booking_system.dto.admin.RoomResponseDTO;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.entity.room.RoomType;
-import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import hsf.g3.hotel_booking_system.repository.admin.RoomRepository;
 import hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository;
 import lombok.RequiredArgsConstructor;

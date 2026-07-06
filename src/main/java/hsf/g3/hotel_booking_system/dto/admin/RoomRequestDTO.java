@@ -1,6 +1,6 @@
 package hsf.g3.hotel_booking_system.dto.admin;
 
-import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
