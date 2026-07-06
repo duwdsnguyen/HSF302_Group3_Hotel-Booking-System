@@ -4,7 +4,7 @@ import hsf.g3.hotel_booking_system.dto.admin.RoomRequestDTO;
 import hsf.g3.hotel_booking_system.dto.admin.RoomResponseDTO;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.entity.room.RoomType;
-import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import hsf.g3.hotel_booking_system.repository.admin.RoomRepository;
 import hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,9 +48,7 @@ public class AdminRoomServiceImpl implements AdminRoomService {
 
     @Override
     public RoomResponseDTO createRoom(RoomRequestDTO request) {
-        if (roomRepository.existsByRoomNumber(request.getRoomNumber())) {
-            throw new RuntimeException("Room with number " + request.getRoomNumber() + " already exists");
-        }
+        rejectDuplicateRoomNumber(request.getRoomNumber(), null);
 
         Room room = new Room();
         room.setRoomNumber(request.getRoomNumber());
@@ -66,6 +64,8 @@ public class AdminRoomServiceImpl implements AdminRoomService {
     @Override
     public RoomResponseDTO updateRoom(Integer id, RoomRequestDTO request) {
         Room room = findEntityById(id);
+        rejectDuplicateRoomNumber(request.getRoomNumber(), id);
+
         room.setRoomNumber(request.getRoomNumber());
         room.setRoomType(findRoomTypeById(request.getRoomTypeId()));
         room.setFloorNumber(request.getFloorNumber());
@@ -89,6 +89,15 @@ public class AdminRoomServiceImpl implements AdminRoomService {
     private RoomType findRoomTypeById(Integer roomTypeId) {
         return roomTypeRepository.findById(roomTypeId)
                 .orElseThrow(() -> new RuntimeException("RoomType with id " + roomTypeId + " does not exist"));
+    }
+
+    private void rejectDuplicateRoomNumber(String roomNumber, Integer currentRoomId) {
+        boolean duplicate = currentRoomId == null
+                ? roomRepository.existsByRoomNumber(roomNumber)
+                : roomRepository.existsByRoomNumberAndRoomIdNot(roomNumber, currentRoomId);
+        if (duplicate) {
+            throw new IllegalArgumentException("Room with number " + roomNumber + " already exists");
+        }
     }
 
     private RoomResponseDTO toResponseDTO(Room room) {

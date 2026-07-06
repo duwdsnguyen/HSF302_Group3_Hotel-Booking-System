@@ -1,7 +1,7 @@
 package hsf.g3.hotel_booking_system.entity.room;
 
 
-import hsf.g3.hotel_booking_system.enums.user.RoomTypeStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomTypeStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
