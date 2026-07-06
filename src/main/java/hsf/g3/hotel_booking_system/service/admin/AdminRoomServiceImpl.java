@@ -4,7 +4,7 @@ import hsf.g3.hotel_booking_system.dto.admin.RoomRequestDTO;
 import hsf.g3.hotel_booking_system.dto.admin.RoomResponseDTO;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.entity.room.RoomType;
-import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import hsf.g3.hotel_booking_system.repository.admin.RoomRepository;
 import hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,7 @@ public class AdminRoomServiceImpl implements AdminRoomService {
     @Override
     public RoomResponseDTO createRoom(RoomRequestDTO request) {
         if (roomRepository.existsByRoomNumber(request.getRoomNumber())) {
-            throw new RuntimeException("Room with number " + request.getRoomNumber() + " already exists");
+            throw new IllegalArgumentException("Số phòng đã tồn tại");
         }
 
         Room room = new Room();
@@ -66,6 +66,10 @@ public class AdminRoomServiceImpl implements AdminRoomService {
     @Override
     public RoomResponseDTO updateRoom(Integer id, RoomRequestDTO request) {
         Room room = findEntityById(id);
+        if (roomRepository.existsByRoomNumberAndRoomIdNot(request.getRoomNumber(), id)) {
+            throw new IllegalArgumentException("Số phòng đã tồn tại");
+        }
+
         room.setRoomNumber(request.getRoomNumber());
         room.setRoomType(findRoomTypeById(request.getRoomTypeId()));
         room.setFloorNumber(request.getFloorNumber());

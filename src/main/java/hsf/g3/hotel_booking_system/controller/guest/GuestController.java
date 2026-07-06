@@ -20,11 +20,6 @@ import java.util.List;
 public class GuestController {
     private final GuestRoomService guestRoomService;
 
-    @GetMapping("/dashboard")
-    public String dashboard() {
-        return "/pages/guest/dashboard";
-    }
-
     @GetMapping("/search-rooms")
     public String searchAvailableRooms(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkInDate,

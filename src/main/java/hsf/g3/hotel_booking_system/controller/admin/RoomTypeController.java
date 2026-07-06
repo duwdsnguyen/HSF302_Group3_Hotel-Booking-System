@@ -1,7 +1,7 @@
 package hsf.g3.hotel_booking_system.controller.admin;
 
 import hsf.g3.hotel_booking_system.dto.admin.RoomTypeRequestDTO;
-import hsf.g3.hotel_booking_system.enums.user.RoomTypeStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomTypeStatus;
 import hsf.g3.hotel_booking_system.service.admin.AdminRoomTypeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +37,18 @@ public class RoomTypeController {
     }
 
     @PostMapping("/create")
-    public String createRoomType(@Valid @ModelAttribute RoomTypeRequestDTO request, BindingResult result, Model model){
-        roomTypeService.createRoomType(request);
+    public String createRoomType(@Valid @ModelAttribute("roomType") RoomTypeRequestDTO request, BindingResult result, Model model){
+        if (result.hasErrors()) {
+            model.addAttribute("formAction", "/v1/admin/room-types/create");
+            return "/pages/admin/room/room-type-form";
+        }
+        try {
+            roomTypeService.createRoomType(request);
+        } catch (IllegalArgumentException e) {
+            result.rejectValue("typeName", "duplicate", e.getMessage());
+            model.addAttribute("formAction", "/v1/admin/room-types/create");
+            return "/pages/admin/room/room-type-form";
+        }
         return "redirect:/v1/admin/room-types";
     }
 
@@ -50,8 +60,21 @@ public class RoomTypeController {
     }
 
     @PostMapping("/edit/{id}")
-    public String updateRoomType(@PathVariable Integer id, @ModelAttribute RoomTypeRequestDTO request){
-        roomTypeService.updateRoomType(id, request);
+    public String updateRoomType(@PathVariable Integer id,
+                                 @Valid @ModelAttribute("roomType") RoomTypeRequestDTO request,
+                                 BindingResult result,
+                                 Model model){
+        if (result.hasErrors()) {
+            model.addAttribute("formAction", "/v1/admin/room-types/edit/" + id);
+            return "/pages/admin/room/room-type-form";
+        }
+        try {
+            roomTypeService.updateRoomType(id, request);
+        } catch (IllegalArgumentException e) {
+            result.rejectValue("typeName", "duplicate", e.getMessage());
+            model.addAttribute("formAction", "/v1/admin/room-types/edit/" + id);
+            return "/pages/admin/room/room-type-form";
+        }
         return "redirect:/v1/admin/room-types";
     }
 

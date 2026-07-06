@@ -1,7 +1,7 @@
 package hsf.g3.hotel_booking_system.service.guest;
 
 import hsf.g3.hotel_booking_system.entity.room.Room;
-import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import hsf.g3.hotel_booking_system.repository.admin.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

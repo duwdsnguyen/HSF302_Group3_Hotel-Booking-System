@@ -23,6 +23,7 @@
     <div class="form-group">
         <label>Type Name:</label>
         <input type="text" th:field="*{typeName}">
+        <span class="error" th:if="${#fields.hasErrors('typeName')}" th:errors="*{typeName}"></span>
     </div>
 
     <div class="form-group">
@@ -33,11 +34,13 @@
     <div class="form-group">
         <label>Max Guests:</label>
         <input type="number" th:field="*{maxGuests}">
+        <span class="error" th:if="${#fields.hasErrors('maxGuests')}" th:errors="*{maxGuests}"></span>
     </div>
 
     <div class="form-group">
         <label>Base Price:</label>
         <input type="number" th:field="*{basePrice}">
+        <span class="error" th:if="${#fields.hasErrors('basePrice')}" th:errors="*{basePrice}"></span>
     </div>
 
     <div class="form-group">
@@ -46,6 +49,7 @@
             <option value="ACTIVE">ACTIVE</option>
             <option value="INACTIVE">INACTIVE</option>
         </select>
+        <span class="error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></span>
     </div>
 
     <div class="form-actions">

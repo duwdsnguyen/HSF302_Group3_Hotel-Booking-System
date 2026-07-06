@@ -3,7 +3,7 @@ package hsf.g3.hotel_booking_system.service.admin;
 import hsf.g3.hotel_booking_system.dto.admin.RoomTypeRequestDTO;
 import hsf.g3.hotel_booking_system.dto.admin.RoomTypeResponseDTO;
 import hsf.g3.hotel_booking_system.entity.room.RoomType;
-import hsf.g3.hotel_booking_system.enums.user.RoomTypeStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomTypeStatus;
 import hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,7 +45,7 @@ public class AdminRoomTypeServiceImpl implements AdminRoomTypeService {
     @Override
     public RoomTypeResponseDTO createRoomType(RoomTypeRequestDTO request) {
         if (roomTypeRepository.existsByTypeName(request.getTypeName())) {
-            throw new RuntimeException("RoomType with name " + request.getTypeName() + " already exists");
+            throw new IllegalArgumentException("Tên loại phòng đã tồn tại");
         }
 
         RoomType roomType = new RoomType();
@@ -62,6 +62,10 @@ public class AdminRoomTypeServiceImpl implements AdminRoomTypeService {
     @Override
     public RoomTypeResponseDTO updateRoomType(Integer id, RoomTypeRequestDTO request) {
         RoomType roomType = findEntityById(id);
+        if (roomTypeRepository.existsByTypeNameAndRoomTypeIdNot(request.getTypeName(), id)) {
+            throw new IllegalArgumentException("Tên loại phòng đã tồn tại");
+        }
+
         roomType.setTypeName(request.getTypeName());
         roomType.setDescription(request.getDescription());
         roomType.setBasePrice(request.getBasePrice());

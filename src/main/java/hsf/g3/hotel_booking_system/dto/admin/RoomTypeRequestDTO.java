@@ -1,6 +1,6 @@
 package hsf.g3.hotel_booking_system.dto.admin;
 
-import hsf.g3.hotel_booking_system.enums.user.RoomTypeStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomTypeStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,3 +27,4 @@ public class RoomTypeRequestDTO {
     @NotNull(message = "Vui lòng chọn trạng thái")
     private RoomTypeStatus status;
 }
+

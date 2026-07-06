@@ -23,6 +23,7 @@
     <div class="form-group">
         <label>Room Number:</label>
         <input type="text" th:field="*{roomNumber}">
+        <span class="error" th:if="${#fields.hasErrors('roomNumber')}" th:errors="*{roomNumber}"></span>
     </div>
 
     <div class="form-group">
@@ -34,11 +35,13 @@
                     th:text="${roomType.typeName}">
             </option>
         </select>
+        <span class="error" th:if="${#fields.hasErrors('roomTypeId')}" th:errors="*{roomTypeId}"></span>
     </div>
 
     <div class="form-group">
         <label>Floor Number:</label>
         <input type="number" th:field="*{floorNumber}">
+        <span class="error" th:if="${#fields.hasErrors('floorNumber')}" th:errors="*{floorNumber}"></span>
     </div>
 
     <div class="form-group">
@@ -48,6 +51,7 @@
             <option value="OCCUPIED">OCCUPIED</option>
             <option value="MAINTENANCE">MAINTENANCE</option>
         </select>
+        <span class="error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></span>
     </div>
 
     <div class="form-group">
