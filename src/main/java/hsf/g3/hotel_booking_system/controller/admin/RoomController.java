@@ -5,9 +5,11 @@ import hsf.g3.hotel_booking_system.dto.admin.RoomRequestDTO;
 import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
 import hsf.g3.hotel_booking_system.service.admin.AdminRoomService;
 import hsf.g3.hotel_booking_system.service.admin.AdminRoomTypeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,8 +49,18 @@ public class RoomController {
     }
 
     @PostMapping("/create")
-    public String createRoom(@ModelAttribute RoomRequestDTO request) {
-        roomService.createRoom(request);
+    public String createRoom(@Valid @ModelAttribute("room") RoomRequestDTO request, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return roomForm(model, "/v1/admin/rooms/create");
+        }
+
+        try {
+            roomService.createRoom(request);
+        } catch (IllegalArgumentException e) {
+            result.rejectValue("roomNumber", "duplicate", e.getMessage());
+            return roomForm(model, "/v1/admin/rooms/create");
+        }
+
         return "redirect:/v1/admin/rooms";
     }
 
@@ -61,8 +73,19 @@ public class RoomController {
     }
 
     @PostMapping("/edit/{id}")
-    public String updateRoom(@PathVariable Integer id, @ModelAttribute RoomRequestDTO request) {
-        roomService.updateRoom(id, request);
+    public String updateRoom(@PathVariable Integer id, @Valid @ModelAttribute("room") RoomRequestDTO request, BindingResult result, Model model) {
+        String formAction = "/v1/admin/rooms/edit/" + id;
+        if (result.hasErrors()) {
+            return roomForm(model, formAction);
+        }
+
+        try {
+            roomService.updateRoom(id, request);
+        } catch (IllegalArgumentException e) {
+            result.rejectValue("roomNumber", "duplicate", e.getMessage());
+            return roomForm(model, formAction);
+        }
+
         return "redirect:/v1/admin/rooms";
     }
 
@@ -70,5 +93,11 @@ public class RoomController {
     public String deleteRoom(@PathVariable Integer id) {
         roomService.deleteRoom(id);
         return "redirect:/v1/admin/rooms";
+    }
+
+    private String roomForm(Model model, String formAction) {
+        model.addAttribute("roomTypes", roomTypeService.getAllRoomTypes());
+        model.addAttribute("formAction", formAction);
+        return "/pages/admin/room/room-form";
     }
 }

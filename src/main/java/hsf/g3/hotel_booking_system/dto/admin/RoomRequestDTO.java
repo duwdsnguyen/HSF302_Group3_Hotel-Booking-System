@@ -13,6 +13,7 @@ public class RoomRequestDTO {
     @NotBlank(message = "Tên phòng không được để trống")
     private String roomNumber;
 
+    @NotNull(message = "Vui lòng chọn loại phòng")
     private Integer roomTypeId;
 
     @NotNull(message = "Tầng không được để trống")

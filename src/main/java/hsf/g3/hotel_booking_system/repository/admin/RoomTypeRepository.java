@@ -14,5 +14,7 @@ public interface RoomTypeRepository extends JpaRepository<RoomType, Integer> {
 
     boolean existsByTypeName(String name);
 
+    boolean existsByTypeNameAndRoomTypeIdNot(String name, Integer roomTypeId);
+
     List<RoomType> findByTypeNameContainingIgnoreCase(String roomTypeName);
 }

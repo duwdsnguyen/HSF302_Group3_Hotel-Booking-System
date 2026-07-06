@@ -48,9 +48,7 @@ public class AdminRoomServiceImpl implements AdminRoomService {
 
     @Override
     public RoomResponseDTO createRoom(RoomRequestDTO request) {
-        if (roomRepository.existsByRoomNumber(request.getRoomNumber())) {
-            throw new RuntimeException("Room with number " + request.getRoomNumber() + " already exists");
-        }
+        rejectDuplicateRoomNumber(request.getRoomNumber(), null);
 
         Room room = new Room();
         room.setRoomNumber(request.getRoomNumber());
@@ -66,6 +64,8 @@ public class AdminRoomServiceImpl implements AdminRoomService {
     @Override
     public RoomResponseDTO updateRoom(Integer id, RoomRequestDTO request) {
         Room room = findEntityById(id);
+        rejectDuplicateRoomNumber(request.getRoomNumber(), id);
+
         room.setRoomNumber(request.getRoomNumber());
         room.setRoomType(findRoomTypeById(request.getRoomTypeId()));
         room.setFloorNumber(request.getFloorNumber());
@@ -89,6 +89,15 @@ public class AdminRoomServiceImpl implements AdminRoomService {
     private RoomType findRoomTypeById(Integer roomTypeId) {
         return roomTypeRepository.findById(roomTypeId)
                 .orElseThrow(() -> new RuntimeException("RoomType with id " + roomTypeId + " does not exist"));
+    }
+
+    private void rejectDuplicateRoomNumber(String roomNumber, Integer currentRoomId) {
+        boolean duplicate = currentRoomId == null
+                ? roomRepository.existsByRoomNumber(roomNumber)
+                : roomRepository.existsByRoomNumberAndRoomIdNot(roomNumber, currentRoomId);
+        if (duplicate) {
+            throw new IllegalArgumentException("Room with number " + roomNumber + " already exists");
+        }
     }
 
     private RoomResponseDTO toResponseDTO(Room room) {

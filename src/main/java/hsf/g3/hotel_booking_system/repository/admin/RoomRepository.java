@@ -16,6 +16,8 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
 
     boolean existsByRoomNumber(String roomNumber);
 
+    boolean existsByRoomNumberAndRoomIdNot(String roomNumber, Integer roomId);
+
     @Query("SELECT r FROM Room r " +
             "WHERE r.status = :roomStatus " +
             "AND r.roomType.maxGuests >= :numberOfGuests " +
