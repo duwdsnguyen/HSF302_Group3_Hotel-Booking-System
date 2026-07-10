@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import hsf.g3.hotel_booking_system.enums.user.BookingStatus;
+import hsf.g3.hotel_booking_system.entity.user.User;
+import hsf.g3.hotel_booking_system.entity.room.Room;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,11 +24,13 @@ public class Booking {
     @Column(name = "booking_id")
     private int id;
 
-    @Column(name = "customer_id", nullable = false)
-    private int customerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private User customer;
 
-    @Column(name = "room_id", nullable = false)
-    private int roomId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 
     @Column(name = "check_in_date", nullable = false)
     private LocalDate checkInDate;
@@ -45,8 +50,9 @@ public class Booking {
     @Column(name = "total_amount", precision = 18, scale = 2, nullable = false)
     private BigDecimal totalAmount;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
-    private String status = "PENDING";
+    private BookingStatus status = BookingStatus.PENDING;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
