@@ -1,6 +1,7 @@
 package hsf.g3.hotel_booking_system.entity.room;
 
-import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
+
+import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,17 +10,16 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Getter@Setter
 @Entity
 @Table(name = "rooms")
-public class Room {
+public class Room{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer roomId;
 
-    @Column(name = "room_number", nullable = false, unique = true, length = 100)
+    @Column(name = "room_number", nullable = false, unique = true,  length = 100)
     private String roomNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
