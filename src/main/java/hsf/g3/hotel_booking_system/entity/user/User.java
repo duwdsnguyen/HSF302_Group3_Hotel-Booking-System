@@ -2,6 +2,7 @@ package hsf.g3.hotel_booking_system.entity.user;
 
 
 import hsf.g3.hotel_booking_system.entity.Base;
+import hsf.g3.hotel_booking_system.entity.guest.Booking;
 import hsf.g3.hotel_booking_system.enums.user.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,16 +41,16 @@ public class User extends Base {
     @Column(name = "status",columnDefinition = "VARCHAR(25)")
     UserStatus status = UserStatus.ACTIVE;
 
-
     @ToString.Exclude
     @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.DETACH})
     @JoinTable(name = "user_roles",joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<Role>roles = new HashSet<>();
 
-
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     List<ResetToken> resetTokens = new ArrayList<>();
 
+    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL,orphanRemoval = true)
+    List<Booking> bookings = new ArrayList<>();
 
 
 }

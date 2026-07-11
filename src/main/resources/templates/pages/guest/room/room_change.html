@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Room Change</title>
+    <link rel="stylesheet" href="/css/room/room-change.css">
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>Request a Room Change</h1>
+        <a class="back-link" th:href="@{/v1/guest/dashboard}">&larr; Back to dashboard</a>
+    </div>
+    <p class="subtitle">Browse the rooms currently available and request to move into a different one.</p>
+
+    <div th:if="${success}" class="alert alert-success" role="alert">
+        <span class="alert-icon" aria-hidden="true">&#10003;</span>
+        <span th:text="${success}"></span>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error" role="alert">
+        <span class="alert-icon" aria-hidden="true">!</span>
+        <span th:text="${error}"></span>
+    </div>
+
+    <form class="toolbar" method="get" th:action="@{/v1/guest/room/change}">
+        <div class="field">
+            <label for="sortBy">Sort by</label>
+            <select id="sortBy" name="sortBy">
+                <option value="typeName" th:selected="${sortBy == 'typeName'}">Room type</option>
+                <option value="roomNumber" th:selected="${sortBy == 'roomNumber'}">Room number</option>
+                <option value="floorNumber" th:selected="${sortBy == 'floorNumber'}">Floor</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="sortOrder">Order</label>
+            <select id="sortOrder" name="sortOrder">
+                <option value="asc" th:selected="${sortOrder == 'asc'}">Ascending</option>
+                <option value="desc" th:selected="${sortOrder == 'desc'}">Descending</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="pageSize">Per page</label>
+            <select id="pageSize" name="pageSize">
+                <option value="10" th:selected="${roomResponse.pageSize == 10}">10</option>
+                <option value="20" th:selected="${roomResponse.pageSize == 20}">20</option>
+                <option value="50" th:selected="${roomResponse.pageSize == 50}">50</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-outline">Apply</button>
+    </form>
+
+    <p class="result-count"
+       th:if="${roomResponse != null and roomResponse.totalElements != null}"
+       th:text="|Showing ${#lists.size(roomResponse.content)} of ${roomResponse.totalElements} available room(s)|">
+        Showing rooms
+    </p>
+
+
+    <div class="empty" th:if="${roomResponse != null and #lists.isEmpty(roomResponse.content)}">
+        <h3>No available rooms right now</h3>
+        <p>Please check back later or contact the front desk for assistance.</p>
+    </div>
+
+    <div class="grid" th:if="${roomResponse != null and !#lists.isEmpty(roomResponse.content)}">
+        <div class="room-card" th:each="room : ${roomResponse.content}">
+            <div class="room-card-head">
+                <h2 class="room-number" th:text="'Room ' + ${room.roomNumber}"></h2>
+                <span class="badge" th:text="${room.status}">AVAILABLE</span>
+            </div>
+
+            <div class="room-meta"><span>Type:</span> <b th:text="${room.typeName}">Deluxe</b></div>
+            <div class="room-meta"><span>Floor:</span> <b th:text="${room.floorNumber}">3</b></div>
+            <div class="room-desc" th:text="${room.description}">Room description goes here.</div>
+
+            <form method="post" th:action="@{/v1/guest/room/change}">
+                <input type="hidden" name="newRoomId" th:value="${room.roomId}">
+                <input type="hidden" name="pageNumber" th:value="${roomResponse.getPageNumber()}">
+                <input type="hidden" name="pageSize" th:value="${roomResponse.getPageSize()}">
+                <input type="hidden" name="sortBy" th:value="${sortBy}">
+                <input type="hidden" name="sortOrder" th:value="${sortOrder}">
+                <button type="submit" class="btn btn-primary"
+                        th:disabled="${room.status != null and room.status.name() != 'AVAILABLE'}">
+                    Request this room
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="pagination"
+         th:if="${roomResponse != null and roomResponse.totalPages != null and roomResponse.totalPages > 1}">
+
+        <a th:if="${roomResponse.pageNumber > 0}"
+           th:href="@{/v1/guest/room/change(pageNumber=${roomResponse.pageNumber - 1}, pageSize=${roomResponse.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}">&laquo;</a>
+        <span th:unless="${roomResponse.pageNumber > 0}" class="disabled">&laquo;</span>
+
+        <th:block th:each="i : ${#numbers.sequence(0, roomResponse.totalPages - 1)}">
+            <span th:if="${i == roomResponse.pageNumber}" class="active" th:text="${i + 1}">1</span>
+            <a th:unless="${i == roomResponse.pageNumber}"
+               th:href="@{/v1/guest/room/change(pageNumber=${i}, pageSize=${roomResponse.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"
+               th:text="${i + 1}">2</a>
+        </th:block>
+
+        <a th:unless="${roomResponse.lastPage}"
+           th:href="@{/v1/guest/room/change(pageNumber=${roomResponse.pageNumber + 1}, pageSize=${roomResponse.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}">&raquo;</a>
+        <span th:if="${roomResponse.lastPage}" class="disabled">&raquo;</span>
+    </div>
+</div>
+</body>
+</html>

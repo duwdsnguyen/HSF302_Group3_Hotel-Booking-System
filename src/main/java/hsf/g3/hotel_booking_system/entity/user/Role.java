@@ -36,7 +36,6 @@ public class Role extends Base {
     @Column(name = "status",columnDefinition = "VARCHAR(50)")
     RoleStatus status = RoleStatus.ACTIVE;
 
-
     @ToString.Exclude
     @ManyToMany(mappedBy = "roles")
     Set<User> users = new HashSet<>();

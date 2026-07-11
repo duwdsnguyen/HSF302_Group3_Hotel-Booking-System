@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Có Lỗi Xảy Ra</title>
+    <link rel="stylesheet" href="/css/error/error.css">
+</head>
+<body class="error-body">
+
+<div class="error-card">
+    <div class="error-icon icon-bounce">
+    </div>
+
+    <h3 class="error-title">Đã xảy ra sự cố!</h3>
+    <p class="error-subtitle">Hệ thống FU Car Renting gặp phải một lỗi không mong muốn khi xử lý yêu cầu của bạn.</p>
+
+    <div class="alert-danger">
+        <div class="alert-title">
+
+            Chi tiết lỗi:
+        </div>
+        <span class="error-detail" th:text="${error}">
+            Nội dung lỗi chi tiết sẽ được hiển thị tại đây...
+        </span>
+    </div>
+
+    <div class="button-row">
+        <button onclick="window.location.reload();" class="btn btn-secondary">
+            Thử tải lại trang
+        </button>
+
+        <a th:href="@{/}" class="btn btn-primary">
+            Quay về trang chủ
+        </a>
+    </div>
+
+    <hr class="divider">
+    <small class="footer-text">Nếu lỗi này tiếp tục tiếp diễn, vui lòng liên hệ Đội ngũ Quản trị viên.</small>
+</div>
+
+</body>
+</html>
