@@ -8,6 +8,7 @@ import hsf.g3.hotel_booking_system.entity.guest.Booking;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.entity.room.RoomType;
 import hsf.g3.hotel_booking_system.entity.user.User;
+import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
 import hsf.g3.hotel_booking_system.exception.ResourceNotFoundException;
 import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import hsf.g3.hotel_booking_system.repository.admin.RoomRepository;
@@ -148,6 +149,7 @@ public class GuestRoomServiceImpl implements GuestRoomService {
         oldRoom.setStatus(RoomStatus.AVAILABLE);
         newRoom.setStatus(RoomStatus.OCCUPIED);
         booking.setRoom(newRoom);
+        booking.setStatus(BookingStatus.PENDING);
         roomRepository.save(oldRoom);
         roomRepository.save(newRoom);
         bookingRepository.save(booking);

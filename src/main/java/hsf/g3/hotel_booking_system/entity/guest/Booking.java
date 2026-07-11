@@ -1,5 +1,6 @@
 package hsf.g3.hotel_booking_system.entity.guest;
 
+import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +14,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import hsf.g3.hotel_booking_system.entity.room.Room;
-import hsf.g3.hotel_booking_system.entity.service.HotelService;
 import hsf.g3.hotel_booking_system.entity.user.User;
 import java.util.List;
 import java.util.ArrayList;
@@ -62,6 +62,7 @@ public class Booking extends Base {
     @Column(name = "total_amount", precision = 18, scale = 2, nullable = false)
     private BigDecimal totalAmount;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
-    private String status = "PENDING";
+    private BookingStatus status = BookingStatus.PENDING;
 }
