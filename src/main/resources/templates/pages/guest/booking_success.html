@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Success</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .success-box { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
+        .icon { font-size: 80px; color: #28a745; margin-bottom: 20px; }
+        h1 { color: #333; margin-bottom: 15px; }
+        p { color: #666; font-size: 1.1em; line-height: 1.6; margin-bottom: 30px; }
+        .status-pending { display: inline-block; background-color: #ffc107; color: #212529; font-weight: bold; padding: 5px 15px; border-radius: 20px; margin-bottom: 20px; }
+        .btn-home { background-color: #007bff; color: white; text-decoration: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; transition: background 0.3s; }
+        .btn-home:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div class="success-box">
+    <div class="icon">✓</div>
+    <h1>Booking Successful!</h1>
+    
+    <div class="status-pending">Status: PENDING</div>
+    
+    <p>Thank you for choosing our hotel. Your booking has been successfully recorded and is currently awaiting confirmation from our staff. You can view the details in your dashboard.</p>
+    
+    <a th:href="@{/v1/guest/dashboard}" class="btn-home">Go to Dashboard</a>
+</div>
+
+</body>
+</html>
