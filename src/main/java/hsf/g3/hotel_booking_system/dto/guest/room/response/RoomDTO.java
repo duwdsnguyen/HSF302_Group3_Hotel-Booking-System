@@ -1,6 +1,6 @@
 package hsf.g3.hotel_booking_system.dto.guest.room.response;
 
-import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

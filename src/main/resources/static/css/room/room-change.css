@@ -34,6 +34,51 @@ h1 { font-size: 1.6rem; margin: 0; }
 
 .subtitle { color: var(--muted); margin: 4px 0 20px; }
 
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.alert-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-weight: 700;
+}
+
+.alert-success {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.alert-success .alert-icon {
+    color: #fff;
+    background: #22c55e;
+}
+
+.alert-error {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.alert-error .alert-icon {
+    color: #fff;
+    background: #ef4444;
+}
+
 .back-link {
     color: var(--primary);
     text-decoration: none;

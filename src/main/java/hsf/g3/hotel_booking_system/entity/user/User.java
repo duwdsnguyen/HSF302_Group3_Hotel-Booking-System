@@ -2,6 +2,7 @@ package hsf.g3.hotel_booking_system.entity.user;
 
 
 import hsf.g3.hotel_booking_system.entity.Base;
+import hsf.g3.hotel_booking_system.entity.guest.Booking;
 import hsf.g3.hotel_booking_system.enums.user.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -48,6 +49,8 @@ public class User extends Base {
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     List<ResetToken> resetTokens = new ArrayList<>();
 
+    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL,orphanRemoval = true)
+    List<Booking> bookings = new ArrayList<>();
 
 
 }

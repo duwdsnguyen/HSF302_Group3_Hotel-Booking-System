@@ -3,6 +3,9 @@ package hsf.g3.hotel_booking_system.controller.guest;
 import hsf.g3.hotel_booking_system.config.AppConstants;
 import hsf.g3.hotel_booking_system.dto.guest.room.request.RoomChangeRequest;
 import hsf.g3.hotel_booking_system.dto.guest.room.response.RoomResponse;
+import hsf.g3.hotel_booking_system.dto.user.UserInfoDTO;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.service.guest.GuestRoomService;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.net.http.HttpRequest;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -81,12 +85,14 @@ public class GuestController {
     }
 
     @PostMapping("/room/change")
-    public String requestRoomChange(RedirectAttributes redirectAttributes, @ModelAttribute("roomChangeRequest") RoomChangeRequest roomChangeRequest){
-        boolean isChangedSuccess = guestRoomService.changeRoom(roomChangeRequest);
+    public String requestRoomChange(RedirectAttributes redirectAttributes, @ModelAttribute("roomChangeRequest") RoomChangeRequest roomChangeRequest, HttpServletRequest request){
+        HttpSession session = request.getSession(false);
+        UserInfoDTO userInfoDTO = session != null ? (UserInfoDTO) session.getAttribute("loggedInUser"):null;
+        boolean isChangedSuccess = guestRoomService.changeRoom(roomChangeRequest,userInfoDTO);
         if(!isChangedSuccess){
-            redirectAttributes.addFlashAttribute("error","Không thể thay đổi phòng khác");
+            redirectAttributes.addFlashAttribute("error","Không thể gửi yêu câu thay đổi phòng.");
         }else{
-            redirectAttributes.addFlashAttribute("success","Đã thay đổi phòng thành công");
+            redirectAttributes.addFlashAttribute("success","Gửi yêu cầu thay đổi phòng thành công.");
         }
         return "redirect:/v1/guest/room/change?sortBy="+roomChangeRequest.getSortBy()+"&sortOrder="+roomChangeRequest.getSortOrder()+"&pageSize="+roomChangeRequest.getPageSize();
     }

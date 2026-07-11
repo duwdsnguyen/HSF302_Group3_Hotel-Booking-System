@@ -3,10 +3,17 @@ package hsf.g3.hotel_booking_system.service.guest;
 import hsf.g3.hotel_booking_system.dto.guest.room.request.RoomChangeRequest;
 import hsf.g3.hotel_booking_system.dto.guest.room.response.RoomDTO;
 import hsf.g3.hotel_booking_system.dto.guest.room.response.RoomResponse;
+import hsf.g3.hotel_booking_system.dto.user.UserInfoDTO;
+import hsf.g3.hotel_booking_system.entity.guest.Booking;
 import hsf.g3.hotel_booking_system.entity.room.Room;
+import hsf.g3.hotel_booking_system.entity.room.RoomType;
+import hsf.g3.hotel_booking_system.entity.user.User;
 import hsf.g3.hotel_booking_system.exception.ResourceNotFoundException;
 import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import hsf.g3.hotel_booking_system.repository.admin.RoomRepository;
+import hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository;
+import hsf.g3.hotel_booking_system.repository.guest.BookingRepository;
+import hsf.g3.hotel_booking_system.repository.user.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +28,15 @@ import java.util.List;
 public class GuestRoomServiceImpl implements GuestRoomService {
 
     private final RoomRepository roomRepository;
-    private final hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository roomTypeRepository;
+    private final RoomTypeRepository roomTypeRepository;
+    private final BookingRepository bookingRepository;
+    private final UserRepository userRepository;
 
-    public GuestRoomServiceImpl(RoomRepository roomRepository) {
+    public GuestRoomServiceImpl(RoomRepository roomRepository,RoomTypeRepository roomTypeRepository,BookingRepository bookingRepository,UserRepository userRepository) {
         this.roomRepository = roomRepository;
+        this.roomTypeRepository = roomTypeRepository;
+        this.bookingRepository = bookingRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -81,8 +93,14 @@ public class GuestRoomServiceImpl implements GuestRoomService {
     }
 
     @Override
-    public List<hsf.g3.hotel_booking_system.entity.room.RoomType> getAllRoomTypes() {
+    public List<RoomType> getAllRoomTypes() {
         return roomTypeRepository.findAll();
+    }
+
+
+    @Override
+    public List<Room> searchAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfGuests) {
+        return List.of();
     }
 
     @Override
@@ -118,10 +136,21 @@ public class GuestRoomServiceImpl implements GuestRoomService {
     }
 
     @Override
-    public boolean changeRoom(RoomChangeRequest roomChangeRequest) {
-        Room room = roomRepository.findRoomByRoomId(roomChangeRequest.getRoomId()).orElseThrow(() -> new ResourceNotFoundException("Room","roomId",roomChangeRequest.getRoomId()));
+    public boolean changeRoom(RoomChangeRequest roomChangeRequest, UserInfoDTO userInfoDTO) {
+        if(userInfoDTO == null){
+            return false;
+        }
+        User user = userRepository.findUserByEmail(userInfoDTO.getEmail()).orElseThrow(() -> new ResourceNotFoundException("User","email",userInfoDTO.getEmail()));
 
-        roomRepository.save(room);
+        Room oldRoom = user.getBookings().stream().map(Booking::getRoom).findFirst().orElseThrow(() -> new ResourceNotFoundException("Room","userId", user.getUserId()));
+        Booking booking = bookingRepository.getCheckedInBooking(userInfoDTO.getUserId(), oldRoom.getRoomId()).orElseThrow(() -> new ResourceNotFoundException("Booking","userId and roomId", userInfoDTO.getUserId()+" "+oldRoom.getRoomId()));
+        Room newRoom = roomRepository.findRoomByRoomId(roomChangeRequest.getNewRoomId()).orElseThrow(() -> new ResourceNotFoundException("Room","roomId",roomChangeRequest.getNewRoomId()));
+        oldRoom.setStatus(RoomStatus.AVAILABLE);
+        newRoom.setStatus(RoomStatus.OCCUPIED);
+        booking.setRoom(newRoom);
+        roomRepository.save(oldRoom);
+        roomRepository.save(newRoom);
+        bookingRepository.save(booking);
         return true;
     }
 }
