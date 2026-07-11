@@ -3,7 +3,7 @@ package hsf.g3.hotel_booking_system.service.admin;
 import hsf.g3.hotel_booking_system.dto.admin.RoomTypeRequestDTO;
 import hsf.g3.hotel_booking_system.dto.admin.RoomTypeResponseDTO;
 import hsf.g3.hotel_booking_system.entity.room.RoomType;
-import hsf.g3.hotel_booking_system.enums.user.RoomTypeStatus;
+import hsf.g3.hotel_booking_system.enums.room.RoomTypeStatus;
 import hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -61,6 +61,7 @@ public class AdminRoomTypeServiceImpl implements AdminRoomTypeService {
         if (roomTypeRepository.existsByTypeName(request.getTypeName())) {
             throw new RuntimeException("Loại phòng với tên " + request.getTypeName() + " đã tồn tại");
         }
+        rejectDuplicateTypeName(request.getTypeName(), null);
 
         RoomType roomType = new RoomType();
         roomType.setTypeName(request.getTypeName());
@@ -76,6 +77,8 @@ public class AdminRoomTypeServiceImpl implements AdminRoomTypeService {
     @Override
     public RoomTypeResponseDTO updateRoomType(Integer id, RoomTypeRequestDTO request) {
         RoomType roomType = findEntityById(id);
+        rejectDuplicateTypeName(request.getTypeName(), id);
+
         roomType.setTypeName(request.getTypeName());
         roomType.setDescription(request.getDescription());
         roomType.setBasePrice(request.getBasePrice());
@@ -94,6 +97,15 @@ public class AdminRoomTypeServiceImpl implements AdminRoomTypeService {
     private RoomType findEntityById(Integer roomTypeId) {
         return roomTypeRepository.findById(roomTypeId)
                 .orElseThrow(() -> new RuntimeException("RoomType with id " + roomTypeId + " does not exist"));
+    }
+
+    private void rejectDuplicateTypeName(String typeName, Integer currentRoomTypeId) {
+        boolean duplicate = currentRoomTypeId == null
+                ? roomTypeRepository.existsByTypeName(typeName)
+                : roomTypeRepository.existsByTypeNameAndRoomTypeIdNot(typeName, currentRoomTypeId);
+        if (duplicate) {
+            throw new IllegalArgumentException("RoomType with name " + typeName + " already exists");
+        }
     }
 
     private RoomTypeResponseDTO toResponseDTO(RoomType roomType) {

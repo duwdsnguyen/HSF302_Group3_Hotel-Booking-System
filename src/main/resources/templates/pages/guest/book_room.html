@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Confirmation</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; color: #333; }
+        .container { max-width: 800px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { border-bottom: 2px solid #007bff; padding-bottom: 10px; color: #007bff; }
+        .section { margin-bottom: 25px; }
+        .room-item { background: #e9ecef; padding: 15px; border-radius: 5px; margin-bottom: 10px; border-left: 5px solid #007bff; }
+        .service-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
+        .service-item input { transform: scale(1.5); margin-right: 15px; cursor: pointer; }
+        .summary-box { background-color: #e2f0d9; padding: 20px; border-radius: 8px; font-size: 1.2em; }
+        .price { color: #28a745; font-weight: bold; font-size: 1.5em; }
+        .btn-confirm { background-color: #28a745; color: white; padding: 15px 30px; font-size: 1.2em; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 20px; }
+        .btn-confirm:hover { background-color: #218838; }
+        .btn-cancel { background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Review Your Booking</h2>
+
+    <div th:if="${error}" style="color: red; padding: 10px; border: 1px solid red; background: #ffe6e6; margin-bottom: 20px;" th:text="${error}"></div>
+
+    <form th:action="@{/v1/guest/booking/create}" method="POST">
+        <!-- Hidden inputs for required parameters -->
+        <input type="hidden" name="roomId" th:value="${roomId}">
+        <input type="hidden" name="checkInDate" th:value="${checkInDate}">
+        <input type="hidden" name="checkOutDate" th:value="${checkOutDate}">
+        <input type="hidden" name="numberOfGuests" th:value="${numberOfGuests}">
+
+        <div class="section">
+            <h3>Guest Information</h3>
+            <p><strong>Name:</strong> <span th:text="${user.fullName}"></span></p>
+            <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+        </div>
+
+        <div class="section">
+            <h3>Booking Details</h3>
+            <p><strong>Check-in:</strong> <span th:text="${checkInDate}"></span></p>
+            <p><strong>Check-out:</strong> <span th:text="${checkOutDate}"></span></p>
+            <p><strong>Duration:</strong> <span th:text="${days}"></span> night(s)</p>
+            <p><strong>Guests:</strong> <span th:text="${numberOfGuests}"></span></p>
+        </div>
+
+        <div class="section">
+            <h3>Selected Room</h3>
+            <div class="room-item">
+                <h4 th:text="'Room ' + ${room.roomNumber} + ' (' + ${room.roomType.typeName} + ')'" style="margin-top: 0;"></h4>
+                <p style="margin-bottom: 0;">Price per night: $<span th:text="${room.roomType.basePrice}"></span></p>
+            </div>
+            <p style="text-align: right; font-weight: bold;">Room Subtotal: $<span id="roomsTotal" th:text="${totalRoomsAmount}"></span></p>
+        </div>
+
+        <div class="section" th:if="${!#lists.isEmpty(availableServices)}">
+            <h3>Additional Services</h3>
+            <div th:each="svc : ${availableServices}" class="service-item">
+                <label style="cursor: pointer; display: flex; align-items: center;">
+                    <input type="checkbox" name="serviceIds" th:value="${svc.serviceId}" class="service-checkbox" th:data-price="${svc.price}">
+                    <div>
+                        <strong th:text="${svc.serviceName}"></strong> - $<span th:text="${svc.price}"></span>
+                        <div style="font-size: 0.9em; color: #666;" th:text="${svc.description}"></div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="summary-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong>Grand Total:</strong>
+                <div class="price">$<span id="grandTotalDisplay" th:text="${totalRoomsAmount}"></span></div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-confirm">Confirm Booking</button>
+    </form>
+
+    <div style="text-align: center;">
+        <a th:href="@{/v1/guest/search-rooms(checkInDate=${checkInDate},checkOutDate=${checkOutDate},numberOfGuests=${numberOfGuests})}" class="btn-cancel">Cancel and Go Back</a>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        const roomsTotal = parseFloat(document.getElementById('roomsTotal').innerText);
+        const grandTotalDisplay = document.getElementById('grandTotalDisplay');
+        const checkboxes = document.querySelectorAll('.service-checkbox');
+
+        function calculateTotal() {
+            let servicesTotal = 0;
+            checkboxes.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    servicesTotal += parseFloat(checkbox.getAttribute('data-price'));
+                }
+            });
+            const grandTotal = roomsTotal + servicesTotal;
+            grandTotalDisplay.innerText = grandTotal.toFixed(2);
+        }
+
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', calculateTotal);
+        });
+    });
+</script>
+
+</body>
+</html>

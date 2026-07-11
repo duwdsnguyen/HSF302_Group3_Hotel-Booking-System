@@ -4,29 +4,31 @@ import hsf.g3.hotel_booking_system.dto.guest.room.request.RoomChangeRequest;
 import hsf.g3.hotel_booking_system.dto.guest.room.response.RoomDTO;
 import hsf.g3.hotel_booking_system.dto.guest.room.response.RoomResponse;
 import hsf.g3.hotel_booking_system.entity.room.Room;
-import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
 import hsf.g3.hotel_booking_system.exception.ResourceNotFoundException;
+import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import hsf.g3.hotel_booking_system.repository.admin.RoomRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class GuestRoomServiceImpl implements GuestRoomService {
+
     private final RoomRepository roomRepository;
+    private final hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository roomTypeRepository;
 
     public GuestRoomServiceImpl(RoomRepository roomRepository) {
         this.roomRepository = roomRepository;
     }
 
     @Override
-    public List<Room> searchAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfGuests) {
+    public List<Room> searchAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfGuests, BigDecimal minPrice, BigDecimal maxPrice, Integer roomTypeId) {
         if (checkInDate == null || checkOutDate == null) {
             throw new IllegalArgumentException("Please select both check-in and check-out dates.");
         }
@@ -43,12 +45,44 @@ public class GuestRoomServiceImpl implements GuestRoomService {
             throw new IllegalArgumentException("Number of guests must be greater than 0.");
         }
 
-        return roomRepository.findAvailableRooms(
+        List<Room> availableRooms = roomRepository.findAvailableRooms(
                 checkInDate,
                 checkOutDate,
                 numberOfGuests,
                 RoomStatus.AVAILABLE,
-                List.of("PENDING", "CONFIRMED"));
+                List.of("PENDING", "CONFIRMED")
+        );
+
+        if (minPrice != null) {
+            availableRooms = availableRooms.stream()
+                    .filter(room -> room.getRoomType().getBasePrice().compareTo(minPrice) >= 0)
+                    .toList();
+        }
+
+        if (maxPrice != null) {
+            availableRooms = availableRooms.stream()
+                    .filter(room -> room.getRoomType().getBasePrice().compareTo(maxPrice) <= 0)
+                    .toList();
+        }
+
+        if (roomTypeId != null) {
+            availableRooms = availableRooms.stream()
+                    .filter(room -> room.getRoomType().getRoomTypeId().equals(roomTypeId))
+                    .toList();
+        }
+
+        return availableRooms;
+    }
+
+    @Override
+    public Room getRoomById(Integer roomId) {
+        return roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found with ID: " + roomId));
+    }
+
+    @Override
+    public List<hsf.g3.hotel_booking_system.entity.room.RoomType> getAllRoomTypes() {
+        return roomTypeRepository.findAll();
     }
 
     @Override

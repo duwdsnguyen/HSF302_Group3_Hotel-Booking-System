@@ -48,4 +48,6 @@ public class User extends Base {
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     List<ResetToken> resetTokens = new ArrayList<>();
 
+
+
 }
