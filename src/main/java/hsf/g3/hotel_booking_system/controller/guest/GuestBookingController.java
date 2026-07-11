@@ -35,7 +35,7 @@ public class GuestBookingController {
 
     @GetMapping("/create")
     public String showBookingForm(
-            @RequestParam List<Integer> roomIds,
+            @RequestParam Integer roomId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkInDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOutDate,
             @RequestParam Integer numberOfGuests,
@@ -48,24 +48,14 @@ public class GuestBookingController {
         }
 
         try {
-            if (roomIds.size() > 1) {
-                throw new IllegalArgumentException("Hệ thống chỉ hỗ trợ đặt 1 phòng cho mỗi đơn đặt phòng. Vui lòng chọn lại.");
-            }
-            
-            List<Room> rooms = new ArrayList<>();
-            BigDecimal totalRoomsAmount = BigDecimal.ZERO;
+            Room room = guestRoomService.getRoomById(roomId);
             long days = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
-
-            for (Integer roomId : roomIds) {
-                Room room = guestRoomService.getRoomById(roomId);
-                rooms.add(room);
-                totalRoomsAmount = totalRoomsAmount.add(room.getRoomType().getBasePrice().multiply(BigDecimal.valueOf(days)));
-            }
+            BigDecimal totalRoomsAmount = room.getRoomType().getBasePrice().multiply(BigDecimal.valueOf(days));
 
             List<HotelService> availableServices = hotelServiceRepository.findByStatus(ServiceStatus.ACTIVE);
 
-            model.addAttribute("rooms", rooms);
-            model.addAttribute("roomIds", roomIds);
+            model.addAttribute("room", room);
+            model.addAttribute("roomId", roomId);
             model.addAttribute("availableServices", availableServices);
             model.addAttribute("checkInDate", checkInDate);
             model.addAttribute("checkOutDate", checkOutDate);
@@ -83,7 +73,7 @@ public class GuestBookingController {
 
     @PostMapping("/create")
     public String submitBooking(
-            @RequestParam List<Integer> roomIds,
+            @RequestParam Integer roomId,
             @RequestParam(required = false) List<Long> serviceIds,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkInDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOutDate,
@@ -98,18 +88,13 @@ public class GuestBookingController {
 
         try {
             Long customerId = loggedInUser.getUserId();
-            guestBookingService.createBooking(roomIds, serviceIds, checkInDate, checkOutDate, numberOfGuests, customerId);
+            guestBookingService.createBooking(roomId, serviceIds, checkInDate, checkOutDate, numberOfGuests, customerId);
             return "redirect:/v1/guest/booking/success";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             
-            StringBuilder roomIdsParam = new StringBuilder();
-            for (Integer id : roomIds) {
-                roomIdsParam.append("roomIds=").append(id).append("&");
-            }
-            
-            return "redirect:/v1/guest/booking/create?" + roomIdsParam.toString() +
-                    "checkInDate=" + checkInDate +
+            return "redirect:/v1/guest/booking/create?roomId=" + roomId +
+                    "&checkInDate=" + checkInDate +
                     "&checkOutDate=" + checkOutDate +
                     "&numberOfGuests=" + numberOfGuests;
         }

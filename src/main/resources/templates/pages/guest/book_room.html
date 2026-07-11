@@ -27,7 +27,7 @@
 
     <form th:action="@{/v1/guest/booking/create}" method="POST">
         <!-- Hidden inputs for required parameters -->
-        <input type="hidden" th:each="id : ${roomIds}" name="roomIds" th:value="${id}">
+        <input type="hidden" name="roomId" th:value="${roomId}">
         <input type="hidden" name="checkInDate" th:value="${checkInDate}">
         <input type="hidden" name="checkOutDate" th:value="${checkOutDate}">
         <input type="hidden" name="numberOfGuests" th:value="${numberOfGuests}">
@@ -47,12 +47,12 @@
         </div>
 
         <div class="section">
-            <h3>Selected Rooms</h3>
-            <div th:each="room : ${rooms}" class="room-item">
+            <h3>Selected Room</h3>
+            <div class="room-item">
                 <h4 th:text="'Room ' + ${room.roomNumber} + ' (' + ${room.roomType.typeName} + ')'" style="margin-top: 0;"></h4>
                 <p style="margin-bottom: 0;">Price per night: $<span th:text="${room.roomType.basePrice}"></span></p>
             </div>
-            <p style="text-align: right; font-weight: bold;">Rooms Subtotal: $<span id="roomsTotal" th:text="${totalRoomsAmount}"></span></p>
+            <p style="text-align: right; font-weight: bold;">Room Subtotal: $<span id="roomsTotal" th:text="${totalRoomsAmount}"></span></p>
         </div>
 
         <div class="section" th:if="${!#lists.isEmpty(availableServices)}">

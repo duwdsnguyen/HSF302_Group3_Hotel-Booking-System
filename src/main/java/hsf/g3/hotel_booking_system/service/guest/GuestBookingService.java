@@ -7,5 +7,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface GuestBookingService {
-    Booking createBooking(List<Integer> roomIds, List<Long> serviceIds, LocalDate checkIn, LocalDate checkOut, Integer guests, Long customerId);
+    Booking createBooking(Integer roomId, List<Long> serviceIds, LocalDate checkIn, LocalDate checkOut, Integer guests, Long customerId);
 }

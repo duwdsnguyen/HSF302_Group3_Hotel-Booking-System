@@ -90,18 +90,7 @@
 <div th:if="${!#lists.isEmpty(rooms)}">
     <h3 style="color: green;">Great! We found <span th:text="${rooms.size()}"></span> available rooms:</h3>
 
-    <form th:action="@{/v1/guest/booking/create}" method="GET">
-        <input type="hidden" name="checkInDate" th:value="${checkIn}">
-        <input type="hidden" name="checkOutDate" th:value="${checkOut}">
-        <input type="hidden" name="numberOfGuests" th:value="${guests}">
-
-        <div style="margin-bottom: 20px;">
-            <button type="submit" style="background-color: #ff9900; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; font-weight: bold;">
-                Book Selected Rooms
-            </button>
-        </div>
-
-        <div th:each="room : ${rooms}" class="room-card">
+    <div th:each="room : ${rooms}" class="room-card">
             <div class="room-info">
                 <h2 th:text="'Room ' + ${room.roomNumber}">Room Name</h2>
                 <p><b>Floor:</b> <span th:text="${room.floorNumber}"></span></p>
@@ -112,15 +101,10 @@
             </div>
             
             <div class="room-actions">
-                <label class="checkbox-container">
-                    Select to book
-                    <input type="checkbox" name="roomIds" th:value="${room.roomId}">
-                </label>
                 <a th:href="@{/v1/guest/room/{id}(id=${room.roomId},checkInDate=${checkIn},checkOutDate=${checkOut},numberOfGuests=${guests})}" style="background-color: #17a2b8; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; text-align: center; width: 120px;">View Details</a>
-                <a th:href="@{/v1/guest/booking/create(roomIds=${room.roomId},checkInDate=${checkIn},checkOutDate=${checkOut},numberOfGuests=${guests})}" style="background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; text-align: center; width: 120px;">Book Now</a>
+                <a th:href="@{/v1/guest/booking/create(roomId=${room.roomId},checkInDate=${checkIn},checkOutDate=${checkOut},numberOfGuests=${guests})}" style="background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; text-align: center; width: 120px;">Book Now</a>
             </div>
         </div>
-    </form>
 </div>
 
 </body>

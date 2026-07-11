@@ -30,21 +30,21 @@ public class GuestBookingServiceImpl implements GuestBookingService {
 
     @Override
     @Transactional
-    public Booking createBooking(List<Integer> roomIds, List<Long> serviceIds, LocalDate checkIn, LocalDate checkOut, Integer guests, Long customerId) {
+    public Booking createBooking(Integer roomId, List<Long> serviceIds, LocalDate checkIn, LocalDate checkOut, Integer guests, Long customerId) {
         if (checkIn == null || checkOut == null) {
-            throw new IllegalArgumentException("Vui lòng chọn ngày nhận và trả phòng.");
+            throw new IllegalArgumentException("Please select check-in and check-out dates.");
         }
         if (checkIn.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Ngày nhận phòng không thể ở quá khứ.");
+            throw new IllegalArgumentException("Check-in date cannot be in the past.");
         }
         if (!checkOut.isAfter(checkIn)) {
-            throw new IllegalArgumentException("Ngày trả phòng phải sau ngày nhận phòng.");
+            throw new IllegalArgumentException("Check-out date must be after check-in date.");
         }
         if (guests == null || guests <= 0) {
-            throw new IllegalArgumentException("Số lượng khách phải lớn hơn 0.");
+            throw new IllegalArgumentException("Number of guests must be greater than 0.");
         }
-        if (roomIds == null || roomIds.isEmpty()) {
-            throw new IllegalArgumentException("Vui lòng chọn ít nhất một phòng.");
+        if (roomId == null) {
+            throw new IllegalArgumentException("Please select a room.");
         }
 
         // Validate duplicates by checking availability
@@ -52,26 +52,17 @@ public class GuestBookingServiceImpl implements GuestBookingService {
                 checkIn, checkOut, 1, RoomStatus.AVAILABLE, List.of("PENDING", "CONFIRMED"));
 
         List<Integer> availableRoomIds = availableRooms.stream().map(Room::getRoomId).collect(Collectors.toList());
-        for (Integer roomId : roomIds) {
-            if (!availableRoomIds.contains(roomId)) {
-                throw new IllegalArgumentException("Phòng " + roomId + " đã được đặt hoặc không khả dụng. Vui lòng chọn phòng khác.");
-            }
+        if (!availableRoomIds.contains(roomId)) {
+            throw new IllegalArgumentException("Room " + roomId + " is already booked or currently unavailable. Please select another room.");
         }
 
-        List<Room> selectedRooms = availableRooms.stream()
-                .filter(r -> roomIds.contains(r.getRoomId()))
-                .collect(Collectors.toList());
+        Room selectedRoom = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found."));
 
         List<HotelService> selectedServices = java.util.Collections.emptyList();
         if (serviceIds != null && !serviceIds.isEmpty()) {
             selectedServices = hotelServiceRepository.findAllById(serviceIds);
         }
-
-        if (selectedRooms.size() > 1) {
-            throw new IllegalArgumentException("Hệ thống chỉ hỗ trợ đặt 1 phòng cho mỗi đơn đặt phòng. Vui lòng chọn lại.");
-        }
-        
-        Room selectedRoom = selectedRooms.get(0);
         long days = ChronoUnit.DAYS.between(checkIn, checkOut);
         
         BigDecimal roomsTotal = selectedRoom.getRoomType().getBasePrice().multiply(BigDecimal.valueOf(days));
@@ -83,7 +74,7 @@ public class GuestBookingServiceImpl implements GuestBookingService {
         BigDecimal totalAmount = roomsTotal.add(servicesTotal);
 
         User customer = userRepository.findById(customerId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy khách hàng."));
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found."));
 
         Booking booking = new Booking();
         booking.setRoom(selectedRoom);
