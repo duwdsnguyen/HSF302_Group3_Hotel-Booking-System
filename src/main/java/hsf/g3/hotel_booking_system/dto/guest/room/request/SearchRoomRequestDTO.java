@@ -1,4 +1,4 @@
-package hsf.g3.hotel_booking_system.dto.guest;
+package hsf.g3.hotel_booking_system.dto.guest.room.request;
 
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;

@@ -5,6 +5,7 @@ import hsf.g3.hotel_booking_system.dto.admin.RoomRequestDTO;
 import hsf.g3.hotel_booking_system.enums.user.RoomStatus;
 import hsf.g3.hotel_booking_system.service.admin.AdminRoomService;
 import hsf.g3.hotel_booking_system.service.admin.AdminRoomTypeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,7 +48,7 @@ public class RoomController {
     }
 
     @PostMapping("/create")
-    public String createRoom(@ModelAttribute RoomRequestDTO request) {
+    public String createRoom(@Valid @ModelAttribute RoomRequestDTO request) {
         roomService.createRoom(request);
         return "redirect:/v1/admin/rooms";
     }

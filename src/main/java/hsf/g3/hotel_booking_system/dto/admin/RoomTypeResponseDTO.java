@@ -1,13 +1,15 @@
 package hsf.g3.hotel_booking_system.dto.admin;
 
 import hsf.g3.hotel_booking_system.enums.user.RoomTypeStatus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Getter@Setter
+@Getter
+@Setter
 @NoArgsConstructor
 public class RoomTypeResponseDTO {
     private Integer roomTypeId;

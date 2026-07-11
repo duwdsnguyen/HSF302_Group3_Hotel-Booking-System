@@ -30,7 +30,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        boolean hasPermission = loggedInUser.getRoles() != null || loggedInUser.getRoles().stream().anyMatch(role -> role.getRoleCode().equals(requiredRole));
+        boolean hasPermission = loggedInUser.getRoles() != null && loggedInUser.getRoles().stream().anyMatch(role -> role.getRoleCode().equals(requiredRole));
         if(!hasPermission){
             LOGGER.warn("Account with email : {} doesn't have authorize to access path : {} (Required role: {})",
                     loggedInUser.getEmail(), path, requiredRole);

@@ -1,14 +1,8 @@
-package hsf.g3.hotel_booking_system.dto.auth;
+package hsf.g3.hotel_booking_system.dto.auth.register;
 
-import hsf.g3.hotel_booking_system.entity.user.Role;
-import hsf.g3.hotel_booking_system.enums.user.AppRole;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.validator.constraints.Length;
-
-import java.util.HashSet;
-import java.util.Set;
 
 
 @AllArgsConstructor

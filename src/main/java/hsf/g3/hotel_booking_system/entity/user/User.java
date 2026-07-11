@@ -40,12 +40,10 @@ public class User extends Base {
     @Column(name = "status",columnDefinition = "VARCHAR(25)")
     UserStatus status = UserStatus.ACTIVE;
 
-
     @ToString.Exclude
     @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.DETACH})
     @JoinTable(name = "user_roles",joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<Role>roles = new HashSet<>();
-
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     List<ResetToken> resetTokens = new ArrayList<>();

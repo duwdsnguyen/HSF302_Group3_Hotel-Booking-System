@@ -1,6 +1,10 @@
 package hsf.g3.hotel_booking_system.service.user;
 
-import hsf.g3.hotel_booking_system.dto.auth.*;
+import hsf.g3.hotel_booking_system.dto.auth.forget_password.request.ForgetPasswordRequest;
+import hsf.g3.hotel_booking_system.dto.auth.forget_password.response.ForgetPasswordResponse;
+import hsf.g3.hotel_booking_system.dto.auth.login.LoginRequestDTO;
+import hsf.g3.hotel_booking_system.dto.auth.register.RegisterRequestDTO;
+import hsf.g3.hotel_booking_system.dto.auth.reset_password.ResetPasswordRequest;
 import hsf.g3.hotel_booking_system.dto.user.UserInfoDTO;
 import hsf.g3.hotel_booking_system.entity.user.ResetToken;
 import hsf.g3.hotel_booking_system.entity.user.Role;
@@ -11,7 +15,6 @@ import hsf.g3.hotel_booking_system.repository.user.RoleRepository;
 import hsf.g3.hotel_booking_system.repository.user.UserRepository;
 import hsf.g3.hotel_booking_system.service.external.MailService;
 import hsf.g3.hotel_booking_system.util.PasswordUtil;
-import org.antlr.v4.runtime.Token;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +42,6 @@ public class UserServiceImpl implements UserService {
         this.resetTokenRepository = resetTokenRepository;
         this.mailService = mailService;
     }
-
-
-
-
 
 
     @Override
@@ -101,7 +100,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public boolean resetPassword(ResetPasswordRequest resetPasswordRequest,String token) {
+    public boolean resetPassword(ResetPasswordRequest resetPasswordRequest, String token) {
         User userInDB = userRepository.findUserByResetToken(token).orElse(null);
         ResetToken resetToken = resetTokenRepository.findByToken(token).orElse(null);
         if(userInDB != null && resetToken != null){
