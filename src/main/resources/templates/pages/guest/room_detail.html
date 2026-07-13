@@ -164,7 +164,7 @@
         </div>
 
         <div class="action-section">
-            <a th:if="${room.status.name() == 'AVAILABLE'}" th:href="@{/v1/guest/booking/create(roomIds=${room.roomId},checkInDate=${param.checkInDate},checkOutDate=${param.checkOutDate},numberOfGuests=${param.numberOfGuests})}" class="btn-book">Proceed to Book Now</a>
+            <a th:if="${room.status.name() == 'AVAILABLE'}" th:href="@{/v1/guest/booking/create(roomId=${room.roomId},checkInDate=${param.checkInDate},checkOutDate=${param.checkOutDate},numberOfGuests=${param.numberOfGuests})}" class="btn-book">Proceed to Book Now</a>
             <button th:unless="${room.status.name() == 'AVAILABLE'}" disabled class="btn-book"
                 style="background-color: #6c757d; cursor: not-allowed;">Room Currently Unavailable</button>
         </div>

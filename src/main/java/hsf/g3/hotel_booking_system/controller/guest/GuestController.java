@@ -50,12 +50,14 @@ public class GuestController {
             return "pages/guest/search_results";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
+            model.addAttribute("roomTypes", guestRoomService.getAllRoomTypes());
             return "pages/guest/dashboard";
         }
     }
 
     @GetMapping("/dashboard")
-    public String showDashboard() {
+    public String showDashboard(Model model) {
+        model.addAttribute("roomTypes", guestRoomService.getAllRoomTypes());
         return "pages/guest/dashboard";
     }
 
