@@ -1,10 +1,6 @@
-package hsf.g3.hotel_booking_system.dto.auth;
+package hsf.g3.hotel_booking_system.dto.auth.forget_password.response;
 
 import hsf.g3.hotel_booking_system.entity.user.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

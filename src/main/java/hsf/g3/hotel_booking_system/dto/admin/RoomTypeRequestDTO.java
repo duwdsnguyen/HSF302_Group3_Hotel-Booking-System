@@ -1,14 +1,18 @@
 package hsf.g3.hotel_booking_system.dto.admin;
 
+import java.math.BigDecimal;
+
 import hsf.g3.hotel_booking_system.enums.room.RoomTypeStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class RoomTypeRequestDTO {

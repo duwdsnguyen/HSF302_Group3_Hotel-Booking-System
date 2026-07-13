@@ -1,0 +1,202 @@
+:root {
+    --primary: #0d6efd;
+    --primary-dark: #0b5ed7;
+    --border: #e2e5ea;
+    --muted: #6b7280;
+    --bg: #f5f6f8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    margin: 0;
+    background: var(--bg);
+    color: #1f2430;
+}
+
+.container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+h1 { font-size: 1.6rem; margin: 0; }
+
+.subtitle { color: var(--muted); margin: 4px 0 20px; }
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.alert-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-weight: 700;
+}
+
+.alert-success {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.alert-success .alert-icon {
+    color: #fff;
+    background: #22c55e;
+}
+
+.alert-error {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.alert-error .alert-icon {
+    color: #fff;
+    background: #ef4444;
+}
+
+.back-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+.back-link:hover { text-decoration: underline; }
+
+.toolbar {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 14px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+
+select, input[type="text"], input[type="number"] {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: #fff;
+}
+
+.btn {
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-outline {
+    background: #fff;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+.btn-outline:hover { background: #eef4ff; }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.room-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.room-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.room-number { font-size: 1.15rem; font-weight: 700; margin: 0; }
+
+.badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.badge-available { background: #e7f6ec; color: #1a7f37; }
+.badge-occupied { background: #fdecec; color: #c0392b; }
+.badge-maintenance { background: #fef4e5; color: #b26a00; }
+
+.room-meta { font-size: 0.9rem; color: #374151; }
+.room-meta span { color: var(--muted); }
+.room-desc { font-size: 0.86rem; color: var(--muted); min-height: 20px; }
+
+.room-card form { margin-top: auto; }
+
+.empty {
+    background: #fff;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 48px 20px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 28px;
+}
+.pagination a, .pagination span {
+    min-width: 38px;
+    text-align: center;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: #1f2430;
+    font-size: 0.88rem;
+    background: #fff;
+}
+.pagination a:hover { background: #eef4ff; }
+.pagination .active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.pagination .disabled { color: #b8bdc7; pointer-events: none; background: #f3f4f6; }
+
+.result-count { font-size: 0.88rem; color: var(--muted); margin-bottom: 14px; }

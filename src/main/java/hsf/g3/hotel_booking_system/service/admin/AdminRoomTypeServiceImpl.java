@@ -8,6 +8,7 @@ import hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +45,22 @@ public class AdminRoomTypeServiceImpl implements AdminRoomTypeService {
 
     @Override
     public RoomTypeResponseDTO createRoomType(RoomTypeRequestDTO request) {
+        if (request.getTypeName() == null || request.getTypeName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Tên loại phòng không được để trống");
+        }
+        if (request.getMaxGuests() == null || request.getMaxGuests() < 1) {
+            throw new IllegalArgumentException("Số khách phải lớn hơn 0");
+        }
+        if (request.getBasePrice() == null) {
+            throw new IllegalArgumentException("Giá phòng không được để trống");
+        }
+        if (request.getBasePrice().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Giá phòng phải lớn hơn 0");
+        }
+
+        if (roomTypeRepository.existsByTypeName(request.getTypeName())) {
+            throw new RuntimeException("Loại phòng với tên " + request.getTypeName() + " đã tồn tại");
+        }
         rejectDuplicateTypeName(request.getTypeName(), null);
 
         RoomType roomType = new RoomType();
