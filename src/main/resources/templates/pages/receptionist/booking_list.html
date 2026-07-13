@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản Lý Đơn Đặt Phòng</title>
+    <link rel="stylesheet" th:href="@{/css/admin-room.css}">
+</head>
+<body>
+<div th:replace="~{layout/header :: header}"></div>
+
+<main>
+    <h1>Quản Lý Đơn Đặt Phòng</h1>
+
+    <div th:if="${message}" class="error" style="color: green;" th:text="${message}"></div>
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+
+    <form action="/v1/receptionist/bookings" method="get" style="display: flex; gap: 15px; margin-bottom: 25px; align-items: flex-end; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: bold; font-size: 14px;">Trạng thái</label>
+            <select name="status" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; min-width: 150px;">
+                <option value="ALL" th:selected="${currentStatus == 'ALL'}">Tất cả</option>
+                <option th:each="enumStatus : ${bookingStatus}"
+                        th:value="${enumStatus.name()}"
+                        th:text="${enumStatus.name()}"
+                        th:selected="${currentStatus == enumStatus.name()}">
+                </option>
+            </select>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <label style="font-weight: bold; font-size: 14px;">Khách hàng</label>
+            <input type="text" name="customerName" placeholder="Tên khách hàng..." th:value="${customerName}" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: bold; font-size: 14px;">Giá từ</label>
+            <input type="number" name="minPrice" placeholder="VD: 1000000" step="1000000" th:value="${minPrice}" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: bold; font-size: 14px;">Đến mức giá</label>
+            <input type="number" name="maxPrice" placeholder="VD: 5000000" step="1000000" th:value="${maxPrice}" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <button type="submit" class="btn">Tìm kiếm</button>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Mã đơn</th>
+            <th>Tên khách hàng</th>
+            <th>Số phòng</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(bookings)}">
+            <td colspan="8">Không có booking nào.</td>
+        </tr>
+        <tr th:each="b : ${bookings}">
+            <td th:text="'#' + ${b.id}"></td>
+            <td th:text="${b.customer != null ? b.customer.fullName : ''}"></td>
+            <td th:text="${b.room != null ? b.room.roomNumber : ''}"></td>
+            <td th:text="${#temporals.format(b.checkInDate, 'dd/MM/yyyy')}"></td>
+            <td th:text="${#temporals.format(b.checkOutDate, 'dd/MM/yyyy')}"></td>
+            <td th:text="${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+            <td th:text="${b.status}"></td>
+            <td>
+                <a th:href="@{'/v1/receptionist/bookings/' + ${b.id} + '/detail'}" class="btn secondary">Xem chi tiết</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+</body>
+</html>

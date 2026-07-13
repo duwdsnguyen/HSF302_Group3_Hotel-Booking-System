@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Chi Tiết Đơn Đặt Phòng</title>
+  <link rel="stylesheet" th:href="@{/css/admin-room.css}">
+</head>
+<body>
+<div th:replace="~{layout/header :: header}"></div>
+
+<main>
+  <div class="page-actions" style="justify-content: space-between;">
+    <h1>Chi Tiết Đơn Đặt Phòng</h1>
+    <a th:href="@{/v1/receptionist/bookings}" class="btn secondary">Quay lại</a>
+  </div>
+
+  <div th:if="${message}" class="error" style="color: green;" th:text="${message}"></div>
+  <div th:if="${error}" class="error" th:text="${error}"></div>
+
+  <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
+    <div class="room-form" style="flex: 1; min-width: 300px; display: block;">
+      <h3 style="margin-top: 0px; margin-bottom: 15px;">Thông Tin Đặt Phòng</h3>
+      <table style="border: none; background: transparent;">
+        <tr><td style="border: none; width: 150px; padding-bottom: 8px;">Mã Booking</td>
+          <td style="border: none; padding-bottom: 8px; font-weight: bold;" th:text="'#' + ${booking.bookingId}"></td></tr>
+        <tr><td style="border: none; padding-bottom: 8px;">Ngày check-in</td>
+          <td style="border: none; padding-bottom: 8px;" th:text="${#temporals.format(booking.checkInDate, 'dd/MM/yyyy')}"></td></tr>
+        <tr><td style="border: none; padding-bottom: 8px;">Ngày check-out</td>
+          <td style="border: none; padding-bottom: 8px;" th:text="${#temporals.format(booking.checkOutDate, 'dd/MM/yyyy')}"></td></tr>
+        <tr><td style="border: none; padding-bottom: 8px;">Số khách</td>
+          <td style="border: none; padding-bottom: 8px;" th:text="${booking.numberOfGuests}"></td></tr>
+        <tr><td style="border: none; padding-bottom: 8px;">Tổng tiền</td>
+          <td style="border: none; padding-bottom: 8px" th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td></tr>
+        <tr><td style="border: none; padding-bottom: 8px;">Check-in thực tế</td>
+          <td style="border: none; padding-bottom: 8px;" th:text="${booking.actualCheckIn != null ? #temporals.format(booking.actualCheckIn, 'HH:mm dd/MM/yyyy') : 'Chưa'}"></td></tr>
+        <tr><td style="border: none; padding-bottom: 8px;">Check-out thực tế</td>
+          <td style="border: none; padding-bottom: 8px;" th:text="${booking.actualCheckOut != null ? #temporals.format(booking.actualCheckOut, 'HH:mm dd/MM/yyyy') : 'Chưa'}"></td></tr>
+        <tr><td style="border: none; padding-bottom: 0;">Trạng thái</td>
+          <td style="border: none; padding-bottom: 0;" th:text="${booking.status}"></td></tr>
+      </table>
+    </div>
+
+    <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;">
+      <div class="room-form" style="display: block;">
+        <h3 style="margin-top: 0; margin-bottom: 15px;">Khách Hàng</h3>
+        <table style="border: none; background: transparent;">
+          <tr><td style="border: none; width: 100px; padding-bottom: 8px;">Họ tên</td>
+            <td style="border: none; padding-bottom: 8px;" th:text="${booking.customerName}"></td></tr>
+          <tr><td style="border: none; padding-bottom: 8px;">Email</td>
+            <td style="border: none; padding-bottom: 8px;" th:text="${booking.customerEmail}"></td></tr>
+          <tr><td style="border: none; padding-bottom: 0;">SĐT</td>
+            <td style="border: none; padding-bottom: 0;" th:text="${booking.customerPhone}"></td></tr>
+        </table>
+      </div>
+
+      <div class="room-form" style="display: block;">
+        <h3 style="margin-top: 0; margin-bottom: 15px;">Thông Tin Phòng</h3>
+        <table style="border: none; background: transparent;">
+          <tr><td style="border: none; width: 100px; padding-bottom: 8px;">Số phòng</td>
+            <td style="border: none; font-weight: bold; padding-bottom: 8px;" th:text="${booking.roomNumber}"></td></tr>
+          <tr><td style="border: none; padding-bottom: 8px;">Hạng phòng</td>
+            <td style="border: none; padding-bottom: 8px;" th:text="${booking.roomTypeName}"></td></tr>
+        </table>
+        <h4 style="margin-top: 15px; margin-bottom: 8px; padding-top: 15px; border-top: 1px solid #eee;">Dịch Vụ Đi Kèm:</h4>
+        <ul th:if="${booking.services != null and !booking.services.isEmpty()}" style="margin-top: 0; padding-left: 20px;">
+          <li th:each="svc : ${booking.services}" style="margin-bottom: 5px;"
+              th:text="${svc.service.serviceName} + ' x' + ${svc.quantity} + ' (' + ${#numbers.formatDecimal(svc.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ)'">
+          </li>
+        </ul>
+        <p th:if="${booking.services == null or booking.services.isEmpty()}" style="margin-left: 0px; font-style: italic; color: #666;">Không có dịch vụ nào.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <a th:if="${booking.status == 'PENDING'}"
+       th:href="@{'/v1/receptionist/bookings/' + ${booking.bookingId} + '/confirm'}"
+       class="btn" onclick="return confirm('Xác nhận đơn booking này?')">
+      Xác nhận
+    </a>
+
+    <a th:if="${booking.status == 'PENDING'}"
+       th:href="@{'/v1/receptionist/bookings/' + ${booking.bookingId} + '/cancel'}"
+       class="btn danger" onclick="return confirm('Hủy đơn booking này?')">
+      Cancel
+    </a>
+
+    <a th:if="${booking.status == 'CONFIRMED'}"
+       th:href="@{'/v1/receptionist/bookings/' + ${booking.bookingId} + '/checkin'}"
+       class="btn" onclick="return confirm('Thực hiện check-in cho khách?')">
+      Check-in
+    </a>
+
+    <a th:if="${booking.status == 'CHECKED_IN'}"
+       th:href="@{'/v1/receptionist/bookings/' + ${booking.bookingId} + '/checkout'}"
+       class="btn secondary" onclick="return confirm('Thực hiện check-out cho khách?')">
+      Check-out
+    </a>
+  </div>
+</main>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+</body>
+</html>
