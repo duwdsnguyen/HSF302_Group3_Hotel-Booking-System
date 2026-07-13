@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@Repository("serviceHotelServiceRepository")
 public interface HotelServiceRepository extends JpaRepository<HotelService, Long> {
 
     List<HotelService> findByServiceNameContainingIgnoreCase(String keyword);

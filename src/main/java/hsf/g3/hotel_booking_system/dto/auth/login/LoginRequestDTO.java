@@ -1,6 +1,5 @@
-package hsf.g3.hotel_booking_system.dto.auth;
+package hsf.g3.hotel_booking_system.dto.auth.login;
 
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;

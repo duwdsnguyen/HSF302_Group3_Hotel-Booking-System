@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Không Tìm Thấy Trang</title>
+    <link rel="stylesheet" href="/css/error/404.css">
+</head>
+<body class="error-body">
+
+<div class="error-card">
+    <div class="error-icon">
+    </div>
+
+    <h1 class="error-code">404</h1>
+    <h4 class="error-title">Không Tìm Thấy Tài Nguyên</h4>
+
+    <p class="error-message" th:text="${message}">
+        Thông tin lỗi chi tiết sẽ xuất hiện ở đây...
+    </p>
+
+    <div class="button-group">
+        <a th:href="@{/}" class="btn-home">
+            Quay về Trang Chủ
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,11 +1,14 @@
 package hsf.g3.hotel_booking_system.controller.user;
 
-import hsf.g3.hotel_booking_system.dto.auth.*;
+import hsf.g3.hotel_booking_system.dto.auth.forget_password.request.ForgetPasswordRequest;
+import hsf.g3.hotel_booking_system.dto.auth.forget_password.response.ForgetPasswordResponse;
+import hsf.g3.hotel_booking_system.dto.auth.login.LoginRequestDTO;
+import hsf.g3.hotel_booking_system.dto.auth.register.RegisterRequestDTO;
+import hsf.g3.hotel_booking_system.dto.auth.reset_password.ResetPasswordRequest;
 import hsf.g3.hotel_booking_system.dto.user.UserInfoDTO;
 import hsf.g3.hotel_booking_system.enums.user.AppRole;
 import hsf.g3.hotel_booking_system.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;

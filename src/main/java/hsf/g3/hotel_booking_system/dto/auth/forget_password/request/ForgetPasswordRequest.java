@@ -1,4 +1,4 @@
-package hsf.g3.hotel_booking_system.dto.auth;
+package hsf.g3.hotel_booking_system.dto.auth.forget_password.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
