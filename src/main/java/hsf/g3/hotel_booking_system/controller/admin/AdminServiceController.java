@@ -5,8 +5,10 @@ import hsf.g3.hotel_booking_system.dto.service.ServiceFormDTO;
 import hsf.g3.hotel_booking_system.entity.service.HotelService;
 import hsf.g3.hotel_booking_system.enums.service.ServiceStatus;
 import hsf.g3.hotel_booking_system.service.service.HotelServiceService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -53,7 +55,10 @@ public class AdminServiceController {
     }
 
     @PostMapping("/add")
-    public String createService(@ModelAttribute("serviceForm") ServiceFormDTO serviceFormDTO, Model model) {
+    public String createService(@Valid @ModelAttribute("serviceForm") ServiceFormDTO serviceFormDTO, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "pages/admin/services/create";
+        }
         try {
             HotelService hotelService = new HotelService();
             hotelService.setServiceName(serviceFormDTO.getServiceName());
@@ -72,8 +77,12 @@ public class AdminServiceController {
 
     @PostMapping("/edit/{id}")
     public String updateService(@PathVariable("id") Long serviceId,
-                                @ModelAttribute("serviceForm") ServiceFormDTO serviceFormDTO,
+                                @Valid @ModelAttribute("serviceForm") ServiceFormDTO serviceFormDTO,
+                                BindingResult result,
                                 Model model) {
+        if (result.hasErrors()) {
+            return "pages/admin/services/edit";
+        }
         try {
             HotelService hotelService = new HotelService();
             hotelService.setServiceName(serviceFormDTO.getServiceName());
@@ -83,7 +92,7 @@ public class AdminServiceController {
 
             hotelServiceService.updateService(serviceId, hotelService);
             return "redirect:/v1/admin/services/list";
-        }catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("serviceForm", serviceFormDTO);
             model.addAttribute("serviceId", serviceId);

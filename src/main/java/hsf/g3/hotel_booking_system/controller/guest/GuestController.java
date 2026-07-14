@@ -5,6 +5,9 @@ import hsf.g3.hotel_booking_system.dto.guest.room.request.RoomChangeRequest;
 import hsf.g3.hotel_booking_system.dto.guest.room.response.RoomDTO;
 import hsf.g3.hotel_booking_system.dto.guest.room.response.RoomResponse;
 import hsf.g3.hotel_booking_system.dto.user.UserInfoDTO;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.ui.Model;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import hsf.g3.hotel_booking_system.exception.ResourceNotFoundException;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.net.http.HttpRequest;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -43,8 +47,7 @@ public class GuestController {
             @RequestParam(required = false) Integer roomTypeId,
             Model model) {
         try {
-            List<Room> availableRooms = guestRoomService.searchAvailableRooms(
-                    checkInDate, checkOutDate, numberOfGuests, minPrice, maxPrice, roomTypeId);
+            List<Room> availableRooms = guestRoomService.searchAvailableRooms(checkInDate, checkOutDate, numberOfGuests, minPrice, maxPrice, roomTypeId);
 
             model.addAttribute("rooms", availableRooms);
             model.addAttribute("roomTypes", guestRoomService.getAllRoomTypes());
@@ -56,25 +59,26 @@ public class GuestController {
             model.addAttribute("roomTypeId", roomTypeId);
 
             return "pages/guest/search_results";
-        } catch (IllegalArgumentException exception) {
-            model.addAttribute("error", exception.getMessage());
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
             return "pages/guest/dashboard";
         }
     }
 
     @GetMapping("/dashboard")
-    public String showDashboard() {
+    public String showDashboard(Model model) {
+        model.addAttribute("roomTypes", guestRoomService.getAllRoomTypes());
         return "pages/guest/dashboard";
     }
 
     @GetMapping("/room/{id}")
-    public String viewRoomDetail(@PathVariable Integer id, Model model) {
+    public String viewRoomDetail(@org.springframework.web.bind.annotation.PathVariable Integer id, Model model) {
         try {
             Room room = guestRoomService.getRoomById(id);
             model.addAttribute("room", room);
             return "pages/guest/room_detail";
-        } catch (IllegalArgumentException exception) {
-            model.addAttribute("error", exception.getMessage());
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
             return "pages/guest/search_results";
         }
     }
