@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="|Room ${room.roomNumber} - Change Room|">Room details</title>
+    <link rel="stylesheet" th:href="@{/css/room/room-change.css}">
+</head>
+<body>
+<main class="container">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Room change</p>
+            <h1 th:text="|Room ${room.roomNumber}|">Room details</h1>
+        </div>
+        <a class="back-link"
+           th:href="@{/v1/guest/room/change(pageNumber=${pageNumber}, pageSize=${pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}">
+            &larr; Back to available rooms
+        </a>
+    </div>
+    <p class="subtitle">Review this room before confirming your change.</p>
+
+    <div th:if="${success}" class="alert alert-success" role="status" aria-live="polite">
+        <span class="alert-icon" aria-hidden="true">&#10003;</span>
+        <span th:text="${success}"></span>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error" role="alert">
+        <span class="alert-icon" aria-hidden="true">!</span>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="detail-layout">
+        <article class="detail-card">
+            <div class="room-card-head">
+                <h2>Room information</h2>
+                <span class="badge"
+                      th:classappend="${room.status.name() == 'AVAILABLE'} ? ' badge-available' : (${room.status.name() == 'MAINTENANCE'} ? ' badge-maintenance' : ' badge-occupied')"
+                      th:text="${room.status}">AVAILABLE</span>
+            </div>
+
+            <dl class="room-facts">
+                <div>
+                    <dt>Room type</dt>
+                    <dd th:text="${room.roomType.typeName}">Deluxe</dd>
+                </div>
+                <div>
+                    <dt>Floor</dt>
+                    <dd th:text="${room.floorNumber}">3</dd>
+                </div>
+                <div>
+                    <dt>Capacity</dt>
+                    <dd th:text="|Up to ${room.roomType.maxGuests} guest(s)|">Up to 2 guests</dd>
+                </div>
+                <div>
+                    <dt>Base price</dt>
+                    <dd th:text="|${room.roomType.basePrice} VND / night|">800000 VND / night</dd>
+                </div>
+            </dl>
+
+            <div class="description-block">
+                <h3>Description</h3>
+                <p th:text="${room.description != null and !#strings.isEmpty(room.description) ? room.description : room.roomType.description}">
+                    Room description
+                </p>
+            </div>
+        </article>
+
+        <section class="change-panel" aria-labelledby="change-room-heading">
+            <h2 id="change-room-heading">Change to this room</h2>
+            <p>Select the checked-in room you want to replace.</p>
+
+            <div th:if="${#lists.isEmpty(bookedRooms)}" class="inline-notice">
+                You do not have a checked-in room that can be changed.
+            </div>
+
+            <div th:if="${!#lists.isEmpty(bookedRooms) and room.status.name() != 'AVAILABLE'}" class="inline-notice">
+                This room is not currently available for another change.
+            </div>
+
+            <form th:if="${canChange}" method="post" th:action="@{/v1/guest/room/change}" class="change-form">
+                <input type="hidden" name="newRoomId" th:value="${room.roomId}">
+                <input type="hidden" name="pageNumber" th:value="${pageNumber}">
+                <input type="hidden" name="pageSize" th:value="${pageSize}">
+                <input type="hidden" name="sortBy" th:value="${sortBy}">
+                <input type="hidden" name="sortOrder" th:value="${sortOrder}">
+
+                <div class="field">
+                    <label for="oldRoomId">Your current checked-in room</label>
+                    <select id="oldRoomId" name="oldRoomId" required>
+                        <option value="" selected disabled>Select your current room</option>
+                        <option th:each="bookedRoom : ${bookedRooms}"
+                                th:value="${bookedRoom.roomId}"
+                                th:text="|Room ${bookedRoom.roomNumber} - ${bookedRoom.typeName}|">
+                            Room 101 - Standard
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Confirm room change</button>
+            </form>
+        </section>
+    </div>
+
+    <section class="history-section" aria-labelledby="history-heading">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Activity</p>
+                <h2 id="history-heading">Your room-change history</h2>
+            </div>
+            <span class="history-count" th:text="|${#lists.size(changeHistory)} change(s)|">0 changes</span>
+        </div>
+
+        <div class="empty compact-empty" th:if="${#lists.isEmpty(changeHistory)}">
+            <h3>No room changes yet</h3>
+            <p>Your completed room changes will appear here.</p>
+        </div>
+
+        <div class="table-wrap" th:if="${!#lists.isEmpty(changeHistory)}">
+            <table class="history-table">
+                <caption class="sr-only">Room changes performed by the signed-in guest</caption>
+                <thead>
+                <tr>
+                    <th scope="col">Changed at</th>
+                    <th scope="col">Booking</th>
+                    <th scope="col">From</th>
+                    <th scope="col">To</th>
+                    <th scope="col">Details</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="history : ${changeHistory}">
+                    <td th:text="${history.changedAtDisplay}"></td>
+                    <td th:text="|${history.bookingId}|"></td>
+                    <td th:text="|Room ${history.oldRoomNumber}|"></td>
+                    <td th:text="|Room ${history.newRoomNumber}|"></td>
+                    <td th:text="${history.description}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

@@ -65,4 +65,8 @@ public class Booking extends Base {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
     private BookingStatus status = BookingStatus.PENDING;
+
+    @OneToMany(mappedBy = "booking",cascade = CascadeType.ALL,orphanRemoval = true)
+    List<BookingHistory> bookingHistories = new ArrayList<>();
 }
+

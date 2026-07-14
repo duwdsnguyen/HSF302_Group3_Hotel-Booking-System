@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -31,12 +33,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             + "    AND b.checkOutDate > :checkInDate "
             + "    AND b.status IN :bookingStatuses"
             + ")")
-    List<Room> findAvailableRooms(
-            @Param("checkInDate") LocalDate checkInDate,
-            @Param("checkOutDate") LocalDate checkOutDate,
-            @Param("numberOfGuests") Integer numberOfGuests,
-            @Param("roomStatus") RoomStatus roomStatus,
-            @Param("bookingStatuses") Collection<String> bookingStatuses);
+    List<Room> findAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfGuests, RoomStatus roomStatus, Collection<String> bookingStatuses);
 
 
     @Query("SELECT r FROM Room r WHERE r.status = RoomStatus.AVAILABLE")
@@ -45,4 +42,8 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     Boolean existsRoomByRoomId(Integer roomId);
 
     Optional<Room> findRoomByRoomId(Integer roomId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT r FROM Room r WHERE r.roomId = :roomId")
+    Optional<Room> findRoomByRoomIdForUpdate(Integer roomId);
 }
