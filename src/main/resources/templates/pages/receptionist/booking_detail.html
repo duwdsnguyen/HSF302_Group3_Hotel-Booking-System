@@ -82,7 +82,7 @@
     <a th:if="${booking.status == 'PENDING'}"
        th:href="@{'/v1/receptionist/bookings/' + ${booking.bookingId} + '/cancel'}"
        class="btn danger" onclick="return confirm('Hủy đơn booking này?')">
-      Cancel
+      Từ chối
     </a>
 
     <a th:if="${booking.status == 'CONFIRMED'}"
