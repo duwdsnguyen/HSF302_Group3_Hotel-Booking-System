@@ -94,7 +94,7 @@ public class GuestBookingServiceImpl implements GuestBookingService {
         booking.setCheckOutDate(checkOut);
         booking.setNumberOfGuests(guests);
         booking.setTotalAmount(totalAmount);
-        booking.setStatus("PENDING");
+        booking.setStatus(BookingStatus.PENDING);
 
         return bookingRepository.save(booking);
     }
