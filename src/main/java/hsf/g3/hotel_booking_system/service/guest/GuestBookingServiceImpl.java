@@ -64,13 +64,13 @@ public class GuestBookingServiceImpl implements GuestBookingService {
             selectedServices = hotelServiceRepository.findAllById(serviceIds);
         }
         long days = ChronoUnit.DAYS.between(checkIn, checkOut);
-        
+
         BigDecimal roomsTotal = selectedRoom.getRoomType().getBasePrice().multiply(BigDecimal.valueOf(days));
-                
+
         BigDecimal servicesTotal = selectedServices.stream()
                 .map(HotelService::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-                
+
         BigDecimal totalAmount = roomsTotal.add(servicesTotal);
 
         User customer = userRepository.findById(customerId)
