@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Booking Confirmation</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; color: #333; }
         .container { max-width: 800px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -15,22 +16,26 @@
         .price { color: #28a745; font-weight: bold; font-size: 1.5em; }
         .btn-confirm { background-color: #28a745; color: white; padding: 15px 30px; font-size: 1.2em; border: none; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 20px; }
         .btn-confirm:hover { background-color: #218838; }
+        .btn-confirm:disabled { background-color: #6c757d; cursor: not-allowed; }
         .btn-cancel { background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px; }
+        #error-msg { color: red; padding: 10px; border: 1px solid red; background: #ffe6e6; margin-bottom: 15px; display: none; border-radius: 5px; }
+        #success-msg { color: green; padding: 10px; border: 1px solid green; background: #e6ffe6; margin-bottom: 15px; display: none; border-radius: 5px; }
+        #loading-msg { color: #007bff; padding: 10px; background: #e8f4ff; margin-bottom: 15px; display: none; border-radius: 5px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Review Your Booking</h2>
+    <form id="booking-form">
+        <input type="hidden" id="roomId" name="roomId" th:value="${roomId}">
+        <input type="hidden" id="checkInDate" name="checkInDate" th:value="${checkInDate}">
+        <input type="hidden" id="checkOutDate" name="checkOutDate" th:value="${checkOutDate}">
+        <input type="hidden" id="numberOfGuests" name="numberOfGuests" th:value="${numberOfGuests}">
 
-    <div th:if="${error}" style="color: red; padding: 10px; border: 1px solid red; background: #ffe6e6; margin-bottom: 20px;" th:text="${error}"></div>
-
-    <form th:action="@{/v1/guest/booking/create}" method="POST">
-        <!-- Hidden inputs for required parameters -->
-        <input type="hidden" name="roomId" th:value="${roomId}">
-        <input type="hidden" name="checkInDate" th:value="${checkInDate}">
-        <input type="hidden" name="checkOutDate" th:value="${checkOutDate}">
-        <input type="hidden" name="numberOfGuests" th:value="${numberOfGuests}">
+        <div id="error-msg"></div>
+        <div id="success-msg"></div>
+        <div id="loading-msg"> Đang xử lý đơn đặt phòng, vui lòng chờ...</div>
 
         <div class="section">
             <h3>Guest Information</h3>
@@ -75,7 +80,7 @@
             </div>
         </div>
 
-        <button type="submit" class="btn-confirm">Confirm Booking</button>
+        <button type="button" id="btn-confirm" class="btn-confirm">Confirm Booking</button>
     </form>
 
     <div style="text-align: center;">
@@ -84,25 +89,74 @@
 
 </div>
 
-<script th:inline="javascript">
-    document.addEventListener("DOMContentLoaded", function() {
-        const roomsTotal = parseFloat(document.getElementById('roomsTotal').innerText);
-        const grandTotalDisplay = document.getElementById('grandTotalDisplay');
-        const checkboxes = document.querySelectorAll('.service-checkbox');
+<script>
+    $(document).ready(function() {
+
+        const roomsTotal = parseFloat($('#roomsTotal').text());
 
         function calculateTotal() {
             let servicesTotal = 0;
-            checkboxes.forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    servicesTotal += parseFloat(checkbox.getAttribute('data-price'));
-                }
+            $('.service-checkbox:checked').each(function() {
+                servicesTotal += parseFloat($(this).data('price'));
             });
             const grandTotal = roomsTotal + servicesTotal;
-            grandTotalDisplay.innerText = grandTotal.toFixed(2);
+            $('#grandTotalDisplay').text(grandTotal.toFixed(2));
         }
 
-        checkboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', calculateTotal);
+        $('.service-checkbox').on('change', calculateTotal);
+
+        $('#btn-confirm').on('click', function() {
+
+            var serviceIds = [];
+            $('.service-checkbox:checked').each(function() {
+                serviceIds.push($(this).val());
+            });
+
+            var formData = {
+                roomId: $('#roomId').val(),
+                checkInDate: $('#checkInDate').val(),
+                checkOutDate: $('#checkOutDate').val(),
+                numberOfGuests: $('#numberOfGuests').val(),
+                serviceIds: serviceIds
+            };
+
+            $('#btn-confirm').prop('disabled', true).text('Đang xử lý...');
+            $('#loading-msg').show();
+            $('#error-msg').hide();
+            $('#success-msg').hide();
+
+            $.ajax({
+                url: '/v1/guest/booking/create',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+
+                success: function(result) {
+                    if (result.status === 'success') {
+                        $('#success-msg').text(result.message).show();
+                        setTimeout(function() {
+                            window.location.href = result.redirect;
+                        }, 1000);
+
+                    } else if (result.status === 'error' && result.redirect) {
+                        window.location.href = result.redirect;
+
+                    } else {
+                        $('#error-msg').text(result.message).show();
+                        $('#btn-confirm').prop('disabled', false).text('Confirm Booking');
+                    }
+                },
+
+                error: function(xhr, status, error) {
+                    $('#error-msg').text('Lỗi kết nối tới server. Vui lòng thử lại!').show();
+                    $('#btn-confirm').prop('disabled', false).text('Confirm Booking');
+                },
+
+                // Bước 6: Luôn chạy cuối cùng, dù thành công hay thất bại
+                complete: function() {
+                    $('#loading-msg').hide();
+                }
+            });
         });
     });
 </script>
