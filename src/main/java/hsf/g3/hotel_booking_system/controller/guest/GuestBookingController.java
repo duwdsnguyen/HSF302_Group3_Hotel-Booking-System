@@ -75,18 +75,27 @@ public class GuestBookingController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkInDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOutDate,
             @RequestParam Integer numberOfGuests,
-            HttpSession session) {
+            HttpSession session
+//            RedirectAttributes redirectAttributes
+    ) {
 
         UserInfoDTO loggedInUser = (UserInfoDTO) session.getAttribute("loggedInUser");
         if (loggedInUser == null) {
-            return "{\"status\":\"error\", \"message\":\"Bạn chưa đăng nhập\", \"redirect\":\"/v1/auth/login\"}";
+//            return "redirect:/v1/auth/login";
+            return "{\"status\":\"error\",\"message\":\"Bạn chưa đăng nhập\", \"redirect\":\"/v1/auth/login\"}";
         }
 
         try {
             Long customerId = loggedInUser.getUserId();
             guestBookingService.createBooking(roomId, serviceIds, checkInDate, checkOutDate, numberOfGuests, customerId);
+//            return "redirect:/v1/guest/booking/success";
             return "{\"status\":\"success\", \"message\":\"Đặt phòng thành công!\", \"redirect\":\"/v1/guest/booking/success\"}";
         } catch (IllegalArgumentException e) {
+//            redirectAttributes.addFlashAttribute("error", e.getMessage());
+//            return "redirect:/v1/guest/booking/create?roomId=" + roomId +
+//                    "&checkInDate=" + checkInDate +
+//                    "&checkOutDate=" + checkOutDate +
+//                    "&numberOfGuests=" + numberOfGuests;
             String safeMsg = e.getMessage().replace("\"", "'");
             return "{\"status\":\"error\", \"message\":\"" + safeMsg + "\"}";
         }

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Add New Service</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -133,49 +134,116 @@
     </div>
 
     <div class="form-card">
-        <div th:if="${error}" class="error-box">
-            <p th:text="${error}"></p>
-        </div>
+        <!--        <div th:if="${error}" class="error-box">-->
+        <!--            <p th:text="${error}"></p>-->
+        <!--        </div>-->
+        <div id="error-msg" class="error-box" style="display: none;"></div>
+        <div id="success-msg" style="display: none; color: #166534; padding: 12px; background: #dcfce7; border-radius: 10px; margin-bottom: 16px; font-weight: 500;"></div>
 
-        <form th:action="@{/v1/admin/services/add}" th:object="${serviceForm}" method="post" class="service-form">
+        <!--        <form th:action="@{/v1/admin/services/add}" th:object="${serviceForm}" method="post" class="service-form">-->
+        <form id="create-service-form" class="service-form">
             <div class="form-group">
                 <label>Service Name:</label>
-                <input type="text" th:field="*{serviceName}" placeholder="Enter service name">
-                <p th:if="${#fields.hasErrors('serviceName')}"
-                   th:errors="*{serviceName}"
-                   style="color: #dc2626; font-size: 12px; margin: 4px 0 0;">Error</p>
+                <!--                <input type="text" th:field="*{serviceName}" placeholder="Enter service name">-->
+                <input type="text" id="serviceName" name="serviceName" placeholder="Enter service name">
+                <!--                <p th:if="${#fields.hasErrors('serviceName')}"-->
+                <!--                   th:errors="*{serviceName}"-->
+                <!--                   style="color: #dc2626; font-size: 12px; margin: 4px 0 0;">Error</p>-->
+                <span id="error-serviceName" style="color: #dc2626; font-size: 12px; display: none;"></span>
             </div>
 
             <div class="form-group">
                 <label>Description:</label>
-                <textarea type="field" th:field="*{description}" placeholder="Enter description"></textarea>
+                <!--                <textarea type="field" th:field="*{description}" placeholder="Enter description"></textarea>-->
+                <textarea id="description" name="description" placeholder="Enter description"></textarea>
             </div>
 
             <div class="form-group">
                 <label>Price:</label>
-                <input type="number" step="0.01" th:field="*{price}" placeholder="Enter service price">
-                <p th:if="${#fields.hasErrors('price')}"
-                   th:errors="*{price}"
-                   style="color: #dc2626; font-size: 12px; margin: 4px 0 0;">Error</p>
+                <!--                <input type="number" step="0.01" th:field="*{price}" placeholder="Enter service price">-->
+                <input type="number" step="0.01" id="price" name="price" placeholder="Enter service price">
+                <!--                <p th:if="${#fields.hasErrors('price')}"-->
+                <!--                   th:errors="*{price}"-->
+                <!--                   style="color: #dc2626; font-size: 12px; margin: 4px 0 0;">Error</p>-->
+                <span id="error-price" style="color: #dc2626; font-size: 12px; display: none;"></span>
             </div>
 
             <div class="form-group">
                 <label>Status:</label>
-                <select th:field="*{status}">
+                <!--                <select th:field="*{status}">-->
+                <select id="status" name="status">
                     <option value="ACTIVE">ACTIVE</option>
                     <option value="INACTIVE">INACTIVE</option>
                 </select>
-                <p th:if="${#fields.hasErrors('status')}"
-                   th:errors="*{status}"
-                   style="color: #dc2626; font-size: 12px; margin: 4px 0 0;">Error</p>
+                <!--                <p th:if="${#fields.hasErrors('status')}"-->
+                <!--                   th:errors="*{status}"-->
+                <!--                   style="color: #dc2626; font-size: 12px; margin: 4px 0 0;">Error</p>-->
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Create Service</button>
+                <!--                <button type="submit" class="btn btn-primary">Create Service</button>-->
+                <button type="button" id="btn-create" class="btn btn-primary">Create Service</button>
                 <a th:href="@{/v1/admin/services/list}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#btn-create').on('click', function () {
+            // Ẩn thông báo cũ
+            $('#error-msg').hide();
+            $('#success-msg').hide();
+            $('#error-serviceName').hide();
+            $('#error-price').hide();
+
+            // Validation phía client trước khi gửi
+            var isValid = true;
+            if ($('#serviceName').val().trim() === '') {
+                $('#error-serviceName').text('Tên dịch vụ không được để trống').show();
+                isValid = false;
+            }
+            if ($('#price').val() === '' || isNaN($('#price').val()) || parseFloat($('#price').val()) < 0) {
+                $('#error-price').text('Giá phải là số và lớn hơn hoặc bằng 0').show();
+                isValid = false;
+            }
+            if (!isValid) return; // Dừng nếu có lỗi, không gửi AJAX
+
+            $('#btn-create').prop('disabled', true).text('Đang lưu...');
+
+            $.ajax({
+                url: '/v1/admin/services/add',
+                type: 'POST',
+                data: {
+                    serviceName: $('#serviceName').val().trim(),
+                    description: $('#description').val(),
+                    price: $('#price').val(),
+                    status: $('#status').val()
+                },
+                dataType: 'json',
+
+                success: function (result) {
+                    if (result.status === 'success') {
+                        $('#success-msg').text(result.message).show();
+                        setTimeout(function () {
+                            window.location.href = result.redirect;
+                        }, 1000);
+                    } else {
+                        $('#error-msg').text(result.message).show();
+                        $('#btn-create').prop('disabled', false).text('Create Service');
+                    }
+                },
+
+                error: function () {
+                    $('#error-msg').text('Lỗi kết nối tới server. Vui lòng thử lại!').show();
+                    $('#btn-create').prop('disabled', false).text('Create Service');
+                }
+            });
+        });
+    });
+</script>
+
 </body>
 </html>

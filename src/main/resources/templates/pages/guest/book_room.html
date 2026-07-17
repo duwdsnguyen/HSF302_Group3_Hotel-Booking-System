@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Booking Confirmation</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        window.jQuery || document.write('<script src="https:\/\/code.jquery.com\/jquery-3.7.1.min.js<\/script>"');
+    </script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; color: #333; }
         .container { max-width: 800px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -27,11 +30,14 @@
 
 <div class="container">
     <h2>Review Your Booking</h2>
+    <!--    <form th:action="@{/v1/guest/booking/create}" method="POST">-->
     <form id="booking-form">
         <input type="hidden" id="roomId" name="roomId" th:value="${roomId}">
         <input type="hidden" id="checkInDate" name="checkInDate" th:value="${checkInDate}">
         <input type="hidden" id="checkOutDate" name="checkOutDate" th:value="${checkOutDate}">
         <input type="hidden" id="numberOfGuests" name="numberOfGuests" th:value="${numberOfGuests}">
+
+        <!--    <div th:if="${error}" style="color: red; padding: 10px; border: 1px solid red; background: #ffe6e6; margin-bottom: 20px;" th:text="${error}"></div>-->
 
         <div id="error-msg"></div>
         <div id="success-msg"></div>
@@ -80,6 +86,7 @@
             </div>
         </div>
 
+<!--        <button type="submit" class="btn-confirm">Confirm Booking</button>-->
         <button type="button" id="btn-confirm" class="btn-confirm">Confirm Booking</button>
     </form>
 

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Controller
 
@@ -55,23 +57,35 @@ public class AdminServiceController {
     }
 
     @PostMapping("/add")
-    public String createService(@Valid @ModelAttribute("serviceForm") ServiceFormDTO serviceFormDTO, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            return "pages/admin/services/create";
-        }
+    @ResponseBody
+//    public String createService(@Valid @ModelAttribute("serviceForm") ServiceFormDTO serviceFormDTO, BindingResult result, Model model) {
+    public String createService(
+            @RequestParam String serviceName,
+            @RequestParam(required = false) String description,
+            @RequestParam BigDecimal price,
+            @RequestParam ServiceStatus status) {
+//        if (result.hasErrors()) {
+//            return "pages/admin/services/create";
+//        }
         try {
+            if (serviceName == null || serviceName.trim().isEmpty()) {
+                return "{\"status\":\"error\", \"message\":\"Tên dịch vụ không được để trống\"}";
+            }
             HotelService hotelService = new HotelService();
-            hotelService.setServiceName(serviceFormDTO.getServiceName());
-            hotelService.setDescription(serviceFormDTO.getDescription());
-            hotelService.setPrice(serviceFormDTO.getPrice());
-            hotelService.setStatus(serviceFormDTO.getStatus());
+            hotelService.setServiceName(serviceName.trim());
+            hotelService.setDescription(description);
+            hotelService.setPrice(price);
+            hotelService.setStatus(status);
 
             hotelServiceService.createService(hotelService);
-            return "redirect:/v1/admin/services/list";
+//            return "redirect:/v1/admin/services/list";
+            return "{\"status\":\"success\", \"message\":\"Tạo dịch vụ thành công!\", \"redirect\":\"/v1/admin/services/list\"}";
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("serviceForm", serviceFormDTO);
-            return "pages/admin/services/create";
+//            model.addAttribute("error", e.getMessage());
+//            model.addAttribute("serviceForm", serviceFormDTO);
+//            return "pages/admin/services/create";
+            String safeMsg = e.getMessage().replace("\"", "'");
+            return "{\"status\":\"error\", \"message\":\"" + safeMsg + "\"}";
         }
     }
 
@@ -102,14 +116,53 @@ public class AdminServiceController {
     }
 
     @PostMapping("/activate/{id}")
+    @ResponseBody
     public String activateService(@PathVariable("id") Long serviceId) {
-        hotelServiceService.activateService(serviceId);
-        return "redirect:/v1/admin/services/list";
+        try {
+            hotelServiceService.activateService(serviceId);
+//            return "redirect:/v1/admin/services/list";
+            return "{\"status\":\"success\", \"message\":\"Đã kích hoạt dịch vụ\"}";
+        } catch (Exception e) {
+            String safeMsg = e.getMessage().replace("\"", "'");
+            return "{\"status\":\"error\", \"message\":\"" + safeMsg + "\"}";
+        }
     }
 
     @PostMapping("/deactivate/{id}")
+    @ResponseBody
     public String deactivateService(@PathVariable("id") Long serviceId) {
-        hotelServiceService.deactivateService(serviceId);
-        return "redirect:/v1/admin/services/list";
+        try {
+            hotelServiceService.deactivateService(serviceId);
+//            return "redirect:/v1/admin/services/list";
+            return "{\"status\":\"success\", \"message\":\"Đã vô hiệu hóa dịch vụ\"}";
+        } catch (Exception e) {
+            String safeMsg = e.getMessage().replace("\"", "'");
+            return "{\"status\":\"error\", \"message\":\"" + safeMsg + "\"}";
+        }
+    }
+
+    // Chức năng 4: Endpoint mới phục vụ AJAX Search/Filter, trả về JSON
+    @GetMapping("/search")
+    @ResponseBody
+    public String searchServices(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) ServiceStatus status) {
+        List<HotelService> services = hotelServiceService.searchServices(keyword, status);
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < services.size(); i++) {
+            HotelService s = services.get(i);
+            String desc = s.getDescription() != null ? s.getDescription().replace("\"", "'") : "";
+            String name = s.getServiceName() != null ? s.getServiceName().replace("\"", "'") : "";
+            sb.append("{")
+              .append("\"id\":").append(s.getServiceId()).append(",")
+              .append("\"name\":\"").append(name).append("\",")
+              .append("\"description\":\"").append(desc).append("\",")
+              .append("\"price\":").append(s.getPrice()).append(",")
+              .append("\"status\":\"").append(s.getStatus().name()).append("\"")
+              .append("}");
+            if (i < services.size() - 1) sb.append(",");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }

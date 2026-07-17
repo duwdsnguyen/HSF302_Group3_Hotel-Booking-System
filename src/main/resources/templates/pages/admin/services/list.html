@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Service Management</title>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -204,7 +204,8 @@
     </div>
 
     <div class="filter-card">
-        <form th:action="@{/v1/admin/services/list}" method="get" class="filter-form">
+        <!--        <form th:action="@{/v1/admin/services/list}" method="get" class="filter-form">-->
+        <form id="filter-form" class="filter-form">
             <div class="form-group">
                 <label for="keyword"> Search by service name:</label>
                 <input id="keyword" type="text" name="keyword" th:value="${keyword}" placeholder="Enter service name">
@@ -224,8 +225,10 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Search</button>
-                <a th:href="@{/v1/admin/services/list}" class="btn btn-secondary">Reset</a>
+                <!--                <button type="submit" class="btn btn-primary">Search</button>-->
+                <button type="button" id="btn-search" class="btn btn-primary">Search</button>
+                <!--                <a th:href="@{/v1/admin/services/list}" class="btn btn-secondary">Reset</a>-->
+                <button type="button" id="btn-reset" class="btn btn-secondary">Reset</button>
             </div>
         </form>
     </div>
@@ -242,7 +245,7 @@
                 <th>Action</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="service-tbody">
             <tr th:each="service : ${services}">
                 <td th:text="${service.serviceId}">1</td>
                 <td th:text="${service.serviceName}">Breakfast</td>
@@ -258,24 +261,135 @@
                 <td class="action-cell">
                     <a th:href="@{/v1/admin/services/edit/{id}(id=${service.serviceId})}" class="btn btn-edit">Edit</a>
 
-                    <form th:if="${service.status.name() == 'ACTIVE'}"
-                          th:action="@{/v1/admin/services/deactivate/{id}(id=${service.serviceId})}"
-                          method="post"
-                          style="display:inline;">
-                        <button type="submit" class="btn btn-danger">Deactivate</button>
-                    </form>
+                    <!--                    <form th:if="${service.status.name() == 'ACTIVE'}"-->
+                    <!--                          th:action="@{/v1/admin/services/deactivate/{id}(id=${service.serviceId})}"-->
+                    <!--                          method="post"-->
+                    <!--                          style="display:inline;">-->
+                    <!--                        <button type="submit" class="btn btn-danger">Deactivate</button>-->
+                    <!--                    </form>-->
+                    <button type="button"
+                            th:if="${service.status.name() == 'ACTIVE'}"
+                            class="btn btn-danger btn-toggle-status"
+                            th:data-id="${service.serviceId}"
+                            data-action="deactivate">Deactivate</button>
 
-                    <form th:if="${service.status.name() == 'INACTIVE'}"
-                          th:action="@{/v1/admin/services/activate/{id}(id=${service.serviceId})}"
-                          method="post"
-                          style="display:inline;">
-                        <button type="submit" class="btn btn-success">Activate</button>
-                    </form>
+                    <!--                    <form th:if="${service.status.name() == 'INACTIVE'}"-->
+                    <!--                          th:action="@{/v1/admin/services/activate/{id}(id=${service.serviceId})}"-->
+                    <!--                          method="post"-->
+                    <!--                          style="display:inline;">-->
+                    <!--                        <button type="submit" class="btn btn-success">Activate</button>-->
+                    <!--                    </form>-->
+                    <button type="button"
+                            th:if="${service.status.name() == 'INACTIVE'}"
+                            class="btn btn-success btn-toggle-status"
+                            th:data-id="${service.serviceId}"
+                            data-action="activate">Activate</button>
                 </td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+
+        // ============ CHỨC NĂNG 3: Activate / Deactivate bằng AJAX ============
+        // Dùng Event Delegation vì các nút được render bởi Thymeleaf và có thể được thêm mới sau search
+        $(document).on('click', '.btn-toggle-status', function () {
+            var btn = $(this);
+            var id = btn.data('id');         // Lấy id từ data-id
+            var action = btn.data('action'); // Lấy 'deactivate' hoặc 'activate'
+            var confirmMsg = action === 'deactivate'
+                ? 'Bạn có chắc muốn vô hiệu hóa dịch vụ này không?'
+                : 'Bạn có chắc muốn kích hoạt lại dịch vụ này không?';
+
+            if (!confirm(confirmMsg)) return; // Hỏi trước khi thực hiện
+
+            btn.prop('disabled', true).text('Đang xử lý...');
+
+            $.ajax({
+                url: '/v1/admin/services/' + action + '/' + id,
+                type: 'POST',
+                dataType: 'json',
+
+                success: function (result) {
+                    if (result.status === 'success') {
+                        // Gọi lại hàm search để cập nhật bảng mà KHÔNG reload trang
+                        doSearch();
+                    } else {
+                        alert('❌ ' + result.message);
+                        btn.prop('disabled', false);
+                    }
+                },
+
+                error: function () {
+                    alert('❌ Lỗi kết nối server!');
+                    btn.prop('disabled', false);
+                }
+            });
+        });
+
+        // ============ CHỨC NĂNG 4: Search / Filter bằng AJAX ============
+
+        // Hàm tự vẽ một hàng trong bảng từ dữ liệu JSON
+        function renderRow(s) {
+            var badgeClass = s.status === 'ACTIVE' ? 'status-active' : 'status-inactive';
+            var toggleAction = s.status === 'ACTIVE' ? 'deactivate' : 'activate';
+            var toggleText = s.status === 'ACTIVE' ? 'Deactivate' : 'Activate';
+            var toggleClass = s.status === 'ACTIVE' ? 'btn-danger' : 'btn-success';
+
+            return '<tr>' +
+                '<td>' + s.id + '</td>' +
+                '<td>' + s.name + '</td>' +
+                '<td>' + (s.description || '') + '</td>' +
+                '<td>' + s.price + '</td>' +
+                '<td><span class="status-badge ' + badgeClass + '">' + s.status + '</span></td>' +
+                '<td class="action-cell">' +
+                    '<a href="/v1/admin/services/edit/' + s.id + '" class="btn btn-edit">Edit</a>' +
+                    '<button type="button" class="btn ' + toggleClass + ' btn-toggle-status"' +
+                        ' data-id="' + s.id + '" data-action="' + toggleAction + '">' +
+                        toggleText +
+                    '</button>' +
+                '</td>' +
+            '</tr>';
+        }
+
+        // Hàm gọi AJAX đến /search và cập nhật bảng
+        function doSearch() {
+            var keyword = $('#keyword').val();
+            var status = $('#status').val();
+
+            // Nếu status rỗng ("") thì không gửi tham số này
+            var params = { keyword: keyword };
+            if (status !== '') {
+                params.status = status;
+            }
+
+            $.get('/v1/admin/services/search', params, function (services) {
+                $('#service-tbody').empty(); // Xóa bảng cũ
+
+                if (services.length === 0) {
+                    $('#service-tbody').html('<tr><td colspan="6" style="text-align:center; padding: 20px;">Không tìm thấy kết quả</td></tr>');
+                } else {
+                    $.each(services, function (i, s) {
+                        $('#service-tbody').append(renderRow(s)); // Vẽ từng hàng
+                    });
+                }
+            }, 'json');
+        }
+
+        // Gắn sự kiện nút Search
+        $('#btn-search').on('click', doSearch);
+
+        // Gắn sự kiện nút Reset
+        $('#btn-reset').on('click', function () {
+            $('#keyword').val('');
+            $('#status').val('');
+            doSearch();
+        });
+    });
+</script>
+
 </body>
 </html>
