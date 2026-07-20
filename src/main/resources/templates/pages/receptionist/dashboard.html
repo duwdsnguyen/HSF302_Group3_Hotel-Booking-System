@@ -1,10 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Receptionist</title>
+    <title>Receptionist Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/admin-room.css}">
 </head>
 <body>
+<div th:replace="~{layout/header :: header}"></div>
 
+<main>
+    <h1>Trang Chủ Lễ Tân (Dashboard)</h1>
+    <p>Chào mừng bạn đến với hệ thống quản lý khách sạn.</p>
+    
+    <div style="margin-top: 20px;">
+        <a th:href="@{/v1/receptionist/bookings}" class="btn">
+            Truy cập Quản Lý Booking
+        </a>
+    </div>
+</main>
+
+<div th:replace="~{layout/footer :: footer}"></div>
 </body>
 </html>

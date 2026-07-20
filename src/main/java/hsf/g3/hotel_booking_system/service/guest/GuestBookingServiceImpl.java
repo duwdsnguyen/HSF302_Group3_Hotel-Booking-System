@@ -3,6 +3,7 @@ package hsf.g3.hotel_booking_system.service.guest;
 import hsf.g3.hotel_booking_system.entity.guest.Booking;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.entity.service.HotelService;
+import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
 import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import hsf.g3.hotel_booking_system.repository.admin.HotelServiceRepository;
 import hsf.g3.hotel_booking_system.repository.admin.RoomRepository;
@@ -64,7 +65,7 @@ public class GuestBookingServiceImpl implements GuestBookingService {
             selectedServices = hotelServiceRepository.findAllById(serviceIds);
         }
         long days = ChronoUnit.DAYS.between(checkIn, checkOut);
-
+        
         BigDecimal roomsTotal = selectedRoom.getRoomType().getBasePrice().multiply(BigDecimal.valueOf(days));
 
         BigDecimal servicesTotal = selectedServices.stream()
@@ -94,7 +95,7 @@ public class GuestBookingServiceImpl implements GuestBookingService {
         booking.setCheckOutDate(checkOut);
         booking.setNumberOfGuests(guests);
         booking.setTotalAmount(totalAmount);
-        booking.setStatus("PENDING");
+        booking.setStatus(BookingStatus.PENDING);
 
         return bookingRepository.save(booking);
     }
