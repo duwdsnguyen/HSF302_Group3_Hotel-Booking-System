@@ -73,11 +73,7 @@ public class GuestBookingController {
 
     @PostMapping("/create")
     public String submitBooking(
-            @RequestParam Integer roomId,
-            @RequestParam(required = false) List<Long> serviceIds,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkInDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOutDate,
-            @RequestParam Integer numberOfGuests,
+            @org.springframework.web.bind.annotation.ModelAttribute hsf.g3.hotel_booking_system.dto.guest.request.BookingRequestDTO request,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
@@ -88,15 +84,15 @@ public class GuestBookingController {
 
         try {
             Long customerId = loggedInUser.getUserId();
-            guestBookingService.createBooking(roomId, serviceIds, checkInDate, checkOutDate, numberOfGuests, customerId);
+            guestBookingService.createBooking(request, customerId);
             return "redirect:/v1/guest/booking/success";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             
-            return "redirect:/v1/guest/booking/create?roomId=" + roomId +
-                    "&checkInDate=" + checkInDate +
-                    "&checkOutDate=" + checkOutDate +
-                    "&numberOfGuests=" + numberOfGuests;
+            return "redirect:/v1/guest/booking/create?roomId=" + request.getRoomId() +
+                    "&checkInDate=" + request.getCheckInDate() +
+                    "&checkOutDate=" + request.getCheckOutDate() +
+                    "&numberOfGuests=" + request.getNumberOfGuests();
         }
     }
 
