@@ -24,6 +24,10 @@ public class MyGlobalException {
         return "pages/error/error_page";
     }
 
-
+    @ExceptionHandler(DuplicateServiceNameException.class)
+    public String handleDuplicateServiceNameException (DuplicateServiceNameException e, Model model) {
+        model.addAttribute("error", e.getMessage());
+        return "pages/error/error_page";
+    }
 
 }
