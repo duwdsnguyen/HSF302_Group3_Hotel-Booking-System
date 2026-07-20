@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoomChangeRequest {
     Integer newRoomId;
+    Integer oldRoomId;
     Integer pageNumber;
     Integer pageSize;
     String sortBy;
