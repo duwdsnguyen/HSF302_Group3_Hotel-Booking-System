@@ -72,7 +72,7 @@ public class GuestController {
     }
 
     @GetMapping("/room/{id}")
-    public String viewRoomDetail(@org.springframework.web.bind.annotation.PathVariable Integer id, Model model) {
+    public String viewRoomDetail(@PathVariable Integer id, Model model) {
         try {
             Room room = guestRoomService.getRoomById(id);
             model.addAttribute("room", room);
