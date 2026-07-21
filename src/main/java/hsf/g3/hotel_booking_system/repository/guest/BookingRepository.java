@@ -25,7 +25,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "AND b.actualCheckOut IS NULL " +
             "AND b.customer.userId = :userId " +
             "AND b.room.roomId = :roomId")
-    Optional<Booking> getCheckedInBooking( Long userId, Integer roomId);
+    Optional<Booking> getCheckedInBooking(Long userId, Integer roomId);
 
     @Query("SELECT b.room FROM Booking b " +
             "WHERE b.actualCheckIn IS NOT NULL " +
@@ -39,8 +39,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "AND b.checkInDate < :checkOutDate " +
             "AND b.checkOutDate > :checkInDate " +
             "AND b.status IN :blockingStatuses")
-    boolean existsBlockingBooking( Integer roomId, LocalDate checkInDate, LocalDate checkOutDate, Collection<BookingStatus> blockingStatuses);
-
+    boolean existsBlockingBooking(Integer roomId, LocalDate checkInDate, LocalDate checkOutDate, Collection<BookingStatus> blockingStatuses);
 
     @Query("SELECT b FROM Booking b WHERE " +
             "(:status IS NULL OR b.status = :status) AND " +
@@ -53,5 +52,41 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             @Param("fullName") String fullName,
             @Param("minPrice") BigDecimal minPrice,
             @Param("maxPrice") BigDecimal maxPrice
+    );
+
+    // ── Guest Booking History ──────────────────────────────────────────────────
+
+    @Query("SELECT b FROM Booking b " +
+            "JOIN FETCH b.room r " +
+            "JOIN FETCH r.roomType " +
+            "WHERE b.customer.userId = :customerId " +
+            "ORDER BY b.createdAt DESC")
+    List<Booking> findAllByCustomerId(@Param("customerId") Long customerId);
+
+    @Query("SELECT b FROM Booking b " +
+            "JOIN FETCH b.room r " +
+            "JOIN FETCH r.roomType " +
+            "WHERE b.customer.userId = :customerId " +
+            "AND (:status IS NULL OR b.status = :status) " +
+            "AND (:keyword IS NULL OR " +
+            "     LOWER(r.roomNumber) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "     LOWER(r.roomType.typeName) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+            "ORDER BY b.createdAt DESC")
+    List<Booking> searchByCustomer(
+            @Param("customerId") Long customerId,
+            @Param("status") BookingStatus status,
+            @Param("keyword") String keyword
+    );
+
+    @Query("SELECT b FROM Booking b " +
+            "JOIN FETCH b.room r " +
+            "JOIN FETCH r.roomType " +
+            "LEFT JOIN FETCH b.bookingServices bs " +
+            "LEFT JOIN FETCH bs.service " +
+            "WHERE b.id = :bookingId " +
+            "AND b.customer.userId = :customerId")
+    Optional<Booking> findByIdAndCustomerId(
+            @Param("bookingId") Integer bookingId,
+            @Param("customerId") Long customerId
     );
 }
