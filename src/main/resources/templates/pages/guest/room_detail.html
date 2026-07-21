@@ -4,172 +4,154 @@
 <head>
     <meta charset="UTF-8">
     <title>Room Details</title>
+    <link rel="stylesheet" href="/css/auth/style.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f7f6;
-        }
-
-        .detail-container {
+        .page-wrapper {
+            padding: 40px 20px;
             max-width: 900px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
         }
-
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
         }
-
-        .header h2 {
-            margin: 0;
-            color: #333;
-        }
-
-        .btn-back {
-            background-color: #6c757d;
-            color: white;
-            padding: 8px 12px;
+        .btn-outline {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 8px 15px;
+            text-align: center;
+            border-radius: 6px;
             text-decoration: none;
-            border-radius: 4px;
+            font-weight: 600;
+            transition: var(--transition);
         }
-
-        .btn-back:hover {
-            background-color: #5a6268;
+        .btn-outline:hover {
+            background-color: #f3f4f6;
         }
-
-        .room-image {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
         .info-grid {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
             margin-bottom: 20px;
         }
-
         .info-card {
-            flex: 1 1 calc(50% - 20px);
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
+            flex: 1 1 100%;
+            background: #f9fafb;
+            padding: 25px;
+            border-radius: var(--radius);
+            border: 1px solid #e5e7eb;
         }
-
         .info-card h4 {
             margin-top: 0;
-            color: #007bff;
+            color: var(--primary-color);
+            font-size: 18px;
+            margin-bottom: 15px;
         }
-
-        .info-card p {
-            margin: 8px 0;
+        .info-item {
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: #374151;
         }
-
-        .price {
-            font-size: 24px;
-            color: #28a745;
-            font-weight: bold;
+        .info-item strong {
+            color: #111827;
+            display: inline-block;
+            width: 120px;
         }
-
-        .facilities {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .facility-badge {
-            background-color: #e9ecef;
-            color: #495057;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 14px;
-            border: 1px solid #ced4da;
-        }
-
         .action-section {
             text-align: right;
             margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
         }
-
-        .btn-book {
-            background-color: #28a745;
+        .btn-solid {
+            background-color: var(--primary-color);
             color: white;
-            padding: 12px 25px;
-            font-size: 18px;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 6px;
             text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
             display: inline-block;
+            cursor: pointer;
         }
-
-        .btn-book:hover {
-            background-color: #218838;
+        .btn-solid:hover {
+            background-color: var(--primary-hover);
         }
-
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
+        .btn-disabled {
+            background-color: #9ca3af;
             color: white;
-            font-weight: bold;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: not-allowed;
         }
-
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+        }
         .status-available {
-            background-color: #28a745;
+            background-color: #10b981;
         }
-
         .status-unavailable {
-            background-color: #dc3545;
+            background-color: #ef4444;
         }
     </style>
 </head>
 
-<body>
+<body class="login-body">
+    <div class="page-wrapper">
+        <div class="login-card">
+            <div class="login-content" style="padding: 30px;">
+                <div class="header">
+                    <h2 class="login-title" style="margin: 0;" th:text="'Room ' + ${room.roomNumber}">Room Detail</h2>
+                    <a th:href="@{/v1/guest/search-rooms(checkInDate=${param.checkInDate},checkOutDate=${param.checkOutDate},numberOfGuests=${param.numberOfGuests})}"
+                        class="btn-outline">Back to Search Results</a>
+                </div>
 
-    <div class="detail-container">
-        <div class="header">
-            <h2 th:text="'Room ' + ${room.roomNumber}">Room Detail</h2>
-            <a th:href="@{/v1/guest/search-rooms(checkInDate=${param.checkInDate},checkOutDate=${param.checkOutDate},numberOfGuests=${param.numberOfGuests})}"
-                class="btn-back">Back to Search Results</a>
-        </div>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Room Information</h4>
+                        <div class="info-item">
+                            <strong>Type:</strong> <span th:text="${room.roomType.typeName}"></span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Floor:</strong> <span th:text="${room.floorNumber}"></span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Capacity:</strong> Up to <span th:text="${room.roomType.maxGuests}"></span> Guest(s)
+                        </div>
+                        <div class="info-item">
+                            <strong>Price:</strong> $<span th:text="${room.roomType.basePrice}"></span> / night
+                        </div>
+                        <div class="info-item">
+                            <strong>Status:</strong>
+                            <span th:class="${room.status.name() == 'AVAILABLE'} ? 'status-badge status-available' : 'status-badge status-unavailable'"
+                                th:text="${room.status}"></span>
+                        </div>
+                        <div class="info-item" style="margin-top: 15px;">
+                            <strong>Description:</strong> 
+                            <p style="margin-top: 8px; color: #4b5563; line-height: 1.5;" th:text="${room.description != null ? room.description : room.roomType.description}"></p>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="info-grid">
-            <!-- Room Info -->
-            <div class="info-card">
-                <h4>Room Information</h4>
-                <p><strong>Type:</strong> <span th:text="${room.roomType.typeName}"></span></p>
-                <p><strong>Floor:</strong> <span th:text="${room.floorNumber}"></span></p>
-                <p><strong>Capacity:</strong> Up to <span th:text="${room.roomType.maxGuests}"></span> Guest(s)</p>
-                <p><strong>Status:</strong>
-                    <span
-                        th:class="${room.status.name() == 'AVAILABLE'} ? 'status-badge status-available' : 'status-badge status-unavailable'"
-                        th:text="${room.status}"></span>
-                </p>
-                <p><strong>Description:</strong> <span
-                        th:text="${room.description != null ? room.description : room.roomType.description}"></span></p>
+                <div class="action-section">
+                    <a th:if="${room.status.name() == 'AVAILABLE'}" th:href="@{/v1/guest/booking/create(roomId=${room.roomId},checkInDate=${param.checkInDate},checkOutDate=${param.checkOutDate},numberOfGuests=${param.numberOfGuests})}" class="btn-solid">Proceed to Book Now</a>
+                    <button th:unless="${room.status.name() == 'AVAILABLE'}" disabled class="btn-disabled">Room Currently Unavailable</button>
+                </div>
             </div>
         </div>
-
-        <div class="action-section">
-            <a th:if="${room.status.name() == 'AVAILABLE'}" th:href="@{/v1/guest/booking/create(roomId=${room.roomId},checkInDate=${param.checkInDate},checkOutDate=${param.checkOutDate},numberOfGuests=${param.numberOfGuests})}" class="btn-book">Proceed to Book Now</a>
-            <button th:unless="${room.status.name() == 'AVAILABLE'}" disabled class="btn-book"
-                style="background-color: #6c757d; cursor: not-allowed;">Room Currently Unavailable</button>
-        </div>
     </div>
-
 </body>
-
 </html>
