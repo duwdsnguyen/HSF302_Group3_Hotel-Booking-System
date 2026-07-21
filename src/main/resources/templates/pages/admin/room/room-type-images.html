@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Room Type Images</title>
+    <link rel="stylesheet" th:href="@{/css/admin-room.css}">
+    <style>
+        .img-section { max-width: 860px; margin: 0 auto; }
+
+        /* Alerts */
+        .alert { padding: 12px 16px; border-radius: 4px; margin-bottom: 16px; font-size: 14px; }
+        .alert-danger  { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+        .alert-success { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+
+        /* Upload box */
+        .upload-box {
+            background: #f8f9fa;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 28px 24px;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+        .upload-box label { font-weight: bold; display: block; margin-bottom: 12px; font-size: 15px; }
+        .upload-box input[type="file"] {
+            display: block; margin: 0 auto 16px;
+            font-size: 14px;
+        }
+        .btn-upload {
+            background: #007bff; color: white; border: none;
+            padding: 10px 28px; border-radius: 4px; cursor: pointer; font-size: 15px;
+        }
+        .btn-upload:hover { background: #0056b3; }
+        .hint { font-size: 12px; color: #888; margin-top: 8px; }
+
+        /* Preview before upload */
+        #preview-container {
+            display: flex; flex-wrap: wrap; gap: 10px;
+            justify-content: center; margin-top: 14px;
+        }
+        #preview-container img {
+            width: 100px; height: 80px; object-fit: cover;
+            border-radius: 4px; border: 1px solid #ddd;
+        }
+
+        /* Gallery */
+        .gallery-title { font-size: 16px; font-weight: bold; margin-bottom: 14px; color: #333; }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+        }
+        .gallery-item {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        .gallery-item img {
+            width: 100%; height: 140px; object-fit: cover; display: block;
+        }
+        .gallery-item .overlay {
+            position: absolute; top: 6px; right: 6px;
+        }
+        .btn-delete {
+            background: rgba(220,53,69,0.85); color: white;
+            border: none; border-radius: 4px; padding: 4px 8px;
+            cursor: pointer; font-size: 12px;
+        }
+        .btn-delete:hover { background: #b02a37; }
+        .img-order { font-size: 12px; color: #888; text-align: center; padding: 5px 0; }
+
+        .empty-state {
+            text-align: center; color: #aaa; padding: 40px 0; font-size: 14px;
+        }
+
+        .page-actions { margin-bottom: 20px; }
+        .btn { display: inline-block; padding: 8px 16px; border-radius: 4px;
+            text-decoration: none; font-size: 14px; cursor: pointer; border: none; }
+        .btn.secondary { background: #6c757d; color: white; }
+        .btn.secondary:hover { background: #545b62; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{layout/header :: header}"></div>
+
+<main>
+    <div class="img-section">
+        <h1>Room Type Images</h1>
+
+        <div class="page-actions">
+            <a class="btn secondary" th:href="@{/v1/admin/room-types}">← Back to Room Types</a>
+        </div>
+
+        <!-- Alerts -->
+        <div th:if="${error}"   class="alert alert-danger"  th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <!-- Upload form -->
+        <div class="upload-box">
+            <form th:action="@{/v1/admin/room-types/{id}/images/upload(id=${roomTypeId})}"
+                  method="POST"
+                  enctype="multipart/form-data">
+
+                <label>Upload Images</label>
+                <input type="file"
+                       name="files"
+                       accept="image/jpeg,image/png,image/webp,image/gif"
+                       multiple
+                       onchange="previewImages(this)">
+
+                <div id="preview-container"></div>
+
+                <button type="submit" class="btn-upload">Upload</button>
+                <p class="hint">Accepted: JPG, PNG, WEBP, GIF · Max 5 MB per file · Multiple files allowed</p>
+            </form>
+        </div>
+
+        <!-- Gallery -->
+        <div class="gallery-title">
+            Current Images
+            <span style="font-weight: normal; color: #888; font-size: 13px;"
+                  th:text="'(' + ${images.size()} + ' photo(s))'"></span>
+        </div>
+
+        <div class="gallery" th:if="${images != null and !images.isEmpty()}">
+            <div class="gallery-item" th:each="img : ${images}">
+                <img th:src="${img.imageUrl}" th:alt="'Room image ' + ${img.displayOrder + 1}">
+
+                <div class="overlay">
+                    <form th:action="@{/v1/admin/room-types/{rid}/images/{iid}/delete(rid=${roomTypeId}, iid=${img.imageId})}"
+                          method="POST"
+                          onsubmit="return confirm('Delete this image?');">
+                        <button type="submit" class="btn-delete">✕</button>
+                    </form>
+                </div>
+
+                <div class="img-order" th:text="'#' + (${img.displayOrder} + 1)"></div>
+            </div>
+        </div>
+
+        <div class="empty-state" th:if="${images == null or images.isEmpty()}">
+            No images yet. Upload some above.
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    function previewImages(input) {
+        const container = document.getElementById('preview-container');
+        container.innerHTML = '';
+        if (!input.files) return;
+        Array.from(input.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                container.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
+
+</body>
+</html>

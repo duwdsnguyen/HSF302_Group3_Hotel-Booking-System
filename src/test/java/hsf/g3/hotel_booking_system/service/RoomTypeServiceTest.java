@@ -36,7 +36,7 @@ public class RoomTypeServiceTest {
     void createRoomType_Success() {
         // Arrange
         RoomTypeRequestDTO request = new RoomTypeRequestDTO("Luxury", "Phòng sang trọng", 5, new BigDecimal(2000000), RoomTypeStatus.ACTIVE);
-        RoomType savedEntity = new RoomType(1, "Luxury", "Phòng sang trọng", 5, new BigDecimal(2000000), RoomTypeStatus.ACTIVE);
+        RoomType savedEntity = new RoomType(1, "Luxury", "Phòng sang trọng", 5, new BigDecimal(2000000), RoomTypeStatus.ACTIVE, null);
 
         when(roomTypeRepository.existsByTypeName("Luxury")).thenReturn(false);
         when(roomTypeRepository.save(any(RoomType.class))).thenReturn(savedEntity);
