@@ -14,7 +14,43 @@
     <div th:if="${message}" class="error" style="color: green;" th:text="${message}"></div>
     <div th:if="${error}" class="error" th:text="${error}"></div>
 
-    <form action="/v1/receptionist/bookings" method="get" style="display: flex; gap: 15px; margin-bottom: 25px; align-items: flex-end; flex-wrap: wrap;">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+        <div style="flex: 1; min-width: 130px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 22px; font-weight: bold;" th:text="${summary.totalBookings}">0</div>
+            <div style="font-size: 13px; color: #555;">Tổng đơn</div>
+        </div>
+        <div style="flex: 1; min-width: 130px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 22px; font-weight: bold; color: #d97706;" th:text="${summary.pendingCount}">0</div>
+            <div style="font-size: 13px; color: #555;">Chờ xác nhận</div>
+        </div>
+        <div style="flex: 1; min-width: 130px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 22px; font-weight: bold; color: #2563eb;" th:text="${summary.confirmedCount}">0</div>
+            <div style="font-size: 13px; color: #555;">Đã xác nhận</div>
+        </div>
+        <div style="flex: 1; min-width: 130px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 22px; font-weight: bold; color: #16a34a;" th:text="${summary.checkedInCount}">0</div>
+            <div style="font-size: 13px; color: #555;">Đã check-in</div>
+        </div>
+        <div style="flex: 1; min-width: 130px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 22px; font-weight: bold; color: #6b7280;" th:text="${summary.checkedOutCount}">0
+            </div>
+            <div style="font-size: 13px; color: #555;">Đã check-out</div>
+        </div>
+        <div style="flex: 1; min-width: 130px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 22px; font-weight: bold; color: #dc2626;" th:text="${summary.cancelledCount}">0</div>
+            <div style="font-size: 13px; color: #555;">Đã hủy</div>
+        </div>
+        <div style="flex: 1; min-width: 150px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 20px; font-weight: bold;">
+                <span th:text="${#numbers.formatDecimal(summary.totalRevenue, 0, 'COMMA', 0, 'POINT')}">0</span><span
+                    style="font-size: 12px;"> VNĐ</span>
+            </div>
+            <div style="font-size: 13px; color: #555;">Doanh thu</div>
+        </div>
+    </div>
+
+    <form action="/v1/receptionist/bookings" method="get"
+          style="display: flex; gap: 15px; margin-bottom: 25px; align-items: flex-end; flex-wrap: wrap;">
         <div style="display: flex; flex-direction: column; gap: 5px;">
             <label style="font-weight: bold; font-size: 14px;">Trạng thái</label>
             <select name="status" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; min-width: 150px;">
@@ -29,17 +65,79 @@
 
         <div style="display: flex; flex-direction: column; gap: 15px;">
             <label style="font-weight: bold; font-size: 14px;">Khách hàng</label>
-            <input type="text" name="customerName" placeholder="Tên khách hàng..." th:value="${customerName}" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+            <input type="text" name="customerName" placeholder="Tên khách hàng..." th:value="${customerName}"
+                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 5px;">
             <label style="font-weight: bold; font-size: 14px;">Giá từ</label>
-            <input type="number" name="minPrice" placeholder="VD: 1000000" step="1000000" th:value="${minPrice}" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+            <input type="number" name="minPrice" placeholder="VD: 1000000" step="1000000" th:value="${minPrice}"
+                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 5px;">
             <label style="font-weight: bold; font-size: 14px;">Đến mức giá</label>
-            <input type="number" name="maxPrice" placeholder="VD: 5000000" step="1000000" th:value="${maxPrice}" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+            <input type="number" name="maxPrice" placeholder="VD: 5000000" step="1000000" th:value="${maxPrice}"
+                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: bold; font-size: 14px;">Mã đơn</label>
+            <input type="number" name="bookingId" placeholder="VD: 1" th:value="${bookingId}"
+                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; min-width: 100px;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: bold; font-size: 14px;">SĐT khách</label>
+            <input type="text" name="phone" placeholder="Số điện thoại..." th:value="${phone}"
+                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: bold; font-size: 14px;">Check-in từ</label>
+            <input type="date" name="checkInFrom"
+                   th:value="${checkInFrom != null ? #temporals.format(checkInFrom, 'yyyy-MM-dd') : ''}"
+                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: bold; font-size: 14px;">Check-in đến</label>
+            <input type="date" name="checkInTo"
+                   th:value="${checkInTo != null ? #temporals.format(checkInTo, 'yyyy-MM-dd') : ''}"
+                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: bold; font-size: 14px;">Check-out từ</label>
+            <input type="date" name="checkOutFrom"
+                   th:value="${checkOutFrom != null ? #temporals.format(checkOutFrom, 'yyyy-MM-dd') : ''}"
+                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: bold; font-size: 14px;">Check-out đến</label>
+            <input type="date" name="checkOutTo"
+                   th:value="${checkOutTo != null ? #temporals.format(checkOutTo, 'yyyy-MM-dd') : ''}"
+                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: bold; font-size: 14px;">Sắp xếp</label>
+            <select name="sortField" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                <option value="">Mặc định</option>
+                <option value="totalAmount" th:selected="${sortField == 'totalAmount'}">Tổng tiền</option>
+                <option value="checkInDate" th:selected="${sortField == 'checkInDate'}">Ngày check-in</option>
+                <option value="checkOutDate" th:selected="${sortField == 'checkOutDate'}">Ngày check-out</option>
+                <option value="createdAt" th:selected="${sortField == 'createdAt'}">Ngày tạo</option>
+            </select>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label style="font-weight: bold; font-size: 14px;">Thứ tự</label>
+            <select name="sortDir" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                <option value="desc" th:selected="${sortDir == 'desc'}">Giảm dần</option>
+                <option value="asc" th:selected="${sortDir == 'asc'}">Tăng dần</option>
+            </select>
         </div>
 
         <button type="submit" class="btn">Tìm kiếm</button>
@@ -71,11 +169,34 @@
             <td th:text="${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
             <td th:text="${b.status}"></td>
             <td>
-                <a th:href="@{'/v1/receptionist/bookings/' + ${b.id} + '/detail'}" class="btn secondary">Xem chi tiết</a>
+                <a th:href="@{'/v1/receptionist/bookings/' + ${b.id} + '/detail'}" class="btn secondary">Xem chi
+                    tiết</a>
             </td>
         </tr>
         </tbody>
     </table>
+
+    <div style="display: flex; justify-content: center; gap: 5px; margin-top: 20px; align-items: center;">
+        <a th:href="@{/v1/receptionist/bookings(status=${currentStatus}, customerName=${customerName}, phone=${phone}, bookingId=${bookingId}, checkInFrom=${checkInFrom}, checkInTo=${checkInTo}, checkOutFrom=${checkOutFrom}, checkOutTo=${checkOutTo}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortField=${sortField}, sortDir=${sortDir}, page=0, size=${pageSize})}"
+           class="btn secondary" style="padding: 6px 10px; font-size: 13px;"
+           th:disabled="${currentPage == 0}">« Đầu</a>
+
+        <a th:href="@{/v1/receptionist/bookings(status=${currentStatus}, customerName=${customerName}, phone=${phone}, bookingId=${bookingId}, checkInFrom=${checkInFrom}, checkInTo=${checkInTo}, checkOutFrom=${checkOutFrom}, checkOutTo=${checkOutTo}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortField=${sortField}, sortDir=${sortDir}, page=${currentPage - 1}, size=${pageSize})}"
+           class="btn secondary" style="padding: 6px 10px; font-size: 13px;"
+           th:disabled="${currentPage == 0}">‹ Trước</a>
+
+        <span style="padding: 6px 12px; font-size: 14px;"
+              th:text="'Trang ' + (currentPage + 1) + ' / ' + (totalPages == 0 ? 1 : totalPages)">
+        </span>
+
+        <a th:href="@{/v1/receptionist/bookings(status=${currentStatus}, customerName=${customerName}, phone=${phone}, bookingId=${bookingId}, checkInFrom=${checkInFrom}, checkInTo=${checkInTo}, checkOutFrom=${checkOutFrom}, checkOutTo=${checkOutTo}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortField=${sortField}, sortDir=${sortDir}, page=${currentPage + 1}, size=${pageSize})}"
+           class="btn secondary" style="padding: 6px 10px; font-size: 13px;"
+           th:disabled="${currentPage + 1 >= totalPages}">Sau ›</a>
+
+        <a th:href="@{/v1/receptionist/bookings(status=${currentStatus}, customerName=${customerName}, phone=${phone}, bookingId=${bookingId}, checkInFrom=${checkInFrom}, checkInTo=${checkInTo}, checkOutFrom=${checkOutFrom}, checkOutTo=${checkOutTo}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortField=${sortField}, sortDir=${sortDir}, page=${totalPages - 1}, size=${pageSize})}"
+           class="btn secondary" style="padding: 6px 10px; font-size: 13px;"
+           th:disabled="${currentPage + 1 >= totalPages}">Cuối »</a>
+    </div>
 </main>
 
 <div th:replace="~{layout/footer :: footer}"></div>

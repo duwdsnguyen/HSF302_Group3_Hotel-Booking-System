@@ -1,4 +1,4 @@
-package hsf.g3.hotel_booking_system.service.service;
+package hsf.g3.hotel_booking_system.service.services;
 
 import hsf.g3.hotel_booking_system.entity.service.HotelService;
 import hsf.g3.hotel_booking_system.enums.service.ServiceStatus;
