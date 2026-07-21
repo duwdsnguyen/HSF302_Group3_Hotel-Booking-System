@@ -3,282 +3,196 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Results</title>
+    <link rel="stylesheet" href="/css/auth/style.css">
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f4f6f9;
-            color: #333;
+        .page-wrapper {
+            padding: 40px 20px;
             max-width: 1000px;
             margin: 0 auto;
-            padding: 20px;
         }
-
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .nav-links {
-            margin: 15px 0;
+        .header {
             display: flex;
-            gap: 10px;
-        }
-
-        /* Styling cho nút quay lại / điều hướng phía trên */
-        .btn-secondary-link {
-            display: inline-flex;
+            justify-content: space-between;
             align-items: center;
-            padding: 8px 16px;
-            background-color: #ffffff;
-            color: #495057;
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 0.9em;
-            font-weight: 600;
-            border: 1px solid #ced4da;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            margin-bottom: 20px;
         }
-
-        .btn-secondary-link:hover {
-            background-color: #e9ecef;
-            color: #212529;
-            transform: translateY(-1px);
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
         }
-
-        /* Khung tìm kiếm */
-        .search-box {
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
+        .filter-row .form-group {
+            flex: 1;
+            min-width: 150px;
+            margin-bottom: 15px;
         }
-
-        .form-group { margin-bottom: 15px; }
-        .search-box label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9em; color: #495057; }
-        .search-box input[type="date"],
-        .search-box input[type="number"],
-        .search-box select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
-            font-size: 0.95em;
-            transition: border-color 0.2s;
+        hr {
+            border: 0;
+            border-top: 1px solid #e5e7eb;
+            margin: 20px 0;
         }
-
-        .search-box input:focus, .search-box select:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-
-        /* Nút Submit Tìm kiếm */
-        .btn-search {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            width: 100%;
-            margin-top: 10px;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
-        }
-
-        .btn-search:hover {
-            background-color: #218838;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 8px rgba(40, 167, 69, 0.25);
-        }
-
-        /* Thẻ hiển thị phòng */
         .room-card {
-            background: #ffffff;
-            border: none;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            margin: 15px 0;
-            border-radius: 10px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: var(--transition);
         }
-
         .room-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
         }
-
         .room-info {
             flex-grow: 1;
         }
-
         .room-info h2 {
-            margin-top: 0;
+            color: var(--primary-color);
             margin-bottom: 10px;
-            color: #1a252f;
-            font-size: 1.3em;
+            font-size: 20px;
         }
-
         .room-info p {
-            margin: 5px 0;
-            color: #555;
-            font-size: 0.95em;
+            margin-bottom: 5px;
+            color: #4b5563;
+            font-size: 14px;
         }
-
         .room-actions {
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
-            gap: 12px;
-            min-width: 140px;
+            gap: 10px;
+            min-width: 150px;
         }
-
-        /* CSS NÚT HÀNH ĐỘNG CHÍNH (Đã nâng cấp) */
-        .btn-action {
-            display: inline-block;
-            padding: 10px 18px;
-            text-decoration: none;
-            border-radius: 6px;
+        .btn-outline {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 10px 15px;
             text-align: center;
-            width: 100%;
+            border-radius: 6px;
+            text-decoration: none;
             font-weight: 600;
-            font-size: 0.9em;
-            letter-spacing: 0.3px;
-            transition: all 0.2s ease-in-out;
+            transition: var(--transition);
+        }
+        .btn-outline:hover {
+            background-color: #f3f4f6;
+        }
+        .btn-solid {
+            background-color: var(--primary-color);
+            color: white;
             border: none;
-            box-sizing: border-box;
+            padding: 10px 15px;
+            text-align: center;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
         }
-
-        /* Nút View Details */
-        .btn-details {
-            background-color: #e3f2fd;
-            color: #0d6efd;
-        }
-
-        .btn-details:hover {
-            background-color: #0d6efd;
-            color: #ffffff;
-            box-shadow: 0 4px 8px rgba(13, 110, 253, 0.25);
-            transform: translateY(-1px);
-        }
-
-        /* Nút Book Now */
-        .btn-book {
-            background-color: #0d6efd;
-            color: #ffffff;
-            box-shadow: 0 4px 6px rgba(13, 110, 253, 0.15);
-        }
-
-        .btn-book:hover {
-            background-color: #0b5ed7;
-            box-shadow: 0 6px 12px rgba(13, 110, 253, 0.3);
-            transform: translateY(-1px);
+        .btn-solid:hover {
+            background-color: var(--primary-hover);
         }
     </style>
 </head>
 
-<body>
-
-<h1>Search Results</h1>
-
-<p style="color: #6c757d; font-size: 1.05em;">
-    Showing available rooms from <b th:text="${checkIn}" style="color: #2c3e50;"></b>
-    to <b th:text="${checkOut}" style="color: #2c3e50;"></b> for <b th:text="${guests}" style="color: #2c3e50;"></b> guest(s).
-</p>
-
-<div class="nav-links">
-    <a th:href="@{/v1/guest/dashboard}" class="btn-secondary-link">← Back to Dashboard</a>
-    <a th:href="@{/v1/guest/room/change}" class="btn-secondary-link">Change room</a>
-</div>
-
-<div class="search-box">
-    <form th:action="@{/v1/guest/search-rooms}" method="GET">
-        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-            <div class="form-group" style="flex: 1; min-width: 150px;">
-                <label for="checkInDate">Check-in Date:</label>
-                <input type="date" id="checkInDate" name="checkInDate" th:value="${checkIn}" required>
-            </div>
-
-            <div class="form-group" style="flex: 1; min-width: 150px;">
-                <label for="checkOutDate">Check-out Date:</label>
-                <input type="date" id="checkOutDate" name="checkOutDate" th:value="${checkOut}" required>
-            </div>
-
-            <div class="form-group" style="flex: 1; min-width: 100px;">
-                <label for="numberOfGuests">Guests:</label>
-                <input type="number" id="numberOfGuests" name="numberOfGuests" min="1" th:value="${guests != null ? guests : 1}" required>
-            </div>
+<body class="login-body">
+<div class="page-wrapper">
+    <div class="header">
+        <div>
+            <h1 class="login-title" style="margin-bottom: 5px;">Search Results</h1>
+            <p class="login-subtitle">
+                Showing available rooms from <b th:text="${checkIn}"></b>
+                to <b th:text="${checkOut}"></b> for <b th:text="${guests}"></b> guest(s).
+            </p>
         </div>
-
-        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px;">
-            <div class="form-group" style="flex: 1; min-width: 100px;">
-                <label for="minPrice">Min Price ($):</label>
-                <input type="number" id="minPrice" name="minPrice" th:value="${minPrice}" min="0" step="0.01">
-            </div>
-
-            <div class="form-group" style="flex: 1; min-width: 100px;">
-                <label for="maxPrice">Max Price ($):</label>
-                <input type="number" id="maxPrice" name="maxPrice" th:value="${maxPrice}" min="0" step="0.01">
-            </div>
-
-            <div class="form-group" style="flex: 2; min-width: 200px;">
-                <label for="roomTypeId">Room Type:</label>
-                <select id="roomTypeId" name="roomTypeId">
-                    <option value="">-- All Types --</option>
-                    <option th:each="type : ${roomTypes}"
-                            th:value="${type.roomTypeId}"
-                            th:selected="${roomTypeId == type.roomTypeId}"
-                            th:text="${type.typeName}">
-                    </option>
-                </select>
-            </div>
+        <div style="display: flex; gap: 10px;">
+            <a th:href="@{/v1/guest/dashboard}" class="btn-outline">← Back to Dashboard</a>
+            <a th:href="@{/v1/guest/room/change}" class="btn-outline">Change room</a>
         </div>
+    </div>
 
-        <button type="submit" class="btn-search">Search & Filter</button>
-    </form>
-</div>
+    <div class="login-card" style="margin-bottom: 30px;">
+        <div class="login-content" style="padding: 20px 30px;">
+            <form th:action="@{/v1/guest/search-rooms}" method="GET">
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="checkInDate" class="form-label">Check-in Date:</label>
+                        <input type="date" id="checkInDate" name="checkInDate" th:value="${checkIn}" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="checkOutDate" class="form-label">Check-out Date:</label>
+                        <input type="date" id="checkOutDate" name="checkOutDate" th:value="${checkOut}" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group" style="flex: 0.5;">
+                        <label for="numberOfGuests" class="form-label">Guests:</label>
+                        <input type="number" id="numberOfGuests" name="numberOfGuests" min="1" th:value="${guests != null ? guests : 1}" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="filter-row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        <label for="minPrice" class="form-label">Min Price ($):</label>
+                        <input type="number" id="minPrice" name="minPrice" th:value="${minPrice}" min="0" step="0.01" class="form-control">
+                    </div>
 
-<div th:if="${error}" style="color: #dc3545; font-weight: bold; margin-bottom: 15px; padding: 10px; background: #f8d7da; border-radius: 6px;" th:text="${error}"></div>
+                    <div class="form-group">
+                        <label for="maxPrice" class="form-label">Max Price ($):</label>
+                        <input type="number" id="maxPrice" name="maxPrice" th:value="${maxPrice}" min="0" step="0.01" class="form-control">
+                    </div>
 
-<div th:if="${#lists.isEmpty(rooms)}">
-    <h3 style="color: #fd7e14; font-weight: 500;">Sorry, there are no available rooms for the selected dates!</h3>
-</div>
-
-<div th:if="${!#lists.isEmpty(rooms)}">
-    <h3 style="color: #198754; font-weight: 600; margin-bottom: 15px;">
-        Great! We found <span th:text="${rooms.size()}"></span> available rooms:
-    </h3>
-
-    <div th:each="room : ${rooms}" class="room-card">
-        <div class="room-info">
-            <h2 th:text="'Room ' + ${room.roomNumber}">Room Name</h2>
-            <p><b>Floor:</b> <span th:text="${room.floorNumber}"></span></p>
-            <p><b>Room Type:</b> <span th:text="${room.roomType.typeName}"></span></p>
-            <p><b>Max Guests:</b> <span th:text="${room.roomType.maxGuests}"></span></p>
-            <p><b>Base Price:</b> <span style="color: #0d6efd; font-weight: bold; font-size: 1.1em;" th:text="'$' + ${room.roomType.basePrice}"></span></p>
-            <p><b>Description:</b> <span th:text="${room.description}"></span></p>
+                    <div class="form-group" style="flex: 1.5;">
+                        <label for="roomTypeId" class="form-label">Room Type:</label>
+                        <select id="roomTypeId" name="roomTypeId" class="form-control">
+                            <option value="">-- All Types --</option>
+                            <option th:each="type : ${roomTypes}"
+                                    th:value="${type.roomTypeId}"
+                                    th:selected="${roomTypeId == type.roomTypeId}"
+                                    th:text="${type.typeName}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-login" style="margin-top: 10px;">Search & Filter</button>
+            </form>
         </div>
+    </div>
 
-        <div class="room-actions">
-            <a th:href="@{/v1/guest/room/{id}(id=${room.roomId},checkInDate=${checkIn},checkOutDate=${checkOut},numberOfGuests=${guests})}"
-               class="btn-action btn-details">View Details</a>
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+    </div>
 
-            <a th:href="@{/v1/guest/booking/create(roomId=${room.roomId},checkInDate=${checkIn},checkOutDate=${checkOut},numberOfGuests=${guests})}"
-               class="btn-action btn-book">Book Now</a>
+    <div th:if="${#lists.isEmpty(rooms)}">
+        <div class="login-card" style="text-align: center; padding: 40px 20px;">
+            <h3 style="color: #d97706; margin-bottom: 10px;">No Rooms Found</h3>
+            <p class="login-subtitle">Sorry, there are no available rooms matching your criteria!</p>
+        </div>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(rooms)}">
+        <h3 style="color: #059669; margin-bottom: 20px; font-weight: 600;">
+            Great! We found <span th:text="${rooms.size()}"></span> available rooms:
+        </h3>
+
+        <div th:each="room : ${rooms}" class="room-card">
+            <div class="room-info">
+                <h2 th:text="'Room ' + ${room.roomNumber}">Room Name</h2>
+                <p><b>Floor:</b> <span th:text="${room.floorNumber}"></span></p>
+                <p><b>Room Type:</b> <span th:text="${room.roomType.typeName}"></span></p>
+                <p><b>Max Guests:</b> <span th:text="${room.roomType.maxGuests}"></span></p>
+                <p><b>Base Price:</b> $<span th:text="${room.roomType.basePrice}"></span></p>
+                <p><b>Description:</b> <span th:text="${room.description}"></span></p>
+            </div>
+            
+            <div class="room-actions">
+                <a th:href="@{/v1/guest/room/{id}(id=${room.roomId},checkInDate=${checkIn},checkOutDate=${checkOut},numberOfGuests=${guests})}" class="btn-outline">View Details</a>
+                <a th:href="@{/v1/guest/booking/create(roomId=${room.roomId},checkInDate=${checkIn},checkOutDate=${checkOut},numberOfGuests=${guests})}" class="btn-solid">Book Now</a>
+            </div>
         </div>
     </div>
 </div>
-
 </body>
 </html>
