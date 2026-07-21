@@ -88,7 +88,7 @@
            th:href="@{/v1/guest/room/change(pageNumber=${roomResponse.pageNumber - 1}, pageSize=${roomResponse.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}">&laquo;</a>
         <span th:unless="${roomResponse.pageNumber > 0}" class="disabled">&laquo;</span>
 
-        <th:block th:each="i : ${#numbers.sequence(0, roomResponse.totalPages - 1)}">
+        <th:block th:each="i : ${#numbers.sequence(T(java.lang.Math).max(0,roomResponse.getPageNumber()-2), T(java.lang.Math).min(roomResponse.totalPages - 1, roomResponse.pageNumber + 2))}">
             <span th:if="${i == roomResponse.pageNumber}" class="active" th:text="${i + 1}">1</span>
             <a th:unless="${i == roomResponse.pageNumber}"
                th:href="@{/v1/guest/room/change(pageNumber=${i}, pageSize=${roomResponse.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"

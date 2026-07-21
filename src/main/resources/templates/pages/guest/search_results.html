@@ -3,70 +3,204 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Results</title>
     <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .nav-links {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Styling cho nút quay lại / điều hướng phía trên */
+        .btn-secondary-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background-color: #ffffff;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            border: 1px solid #ced4da;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .btn-secondary-link:hover {
+            background-color: #e9ecef;
+            color: #212529;
+            transform: translateY(-1px);
+        }
+
+        /* Khung tìm kiếm */
+        .search-box {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .search-box label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9em; color: #495057; }
+        .search-box input[type="date"],
+        .search-box input[type="number"],
+        .search-box select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 0.95em;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus, .search-box select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        /* Nút Submit Tìm kiếm */
+        .btn-search {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
+        }
+
+        .btn-search:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px rgba(40, 167, 69, 0.25);
+        }
+
+        /* Thẻ hiển thị phòng */
         .room-card {
-            border: 1px solid #ccc;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
+            background: #ffffff;
+            border: none;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
             display: flex;
             align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
+
+        .room-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+        }
+
         .room-info {
             flex-grow: 1;
         }
+
+        .room-info h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #1a252f;
+            font-size: 1.3em;
+        }
+
+        .room-info p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 0.95em;
+        }
+
         .room-actions {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 10px;
+            gap: 12px;
+            min-width: 140px;
         }
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: bold;
-            font-size: 1.1em;
-            color: #007bff;
+
+        /* CSS NÚT HÀNH ĐỘNG CHÍNH (Đã nâng cấp) */
+        .btn-action {
+            display: inline-block;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 6px;
+            text-align: center;
+            width: 100%;
+            font-weight: 600;
+            font-size: 0.9em;
+            letter-spacing: 0.3px;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            box-sizing: border-box;
         }
-        .checkbox-container input {
-            width: 20px;
-            height: 20px;
+
+        /* Nút View Details */
+        .btn-details {
+            background-color: #e3f2fd;
+            color: #0d6efd;
         }
-        .search-box {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+
+        .btn-details:hover {
+            background-color: #0d6efd;
+            color: #ffffff;
+            box-shadow: 0 4px 8px rgba(13, 110, 253, 0.25);
+            transform: translateY(-1px);
         }
-        .form-group { margin-bottom: 15px; }
-        .search-box label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9em; }
-        .search-box input[type="date"], .search-box input[type="number"], .search-box select {
-            width: 100%; padding: 8px; box-sizing: border-box;
-            border: 1px solid #ccc; border-radius: 4px;
+
+        /* Nút Book Now */
+        .btn-book {
+            background-color: #0d6efd;
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(13, 110, 253, 0.15);
         }
-        .search-box button {
-            background-color: #28a745; color: white; border: none;
-            padding: 10px 15px; border-radius: 4px; cursor: pointer;
-            font-size: 16px; font-weight: bold;
+
+        .btn-book:hover {
+            background-color: #0b5ed7;
+            box-shadow: 0 6px 12px rgba(13, 110, 253, 0.3);
+            transform: translateY(-1px);
         }
-        .search-box button:hover { background-color: #218838; }
     </style>
 </head>
 
 <body>
+
 <h1>Search Results</h1>
 
-<p>
-    Showing available rooms from <b th:text="${checkIn}"></b>
-    to <b th:text="${checkOut}"></b> for <b th:text="${guests}"></b> guest(s).
+<p style="color: #6c757d; font-size: 1.05em;">
+    Showing available rooms from <b th:text="${checkIn}" style="color: #2c3e50;"></b>
+    to <b th:text="${checkOut}" style="color: #2c3e50;"></b> for <b th:text="${guests}" style="color: #2c3e50;"></b> guest(s).
 </p>
 
-<a th:href="@{/v1/guest/dashboard}">Back to Dashboard</a>
-
-<hr>
+<div class="nav-links">
+    <a th:href="@{/v1/guest/dashboard}" class="btn-secondary-link">← Back to Dashboard</a>
+    <a th:href="@{/v1/guest/room/change}" class="btn-secondary-link">Change room</a>
+</div>
 
 <div class="search-box">
     <form th:action="@{/v1/guest/search-rooms}" method="GET">
@@ -75,18 +209,18 @@
                 <label for="checkInDate">Check-in Date:</label>
                 <input type="date" id="checkInDate" name="checkInDate" th:value="${checkIn}" required>
             </div>
-            
+
             <div class="form-group" style="flex: 1; min-width: 150px;">
                 <label for="checkOutDate">Check-out Date:</label>
                 <input type="date" id="checkOutDate" name="checkOutDate" th:value="${checkOut}" required>
             </div>
-            
+
             <div class="form-group" style="flex: 1; min-width: 100px;">
                 <label for="numberOfGuests">Guests:</label>
                 <input type="number" id="numberOfGuests" name="numberOfGuests" min="1" th:value="${guests != null ? guests : 1}" required>
             </div>
         </div>
-        
+
         <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px;">
             <div class="form-group" style="flex: 1; min-width: 100px;">
                 <label for="minPrice">Min Price ($):</label>
@@ -110,37 +244,40 @@
                 </select>
             </div>
         </div>
-        
-        <button type="submit" style="width: 100%; margin-top: 5px;">Search & Filter</button>
+
+        <button type="submit" class="btn-search">Search & Filter</button>
     </form>
 </div>
 
-<hr>
-
-<div th:if="${error}" style="color: red; font-weight: bold; margin-bottom: 15px;" th:text="${error}"></div>
+<div th:if="${error}" style="color: #dc3545; font-weight: bold; margin-bottom: 15px; padding: 10px; background: #f8d7da; border-radius: 6px;" th:text="${error}"></div>
 
 <div th:if="${#lists.isEmpty(rooms)}">
-    <h3 style="color: orange;">Sorry, there are no available rooms for the selected dates!</h3>
+    <h3 style="color: #fd7e14; font-weight: 500;">Sorry, there are no available rooms for the selected dates!</h3>
 </div>
 
 <div th:if="${!#lists.isEmpty(rooms)}">
-    <h3 style="color: green;">Great! We found <span th:text="${rooms.size()}"></span> available rooms:</h3>
+    <h3 style="color: #198754; font-weight: 600; margin-bottom: 15px;">
+        Great! We found <span th:text="${rooms.size()}"></span> available rooms:
+    </h3>
 
     <div th:each="room : ${rooms}" class="room-card">
-            <div class="room-info">
-                <h2 th:text="'Room ' + ${room.roomNumber}">Room Name</h2>
-                <p><b>Floor:</b> <span th:text="${room.floorNumber}"></span></p>
-                <p><b>Room Type:</b> <span th:text="${room.roomType.typeName}"></span></p>
-                <p><b>Max Guests:</b> <span th:text="${room.roomType.maxGuests}"></span></p>
-                <p><b>Base Price:</b> $<span th:text="${room.roomType.basePrice}"></span></p>
-                <p><b>Description:</b> <span th:text="${room.description}"></span></p>
-            </div>
-            
-            <div class="room-actions">
-                <a th:href="@{/v1/guest/room/{id}(id=${room.roomId},checkInDate=${checkIn},checkOutDate=${checkOut},numberOfGuests=${guests})}" style="background-color: #17a2b8; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; text-align: center; width: 120px;">View Details</a>
-                <a th:href="@{/v1/guest/booking/create(roomId=${room.roomId},checkInDate=${checkIn},checkOutDate=${checkOut},numberOfGuests=${guests})}" style="background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; text-align: center; width: 120px;">Book Now</a>
-            </div>
+        <div class="room-info">
+            <h2 th:text="'Room ' + ${room.roomNumber}">Room Name</h2>
+            <p><b>Floor:</b> <span th:text="${room.floorNumber}"></span></p>
+            <p><b>Room Type:</b> <span th:text="${room.roomType.typeName}"></span></p>
+            <p><b>Max Guests:</b> <span th:text="${room.roomType.maxGuests}"></span></p>
+            <p><b>Base Price:</b> <span style="color: #0d6efd; font-weight: bold; font-size: 1.1em;" th:text="'$' + ${room.roomType.basePrice}"></span></p>
+            <p><b>Description:</b> <span th:text="${room.description}"></span></p>
         </div>
+
+        <div class="room-actions">
+            <a th:href="@{/v1/guest/room/{id}(id=${room.roomId},checkInDate=${checkIn},checkOutDate=${checkOut},numberOfGuests=${guests})}"
+               class="btn-action btn-details">View Details</a>
+
+            <a th:href="@{/v1/guest/booking/create(roomId=${room.roomId},checkInDate=${checkIn},checkOutDate=${checkOut},numberOfGuests=${guests})}"
+               class="btn-action btn-book">Book Now</a>
+        </div>
+    </div>
 </div>
 
 </body>
