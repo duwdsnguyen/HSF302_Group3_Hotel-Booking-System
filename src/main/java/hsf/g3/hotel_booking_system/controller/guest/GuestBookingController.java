@@ -1,8 +1,10 @@
 package hsf.g3.hotel_booking_system.controller.guest;
 
+import hsf.g3.hotel_booking_system.dto.guest.BookingHistoryDTO;
 import hsf.g3.hotel_booking_system.dto.user.UserInfoDTO;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.entity.service.HotelService;
+import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
 import hsf.g3.hotel_booking_system.enums.service.ServiceStatus;
 import hsf.g3.hotel_booking_system.repository.admin.HotelServiceRepository;
 import hsf.g3.hotel_booking_system.service.guest.GuestBookingService;
@@ -12,16 +14,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -33,6 +31,8 @@ public class GuestBookingController {
     private final GuestRoomService guestRoomService;
     private final HotelServiceRepository hotelServiceRepository;
 
+    // ── Create booking ─────────────────────────────────────────────────────────
+
     @GetMapping("/create")
     public String showBookingForm(
             @RequestParam Integer roomId,
@@ -43,15 +43,12 @@ public class GuestBookingController {
             Model model) {
 
         UserInfoDTO loggedInUser = (UserInfoDTO) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            return "redirect:/v1/auth/login";
-        }
+        if (loggedInUser == null) return "redirect:/v1/auth/login";
 
         try {
             Room room = guestRoomService.getRoomById(roomId);
             long days = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
             BigDecimal totalRoomsAmount = room.getRoomType().getBasePrice().multiply(BigDecimal.valueOf(days));
-
             List<HotelService> availableServices = hotelServiceRepository.findByStatus(ServiceStatus.ACTIVE);
 
             model.addAttribute("room", room);
@@ -73,31 +70,99 @@ public class GuestBookingController {
 
     @PostMapping("/create")
     public String submitBooking(
-            @org.springframework.web.bind.annotation.ModelAttribute hsf.g3.hotel_booking_system.dto.guest.request.BookingRequestDTO request,
+            @ModelAttribute hsf.g3.hotel_booking_system.dto.guest.request.BookingRequestDTO request,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
         UserInfoDTO loggedInUser = (UserInfoDTO) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            return "redirect:/v1/auth/login";
-        }
+        if (loggedInUser == null) return "redirect:/v1/auth/login";
 
         try {
-            Long customerId = loggedInUser.getUserId();
-            guestBookingService.createBooking(request, customerId);
+            guestBookingService.createBooking(request, loggedInUser.getUserId());
             return "redirect:/v1/guest/booking/success";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            
-            return "redirect:/v1/guest/booking/create?roomId=" + request.getRoomId() +
-                    "&checkInDate=" + request.getCheckInDate() +
-                    "&checkOutDate=" + request.getCheckOutDate() +
-                    "&numberOfGuests=" + request.getNumberOfGuests();
+            return "redirect:/v1/guest/booking/create?roomId=" + request.getRoomId()
+                    + "&checkInDate=" + request.getCheckInDate()
+                    + "&checkOutDate=" + request.getCheckOutDate()
+                    + "&numberOfGuests=" + request.getNumberOfGuests();
         }
     }
 
     @GetMapping("/success")
     public String showSuccessPage() {
         return "pages/guest/booking_success";
+    }
+
+
+    @GetMapping("/history")
+    public String showBookingHistory(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String keyword,
+            HttpSession session,
+            Model model) {
+
+        UserInfoDTO loggedInUser = (UserInfoDTO) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) return "redirect:/v1/auth/login";
+
+        BookingStatus bookingStatus = null;
+        if (status != null && !status.isBlank()) {
+            try {
+                bookingStatus = BookingStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException ignored) { }
+        }
+
+        List<BookingHistoryDTO> bookings = guestBookingService.getBookingHistory(
+                loggedInUser.getUserId(), bookingStatus, keyword);
+
+        model.addAttribute("bookings", bookings);
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("allStatuses", BookingStatus.values());
+
+        return "pages/guest/booking_history";
+    }
+
+    // ── Booking detail ─────────────────────────────────────────────────────────
+
+    @GetMapping("/{bookingId}")
+    public String showBookingDetail(
+            @PathVariable Integer bookingId,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        UserInfoDTO loggedInUser = (UserInfoDTO) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) return "redirect:/v1/auth/login";
+
+        try {
+            BookingHistoryDTO booking = guestBookingService.getBookingDetail(bookingId, loggedInUser.getUserId());
+            model.addAttribute("booking", booking);
+            return "pages/guest/booking_detail";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/v1/guest/booking/history";
+        }
+    }
+
+    // ── Cancel booking ─────────────────────────────────────────────────────────
+
+    @PostMapping("/{bookingId}/cancel")
+    public String cancelBooking(
+            @PathVariable Integer bookingId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        UserInfoDTO loggedInUser = (UserInfoDTO) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) return "redirect:/v1/auth/login";
+
+        try {
+            guestBookingService.cancelBooking(bookingId, loggedInUser.getUserId());
+            redirectAttributes.addFlashAttribute("success", "Booking #" + bookingId + " has been cancelled successfully.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+
+        return "redirect:/v1/guest/booking/" + bookingId;
     }
 }
