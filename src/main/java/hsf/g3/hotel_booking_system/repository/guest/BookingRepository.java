@@ -4,6 +4,9 @@ import hsf.g3.hotel_booking_system.entity.guest.Booking;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
 import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -25,7 +28,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "AND b.actualCheckOut IS NULL " +
             "AND b.customer.userId = :userId " +
             "AND b.room.roomId = :roomId")
-    Optional<Booking> getCheckedInBooking( Long userId, Integer roomId);
+    Optional<Booking> getCheckedInBooking(Long userId, Integer roomId);
 
     @Query("SELECT b.room FROM Booking b " +
             "WHERE b.actualCheckIn IS NOT NULL " +
@@ -39,7 +42,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "AND b.checkInDate < :checkOutDate " +
             "AND b.checkOutDate > :checkInDate " +
             "AND b.status IN :blockingStatuses")
-    boolean existsBlockingBooking( Integer roomId, LocalDate checkInDate, LocalDate checkOutDate, Collection<BookingStatus> blockingStatuses);
+    boolean existsBlockingBooking(Integer roomId, LocalDate checkInDate, LocalDate checkOutDate, Collection<BookingStatus> blockingStatuses);
 
 
     @Query("SELECT b FROM Booking b WHERE " +
@@ -54,4 +57,38 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             @Param("minPrice") BigDecimal minPrice,
             @Param("maxPrice") BigDecimal maxPrice
     );
+
+    @Query("SELECT b FROM Booking b " +
+            "JOIN FETCH b.customer c " +
+            "LEFT JOIN FETCH b.room r " +
+            "WHERE (:bookingId IS NULL OR b.id = :bookingId) " +
+            "AND (:status IS NULL OR b.status = :status) " +
+            "AND (:customerName IS NULL OR LOWER(c.fullName) LIKE LOWER(:customerName)) " +
+            "AND (:phone IS NULL OR c.phone LIKE :phone) " +
+            "AND (:checkInFrom IS NULL OR b.checkInDate >= :checkInFrom) " +
+            "AND (:checkInTo IS NULL OR b.checkInDate <= :checkInTo) " +
+            "AND (:checkOutFrom IS NULL OR b.checkOutDate >= :checkOutFrom) " +
+            "AND (:checkOutTo IS NULL OR b.checkOutDate <= :checkOutTo) " +
+            "AND (:minPrice IS NULL OR b.totalAmount >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR b.totalAmount <= :maxPrice)")
+    Page<Booking> searchBookingPaged(
+            @Param("bookingId") Integer bookingId,
+            @Param("status") BookingStatus status,
+            @Param("customerName") String customerName,
+            @Param("phone") String phone,
+            @Param("checkInFrom") LocalDate checkInFrom,
+            @Param("checkInTo") LocalDate checkInTo,
+            @Param("checkOutFrom") LocalDate checkOutFrom,
+            @Param("checkOutTo") LocalDate checkOutTo,
+            @Param("minPrice") BigDecimal minPrice,
+            @Param("maxPrice") BigDecimal maxPrice,
+            Pageable pageable
+    );
+
+    @Query("SELECT b.status, COUNT(b) FROM Booking b GROUP BY b.status")
+    List<Object[]> countByStatus();
+
+    @Query("SELECT COALESCE(SUM(b.totalAmount), 0) FROM Booking b " +
+            "WHERE b.status IN (:revenueStatuses)")
+    BigDecimal sumTotalAmountByStatus(@Param("revenueStatuses") List<BookingStatus> revenueStatuses);
 }
