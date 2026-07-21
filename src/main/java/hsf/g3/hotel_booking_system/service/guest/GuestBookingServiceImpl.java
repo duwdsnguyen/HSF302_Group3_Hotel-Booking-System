@@ -1,5 +1,7 @@
 package hsf.g3.hotel_booking_system.service.guest;
 
+import hsf.g3.hotel_booking_system.dto.guest.BookingDTO;
+import hsf.g3.hotel_booking_system.dto.guest.request.BookingRequestDTO;
 import hsf.g3.hotel_booking_system.entity.guest.Booking;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.entity.service.HotelService;
@@ -31,7 +33,13 @@ public class GuestBookingServiceImpl implements GuestBookingService {
 
     @Override
     @Transactional
-    public Booking createBooking(Integer roomId, List<Long> serviceIds, LocalDate checkIn, LocalDate checkOut, Integer guests, Long customerId) {
+    public BookingDTO createBooking(BookingRequestDTO request, Long customerId) {
+        LocalDate checkIn = request.getCheckInDate();
+        LocalDate checkOut = request.getCheckOutDate();
+        Integer guests = request.getNumberOfGuests();
+        Integer roomId = request.getRoomId();
+        List<Long> serviceIds = request.getServiceIds();
+
         if (checkIn == null || checkOut == null) {
             throw new IllegalArgumentException("Please select check-in and check-out dates.");
         }
@@ -97,6 +105,20 @@ public class GuestBookingServiceImpl implements GuestBookingService {
         booking.setTotalAmount(totalAmount);
         booking.setStatus(BookingStatus.PENDING);
 
-        return bookingRepository.save(booking);
+        Booking savedBooking = bookingRepository.save(booking);
+
+        BookingDTO responseDTO = new BookingDTO();
+        responseDTO.setId(savedBooking.getId());
+        responseDTO.setCustomerId(customer.getUserId().intValue());
+        responseDTO.setRoomId(selectedRoom.getRoomId());
+        responseDTO.setCheckInDate(savedBooking.getCheckInDate());
+        responseDTO.setCheckOutDate(savedBooking.getCheckOutDate());
+        responseDTO.setActualCheckIn(savedBooking.getActualCheckIn());
+        responseDTO.setActualCheckOut(savedBooking.getActualCheckOut());
+        responseDTO.setNumberOfGuests(savedBooking.getNumberOfGuests());
+        responseDTO.setTotalAmount(savedBooking.getTotalAmount());
+        responseDTO.setStatus(savedBooking.getStatus());
+
+        return responseDTO;
     }
 }
