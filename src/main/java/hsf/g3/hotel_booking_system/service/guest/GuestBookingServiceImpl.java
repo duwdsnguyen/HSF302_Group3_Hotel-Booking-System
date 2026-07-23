@@ -9,6 +9,8 @@ import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.entity.room.RoomTypeImage;
 import hsf.g3.hotel_booking_system.entity.service.HotelService;
 import hsf.g3.hotel_booking_system.entity.user.User;
+import hsf.g3.hotel_booking_system.exception.AppException;
+import hsf.g3.hotel_booking_system.exception.ErrorCode;
 import hsf.g3.hotel_booking_system.enums.room.BookingAction;
 import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
 import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
@@ -147,7 +149,7 @@ public class GuestBookingServiceImpl implements GuestBookingService {
     @Transactional(readOnly = true)
     public BookingHistoryDTO getBookingDetail(Integer bookingId, Long customerId) {
         Booking booking = bookingRepository.findByIdAndCustomerId(bookingId, customerId)
-                .orElseThrow(() -> new IllegalArgumentException("Booking not found."));
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
         return toHistoryDTO(booking);
     }
 
@@ -157,16 +159,15 @@ public class GuestBookingServiceImpl implements GuestBookingService {
     @Transactional
     public void cancelBooking(Integer bookingId, Long customerId) {
         Booking booking = bookingRepository.findByIdAndCustomerId(bookingId, customerId)
-                .orElseThrow(() -> new IllegalArgumentException("Booking not found."));
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
         BookingStatus currentStatus = booking.getStatus();
         if (currentStatus != BookingStatus.PENDING && currentStatus != BookingStatus.CONFIRMED) {
-            throw new IllegalArgumentException(
-                    "Cannot cancel this booking. Only bookings with status PENDING or CONFIRMED can be cancelled.");
+            throw new AppException(ErrorCode.BOOKING_CANCEL_NOT_ALLOWED);
         }
 
         User customer = userRepository.findById(customerId)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found."));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         // Record history
         BookingHistory history = BookingHistory.builder()
