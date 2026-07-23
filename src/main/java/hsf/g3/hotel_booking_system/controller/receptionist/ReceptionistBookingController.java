@@ -44,7 +44,8 @@ public class ReceptionistBookingController {
             @RequestParam(defaultValue = "10") int size,
             Model model) {
 
-        BookingStatus bookingStatus = (status == null || status.equals("ALL") ? null : BookingStatus.valueOf(status));
+        BookingStatus bookingStatus = (status == null || status.isBlank() || status.equals("ALL")
+                ? null : BookingStatus.valueOf(status));
 
         Page<Booking> bookingsPage = bookingService.searchBookingPaged(
                 bookingId, bookingStatus, customerName, phone,
@@ -60,7 +61,7 @@ public class ReceptionistBookingController {
         model.addAttribute("page", bookingsPage);
         model.addAttribute("summary", summary);
         model.addAttribute("bookingStatus", BookingStatus.values());
-        model.addAttribute("currentStatus", status);
+        model.addAttribute("currentStatus", (status == null || status.isBlank()) ? "ALL" : status);
         model.addAttribute("bookingId", bookingId);
         model.addAttribute("customerName", customerName);
         model.addAttribute("phone", phone);

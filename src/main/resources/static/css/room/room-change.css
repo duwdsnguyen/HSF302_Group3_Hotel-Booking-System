@@ -1,9 +1,9 @@
 :root {
-    --primary: #0d6efd;
-    --primary-dark: #0b5ed7;
-    --border: #e2e5ea;
-    --muted: #6b7280;
-    --bg: #f5f6f8;
+    --primary: #b45309;
+    --primary-dark: #92400e;
+    --border: #f0e2b6;
+    --muted: #78716c;
+    --bg: #fffdf5;
 }
 
 * { box-sizing: border-box; }
@@ -12,7 +12,7 @@ body {
     font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     margin: 0;
     background: var(--bg);
-    color: #1f2430;
+    color: #292524;
 }
 
 .container {
@@ -127,7 +127,7 @@ input[type="number"] {
     border: 1px solid var(--primary);
 }
 
-.btn-outline:hover { background: #eef4ff; }
+.btn-outline:hover { background: #fef3c7; }
 
 .btn:disabled { cursor: not-allowed; opacity: 0.55; }
 
@@ -149,8 +149,8 @@ input[type="number"] {
 }
 
 .room-card:hover {
-    border-color: #b9c9e8;
-    box-shadow: 0 10px 24px rgba(31, 36, 48, 0.07);
+    border-color: #e8c874;
+    box-shadow: 0 10px 24px rgba(41, 37, 36, 0.07);
     transform: translateY(-2px);
 }
 
@@ -209,12 +209,12 @@ input[type="number"] {
     border: 1px solid var(--border);
     border-radius: 8px;
     text-decoration: none;
-    color: #1f2430;
+    color: #292524;
     font-size: 0.88rem;
     background: #fff;
 }
 
-.pagination a:hover { background: #eef4ff; }
+.pagination a:hover { background: #fef3c7; }
 .pagination .active { background: var(--primary); color: #fff; border-color: var(--primary); }
 .pagination .disabled { color: #b8bdc7; pointer-events: none; background: #f3f4f6; }
 .result-count { font-size: 0.88rem; color: var(--muted); margin-bottom: 14px; }
@@ -259,7 +259,7 @@ input[type="number"] {
     padding: 13px;
     border: 1px solid var(--border);
     border-radius: 9px;
-    background: #fafbfc;
+    background: #fdf8ec;
 }
 
 .room-facts dt {
@@ -353,7 +353,7 @@ input[type="number"] {
 
 .history-table th {
     color: var(--muted);
-    background: #fafbfc;
+    background: #fdf8ec;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -376,7 +376,7 @@ input[type="number"] {
 a:focus-visible,
 button:focus-visible,
 select:focus-visible {
-    outline: 3px solid rgba(13, 110, 253, 0.28);
+    outline: 3px solid rgba(180, 83, 9, 0.28);
     outline-offset: 2px;
 }
 

@@ -33,6 +33,19 @@
         .btn-outline:hover {
             background-color: #f3f4f6;
         }
+        .room-gallery {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        .room-gallery img {
+            width: 220px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: var(--radius);
+            flex-shrink: 0;
+        }
         .info-grid {
             display: flex;
             flex-wrap: wrap;
@@ -117,6 +130,10 @@
                     <h2 class="login-title" style="margin: 0;" th:text="'Room ' + ${room.roomNumber}">Room Detail</h2>
                     <a th:href="@{/v1/guest/search-rooms(checkInDate=${param.checkInDate},checkOutDate=${param.checkOutDate},numberOfGuests=${param.numberOfGuests})}"
                         class="btn-outline">Back to Search Results</a>
+                </div>
+
+                <div class="room-gallery" th:if="${room.roomType.images != null and !room.roomType.images.isEmpty()}">
+                    <img th:each="img : ${room.roomType.images}" th:src="${img.imageUrl}" alt="Room preview">
                 </div>
 
                 <div class="info-grid">

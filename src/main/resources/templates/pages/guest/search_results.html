@@ -46,6 +46,14 @@
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
             transform: translateY(-2px);
         }
+        .room-thumb {
+            width: 130px;
+            height: 95px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 18px;
+            flex-shrink: 0;
+        }
         .room-info {
             flex-grow: 1;
         }
@@ -178,6 +186,8 @@
         </h3>
 
         <div th:each="room : ${rooms}" class="room-card">
+            <img th:if="${room.roomType.images != null and !room.roomType.images.isEmpty()}"
+                 th:src="${room.roomType.images[0].imageUrl}" alt="Room preview" class="room-thumb">
             <div class="room-info">
                 <h2 th:text="'Room ' + ${room.roomNumber}">Room Name</h2>
                 <p><b>Floor:</b> <span th:text="${room.floorNumber}"></span></p>

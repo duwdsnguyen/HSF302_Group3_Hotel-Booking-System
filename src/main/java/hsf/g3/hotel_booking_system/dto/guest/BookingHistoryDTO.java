@@ -17,6 +17,7 @@ public class BookingHistoryDTO {
     private Integer id;
     private String roomNumber;
     private String roomTypeName;
+    private List<String> roomImageUrls;
     private Integer floorNumber;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;

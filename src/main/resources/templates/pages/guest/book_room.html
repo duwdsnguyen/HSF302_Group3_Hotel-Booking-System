@@ -161,6 +161,11 @@
                 <div class="section">
                     <h3>Selected Room</h3>
                     <div class="room-item">
+                        <div th:if="${room.roomType.images != null and !room.roomType.images.isEmpty()}"
+                             style="display:flex; gap:8px; overflow-x:auto; margin-bottom:12px;">
+                            <img th:each="img : ${room.roomType.images}" th:src="${img.imageUrl}" alt="Room preview"
+                                 style="width:140px; height:95px; object-fit:cover; border-radius:6px; flex-shrink:0;">
+                        </div>
                         <h4 th:text="'Room ' + ${room.roomNumber} + ' (' + ${room.roomType.typeName} + ')'" style="margin-top: 0; margin-bottom: 5px; color: #111827;"></h4>
                         <p style="margin-bottom: 0; color: #4b5563;">Price per night: $<span th:text="${room.roomType.basePrice}"></span></p>
                     </div>

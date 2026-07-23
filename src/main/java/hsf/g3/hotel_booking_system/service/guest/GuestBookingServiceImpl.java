@@ -6,6 +6,7 @@ import hsf.g3.hotel_booking_system.dto.guest.request.BookingRequestDTO;
 import hsf.g3.hotel_booking_system.entity.guest.Booking;
 import hsf.g3.hotel_booking_system.entity.guest.BookingHistory;
 import hsf.g3.hotel_booking_system.entity.room.Room;
+import hsf.g3.hotel_booking_system.entity.room.RoomTypeImage;
 import hsf.g3.hotel_booking_system.entity.service.HotelService;
 import hsf.g3.hotel_booking_system.entity.user.User;
 import hsf.g3.hotel_booking_system.enums.room.BookingAction;
@@ -202,6 +203,9 @@ public class GuestBookingServiceImpl implements GuestBookingService {
             dto.setFloorNumber(b.getRoom().getFloorNumber());
             if (b.getRoom().getRoomType() != null) {
                 dto.setRoomTypeName(b.getRoom().getRoomType().getTypeName());
+                dto.setRoomImageUrls(b.getRoom().getRoomType().getImages().stream()
+                        .map(RoomTypeImage::getImageUrl)
+                        .collect(Collectors.toList()));
             }
         }
 
