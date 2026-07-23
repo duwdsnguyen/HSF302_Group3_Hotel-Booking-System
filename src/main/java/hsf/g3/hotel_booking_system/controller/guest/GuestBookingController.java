@@ -6,6 +6,7 @@ import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.entity.service.HotelService;
 import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
 import hsf.g3.hotel_booking_system.enums.service.ServiceStatus;
+import hsf.g3.hotel_booking_system.exception.AppException;
 import hsf.g3.hotel_booking_system.repository.admin.HotelServiceRepository;
 import hsf.g3.hotel_booking_system.service.guest.GuestBookingService;
 import hsf.g3.hotel_booking_system.service.guest.GuestRoomService;
@@ -139,7 +140,7 @@ public class GuestBookingController {
             BookingHistoryDTO booking = guestBookingService.getBookingDetail(bookingId, loggedInUser.getUserId());
             model.addAttribute("booking", booking);
             return "pages/guest/booking_detail";
-        } catch (IllegalArgumentException e) {
+        } catch (AppException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/v1/guest/booking/history";
         }
@@ -159,7 +160,7 @@ public class GuestBookingController {
         try {
             guestBookingService.cancelBooking(bookingId, loggedInUser.getUserId());
             redirectAttributes.addFlashAttribute("success", "Booking #" + bookingId + " has been cancelled successfully.");
-        } catch (IllegalArgumentException e) {
+        } catch (AppException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 

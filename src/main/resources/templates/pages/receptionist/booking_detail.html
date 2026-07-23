@@ -36,7 +36,7 @@
         <tr><td style="border: none; padding-bottom: 8px;">Check-out thực tế</td>
           <td style="border: none; padding-bottom: 8px;" th:text="${booking.actualCheckOut != null ? #temporals.format(booking.actualCheckOut, 'HH:mm dd/MM/yyyy') : 'Chưa'}"></td></tr>
         <tr><td style="border: none; padding-bottom: 0;">Trạng thái</td>
-          <td style="border: none; padding-bottom: 0;" th:text="${booking.status}"></td></tr>
+          <td style="border: none; padding-bottom: 0;" th:text="${booking.status.label}"></td></tr>
       </table>
     </div>
 

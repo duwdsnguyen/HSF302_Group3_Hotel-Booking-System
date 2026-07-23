@@ -22,7 +22,7 @@
             <option value="">All statuses</option>
             <option th:each="status : ${statuses}"
                     th:value="${status}"
-                    th:text="${status}"
+                    th:text="${status.label}"
                     th:selected="${status == selectedStatus}">
             </option>
         </select>
@@ -70,7 +70,7 @@
             <td th:text="${room.roomTypeName}"></td>
             <td th:text="${room.basePrice}"></td>
             <td th:text="${room.floorNumber}"></td>
-            <td th:text="${room.status}"></td>
+            <td th:text="${room.status.label}"></td>
             <td th:text="${room.description}"></td>
             <td>
                 <a th:href="@{/v1/admin/rooms/edit/{id}(id=${room.roomId})}">Edit</a>

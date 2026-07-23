@@ -32,19 +32,19 @@ public class AuthController {
     @GetMapping("/login")
     public String login(Model model){
         model.addAttribute("loginRequestDTO",new LoginRequestDTO());
-        return "/pages/auth/login";
+        return "pages/auth/login";
     }
 
     @PostMapping("/login")
     public String login(@Valid @ModelAttribute("loginRequestDTO")LoginRequestDTO loginRequestDTO,BindingResult result,HttpSession session,Model model){
         if(result.hasErrors()){
-            return "/pages/auth/login";
+            return "pages/auth/login";
         }
         UserInfoDTO userInfoDTO = userService.login(loginRequestDTO);
         LOGGER.info("User login with email: {} and password: {}",loginRequestDTO.getEmail(),loginRequestDTO.getPassword());
         if(userInfoDTO == null){
             model.addAttribute("error", "Mật khẩu hoặc email đã sai");
-            return "/pages/auth/login";
+            return "pages/auth/login";
         }
         else{
             session.setAttribute("loggedInUser",userInfoDTO);
@@ -75,18 +75,18 @@ public class AuthController {
     public String register(Model model){
         LOGGER.info("Display register page");
         model.addAttribute("registerRequestDTO",new RegisterRequestDTO());
-        return "/pages/auth/register";
+        return "pages/auth/register";
     }
 
     @PostMapping("/register")
     public String register(@Valid @ModelAttribute("registerRequestDTO")RegisterRequestDTO registerRequestDTO, BindingResult bindingResult,Model model, RedirectAttributes redirectAttributes){
         if(bindingResult.hasErrors()){
-            return "/pages/auth/register";
+            return "pages/auth/register";
         }
         UserInfoDTO userInfoDTO = userService.register(registerRequestDTO);
         if(userInfoDTO == null){
             model.addAttribute("error", "Không thể tạo tài khoản");
-            return "/pages/auth/register";
+            return "pages/auth/register";
         }
         else{
             redirectAttributes.addFlashAttribute("success","Tạo tài khoản thành công");
@@ -114,7 +114,7 @@ public class AuthController {
             LOGGER.info("Link hasn't sent to your email: {}",forgetPasswordRequest.getEmail());
             model.addAttribute("error", "Nếu email bạn tồn tại thì sẽ nhận được mail trong giây lát");
         }
-        return "/pages/auth/forget_password";
+        return "pages/auth/forget_password";
     }
 
     @GetMapping("/reset-password")
@@ -126,14 +126,14 @@ public class AuthController {
         }else{
             model.addAttribute("resetPasswordRequest",new ResetPasswordRequest());
             model.addAttribute("token",token);
-            return "/pages/auth/reset_password";
+            return "pages/auth/reset_password";
         }
     }
 
     @PostMapping("/reset-password")
     public String resetPassword(@Valid @ModelAttribute("resetPasswordRequest")ResetPasswordRequest resetPasswordRequest,BindingResult bindingResult,@RequestParam("token")String token,RedirectAttributes redirectAttributes){
         if(bindingResult.hasErrors()){
-            return "/pages/auth/reset_password";
+            return "pages/auth/reset_password";
         }
         if(token == null || !userService.isValidToken(token)) {
             LOGGER.info("Password reset failed: Invalid or expired token");

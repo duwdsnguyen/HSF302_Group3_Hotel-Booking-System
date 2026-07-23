@@ -4,6 +4,8 @@ import hsf.g3.hotel_booking_system.dto.admin.RoomTypeRequestDTO;
 import hsf.g3.hotel_booking_system.dto.admin.RoomTypeResponseDTO;
 import hsf.g3.hotel_booking_system.entity.room.RoomType;
 import hsf.g3.hotel_booking_system.enums.room.RoomTypeStatus;
+import hsf.g3.hotel_booking_system.exception.AppException;
+import hsf.g3.hotel_booking_system.exception.ErrorCode;
 import hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,21 +48,18 @@ public class AdminRoomTypeServiceImpl implements AdminRoomTypeService {
     @Override
     public RoomTypeResponseDTO createRoomType(RoomTypeRequestDTO request) {
         if (request.getTypeName() == null || request.getTypeName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Tên loại phòng không được để trống");
+            throw new AppException(ErrorCode.ROOM_TYPE_NAME_REQUIRED);
         }
         if (request.getMaxGuests() == null || request.getMaxGuests() < 1) {
-            throw new IllegalArgumentException("Số khách phải lớn hơn 0");
+            throw new AppException(ErrorCode.ROOM_TYPE_MAX_GUESTS_INVALID);
         }
         if (request.getBasePrice() == null) {
-            throw new IllegalArgumentException("Giá phòng không được để trống");
+            throw new AppException(ErrorCode.ROOM_TYPE_BASE_PRICE_REQUIRED);
         }
         if (request.getBasePrice().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Giá phòng phải lớn hơn 0");
+            throw new AppException(ErrorCode.ROOM_TYPE_BASE_PRICE_INVALID);
         }
 
-        if (roomTypeRepository.existsByTypeName(request.getTypeName())) {
-            throw new RuntimeException("Loại phòng với tên " + request.getTypeName() + " đã tồn tại");
-        }
         rejectDuplicateTypeName(request.getTypeName(), null);
 
         RoomType roomType = new RoomType();
@@ -96,7 +95,7 @@ public class AdminRoomTypeServiceImpl implements AdminRoomTypeService {
 
     private RoomType findEntityById(Integer roomTypeId) {
         return roomTypeRepository.findById(roomTypeId)
-                .orElseThrow(() -> new RuntimeException("RoomType with id " + roomTypeId + " does not exist"));
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_TYPE_NOT_FOUND));
     }
 
     private void rejectDuplicateTypeName(String typeName, Integer currentRoomTypeId) {
@@ -104,7 +103,7 @@ public class AdminRoomTypeServiceImpl implements AdminRoomTypeService {
                 ? roomTypeRepository.existsByTypeName(typeName)
                 : roomTypeRepository.existsByTypeNameAndRoomTypeIdNot(typeName, currentRoomTypeId);
         if (duplicate) {
-            throw new IllegalArgumentException("RoomType with name " + typeName + " already exists");
+            throw new AppException(ErrorCode.ROOM_TYPE_NAME_DUPLICATE);
         }
     }
 

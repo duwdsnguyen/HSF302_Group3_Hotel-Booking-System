@@ -3,6 +3,8 @@ package hsf.g3.hotel_booking_system.controller.admin;
 
 import hsf.g3.hotel_booking_system.dto.admin.RoomRequestDTO;
 import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
+import hsf.g3.hotel_booking_system.exception.AppException;
+import hsf.g3.hotel_booking_system.exception.ErrorCode;
 import hsf.g3.hotel_booking_system.service.admin.AdminRoomService;
 import hsf.g3.hotel_booking_system.service.admin.AdminRoomTypeService;
 import jakarta.validation.Valid;
@@ -37,7 +39,7 @@ public class RoomController {
         model.addAttribute("selectedStatus", status);
         model.addAttribute("selectedRoomTypeId", roomTypeId);
         model.addAttribute("selectedSort", sort);
-        return "/pages/admin/room/room-list";
+        return "pages/admin/room/room-list";
     }
 
     @GetMapping("/create")
@@ -45,7 +47,7 @@ public class RoomController {
         model.addAttribute("room", new RoomRequestDTO());
         model.addAttribute("roomTypes", roomTypeService.getAllRoomTypes());
         model.addAttribute("formAction", "/v1/admin/rooms/create");
-        return "/pages/admin/room/room-form";
+        return "pages/admin/room/room-form";
     }
 
     @PostMapping("/create")
@@ -56,8 +58,12 @@ public class RoomController {
 
         try {
             roomService.createRoom(request);
-        } catch (IllegalArgumentException e) {
-            result.rejectValue("roomNumber", "duplicate", e.getMessage());
+        } catch (AppException e) {
+            if (e.getErrorCode() == ErrorCode.ROOM_NUMBER_DUPLICATE) {
+                result.rejectValue("roomNumber", "duplicate", e.getMessage());
+            } else {
+                result.reject("error", e.getMessage());
+            }
             return roomForm(model, "/v1/admin/rooms/create");
         }
 
@@ -69,7 +75,7 @@ public class RoomController {
         model.addAttribute("room", roomService.getRoomById(id));
         model.addAttribute("roomTypes", roomTypeService.getAllRoomTypes());
         model.addAttribute("formAction", "/v1/admin/rooms/edit/" + id);
-        return "/pages/admin/room/room-form";
+        return "pages/admin/room/room-form";
     }
 
     @PostMapping("/edit/{id}")
@@ -81,8 +87,12 @@ public class RoomController {
 
         try {
             roomService.updateRoom(id, request);
-        } catch (IllegalArgumentException e) {
-            result.rejectValue("roomNumber", "duplicate", e.getMessage());
+        } catch (AppException e) {
+            if (e.getErrorCode() == ErrorCode.ROOM_NUMBER_DUPLICATE) {
+                result.rejectValue("roomNumber", "duplicate", e.getMessage());
+            } else {
+                result.reject("error", e.getMessage());
+            }
             return roomForm(model, formAction);
         }
 
@@ -98,6 +108,6 @@ public class RoomController {
     private String roomForm(Model model, String formAction) {
         model.addAttribute("roomTypes", roomTypeService.getAllRoomTypes());
         model.addAttribute("formAction", formAction);
-        return "/pages/admin/room/room-form";
+        return "pages/admin/room/room-form";
     }
 }

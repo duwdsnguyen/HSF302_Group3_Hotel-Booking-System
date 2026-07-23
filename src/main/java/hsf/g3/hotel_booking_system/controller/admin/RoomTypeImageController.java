@@ -1,5 +1,6 @@
 package hsf.g3.hotel_booking_system.controller.admin;
 
+import hsf.g3.hotel_booking_system.exception.AppException;
 import hsf.g3.hotel_booking_system.service.admin.AdminRoomTypeImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -23,7 +24,7 @@ public class RoomTypeImageController {
     public String manageImages(@PathVariable Integer roomTypeId, Model model) {
         model.addAttribute("roomTypeId", roomTypeId);
         model.addAttribute("images", imageService.getImages(roomTypeId));
-        return "/pages/admin/room/room-type-images";
+        return "pages/admin/room/room-type-images";
     }
 
     /** Upload one or more images */
@@ -36,7 +37,7 @@ public class RoomTypeImageController {
         try {
             imageService.uploadImages(roomTypeId, files);
             redirectAttributes.addFlashAttribute("success", "Images uploaded successfully.");
-        } catch (IllegalArgumentException | IOException e) {
+        } catch (AppException | IOException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/v1/admin/room-types/" + roomTypeId + "/images";
@@ -52,7 +53,7 @@ public class RoomTypeImageController {
         try {
             imageService.deleteImage(roomTypeId, imageId);
             redirectAttributes.addFlashAttribute("success", "Image deleted.");
-        } catch (IllegalArgumentException e) {
+        } catch (AppException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/v1/admin/room-types/" + roomTypeId + "/images";

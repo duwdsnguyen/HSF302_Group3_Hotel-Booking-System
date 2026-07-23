@@ -51,7 +51,36 @@ public enum ErrorCode {
     ROOM_CHANGE_ASSIGNMENT_CHANGED(
             "ROOM_CHANGE_018", "Booking không còn ở phòng cũ trong yêu cầu", HttpStatus.CONFLICT),
     ROOM_CHANGE_REJECTION_REASON_TOO_LONG(
-            "ROOM_CHANGE_019", "Lý do từ chối không được vượt quá 500 ký tự", HttpStatus.BAD_REQUEST);
+            "ROOM_CHANGE_019", "Lý do từ chối không được vượt quá 500 ký tự", HttpStatus.BAD_REQUEST),
+
+    ROOM_NOT_FOUND(
+            "ROOM_001", "Không tìm thấy phòng", HttpStatus.NOT_FOUND),
+    ROOM_NUMBER_DUPLICATE(
+            "ROOM_002", "Số phòng đã tồn tại", HttpStatus.CONFLICT),
+
+    ROOM_TYPE_NOT_FOUND(
+            "ROOM_TYPE_001", "Không tìm thấy loại phòng", HttpStatus.NOT_FOUND),
+    ROOM_TYPE_NAME_REQUIRED(
+            "ROOM_TYPE_002", "Tên loại phòng không được để trống", HttpStatus.BAD_REQUEST),
+    ROOM_TYPE_MAX_GUESTS_INVALID(
+            "ROOM_TYPE_003", "Số khách phải lớn hơn 0", HttpStatus.BAD_REQUEST),
+    ROOM_TYPE_BASE_PRICE_REQUIRED(
+            "ROOM_TYPE_004", "Giá phòng không được để trống", HttpStatus.BAD_REQUEST),
+    ROOM_TYPE_BASE_PRICE_INVALID(
+            "ROOM_TYPE_005", "Giá phòng phải lớn hơn 0", HttpStatus.BAD_REQUEST),
+    ROOM_TYPE_NAME_DUPLICATE(
+            "ROOM_TYPE_006", "Loại phòng với tên này đã tồn tại", HttpStatus.CONFLICT),
+    ROOM_TYPE_IMAGE_FILE_REQUIRED(
+            "ROOM_TYPE_007", "Vui lòng chọn ít nhất một ảnh để tải lên", HttpStatus.BAD_REQUEST),
+    ROOM_TYPE_IMAGE_NOT_FOUND(
+            "ROOM_TYPE_008", "Không tìm thấy ảnh", HttpStatus.NOT_FOUND),
+    ROOM_TYPE_IMAGE_MISMATCH(
+            "ROOM_TYPE_009", "Ảnh này không thuộc loại phòng đã chọn", HttpStatus.BAD_REQUEST),
+
+    BOOKING_NOT_FOUND(
+            "BOOKING_001", "Không tìm thấy đơn đặt phòng", HttpStatus.NOT_FOUND),
+    BOOKING_CANCEL_NOT_ALLOWED(
+            "BOOKING_002", "Chỉ có thể hủy đơn đặt phòng đang ở trạng thái chờ xác nhận hoặc đã xác nhận", HttpStatus.CONFLICT);
 
 
     private final String code;

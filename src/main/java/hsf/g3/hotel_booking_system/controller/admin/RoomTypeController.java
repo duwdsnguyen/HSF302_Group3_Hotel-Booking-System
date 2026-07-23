@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import hsf.g3.hotel_booking_system.dto.admin.RoomTypeRequestDTO;
 import hsf.g3.hotel_booking_system.enums.room.RoomTypeStatus;
+import hsf.g3.hotel_booking_system.exception.AppException;
 import hsf.g3.hotel_booking_system.service.admin.AdminRoomTypeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +33,14 @@ public class RoomTypeController {
         model.addAttribute("search", search);
         model.addAttribute("selectedStatus", status);
         model.addAttribute("selectedSort", sort);
-        return "/pages/admin/room/room-type-list";
+        return "pages/admin/room/room-type-list";
     }
 
     @GetMapping("/create")
     public String showCreateForm(Model model){
         model.addAttribute("roomType", new RoomTypeRequestDTO());
         model.addAttribute("formAction", "/v1/admin/room-types/create");
-        return "/pages/admin/room/room-type-form";
+        return "pages/admin/room/room-type-form";
     }
 
     @PostMapping("/create")
@@ -50,7 +51,7 @@ public class RoomTypeController {
 
         try {
             roomTypeService.createRoomType(request);
-        } catch (IllegalArgumentException e) {
+        } catch (AppException e) {
             result.rejectValue("typeName", "duplicate", e.getMessage());
             return roomTypeForm(model, "/v1/admin/room-types/create");
         }
@@ -63,7 +64,7 @@ public class RoomTypeController {
         model.addAttribute("roomType", roomTypeService.getRoomTypeById(id));
         model.addAttribute("formAction", "/v1/admin/room-types/edit/" + id);
         model.addAttribute("roomTypeId", id);
-        return "/pages/admin/room/room-type-form";
+        return "pages/admin/room/room-type-form";
     }
 
     @PostMapping("/edit/{id}")
@@ -75,7 +76,7 @@ public class RoomTypeController {
 
         try {
             roomTypeService.updateRoomType(id, request);
-        } catch (IllegalArgumentException e) {
+        } catch (AppException e) {
             result.rejectValue("typeName", "duplicate", e.getMessage());
             return roomTypeForm(model, formAction);
         }
@@ -91,7 +92,7 @@ public class RoomTypeController {
 
     private String roomTypeForm(Model model, String formAction) {
         model.addAttribute("formAction", formAction);
-        return "/pages/admin/room/room-type-form";
+        return "pages/admin/room/room-type-form";
     }
 
 }

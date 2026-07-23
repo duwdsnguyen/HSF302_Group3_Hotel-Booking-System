@@ -2,6 +2,8 @@ package hsf.g3.hotel_booking_system.service.admin;
 
 import hsf.g3.hotel_booking_system.entity.room.RoomType;
 import hsf.g3.hotel_booking_system.entity.room.RoomTypeImage;
+import hsf.g3.hotel_booking_system.exception.AppException;
+import hsf.g3.hotel_booking_system.exception.ErrorCode;
 import hsf.g3.hotel_booking_system.repository.admin.RoomTypeImageRepository;
 import hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +30,11 @@ public class AdminRoomTypeImageService {
     public void uploadImages(Integer roomTypeId, List<MultipartFile> files) throws IOException {
         boolean hasFile = files != null && files.stream().anyMatch(file -> file != null && !file.isEmpty());
         if (!hasFile) {
-            throw new IllegalArgumentException("Please select at least one image to upload.");
+            throw new AppException(ErrorCode.ROOM_TYPE_IMAGE_FILE_REQUIRED);
         }
 
         RoomType roomType = roomTypeRepository.findById(roomTypeId)
-                .orElseThrow(() -> new IllegalArgumentException("Room type not found."));
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_TYPE_NOT_FOUND));
 
         int order = imageRepository
                 .findByRoomType_RoomTypeIdOrderByDisplayOrderAsc(roomTypeId)
@@ -54,10 +56,10 @@ public class AdminRoomTypeImageService {
     @Transactional
     public void deleteImage(Integer roomTypeId, Integer imageId) {
         RoomTypeImage image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new IllegalArgumentException("Image not found."));
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_TYPE_IMAGE_NOT_FOUND));
 
         if (!image.getRoomType().getRoomTypeId().equals(roomTypeId)) {
-            throw new IllegalArgumentException("Image does not belong to this room type.");
+            throw new AppException(ErrorCode.ROOM_TYPE_IMAGE_MISMATCH);
         }
 
         storageService.delete(image.getImageUrl());

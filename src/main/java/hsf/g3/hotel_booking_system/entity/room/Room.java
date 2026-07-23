@@ -33,6 +33,6 @@ public class Room{
     @Column(name = "status", nullable = false, length = 30)
     private RoomStatus status = RoomStatus.AVAILABLE;
 
-    @Column(name = "description", length = 500)
+    @Column(name = "description", columnDefinition = "NVARCHAR(500)")
     private String description;
 }
