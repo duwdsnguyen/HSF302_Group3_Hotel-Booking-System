@@ -34,7 +34,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<Booking> searchBookings(String status, String customerName, BigDecimal minPrice, BigDecimal maxPrice) {
-        BookingStatus bookingStatus = (status == null || status.equals("ALL") ? null : BookingStatus.valueOf(status));
+        BookingStatus bookingStatus = (status == null || status.isBlank() || status.equals("ALL")
+                ? null : BookingStatus.valueOf(status));
         if (customerName != null && !customerName.trim().isEmpty()) {
             customerName = "%" + customerName + "%";
         } else {

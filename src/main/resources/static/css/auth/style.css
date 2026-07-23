@@ -1,10 +1,10 @@
 :root {
-    --primary-color: #4d4dac;
-    --primary-hover: purple;
-    --bg-body: white;
-    --text-main: dark blue;
-    --text-muted: grey;
-    --border-color: white;
+    --primary-color: #b45309;
+    --primary-hover: #92400e;
+    --bg-body: #fffdf5;
+    --text-main: #292524;
+    --text-muted: #78716c;
+    --border-color: #e6d7a8;
     --radius: 8px;
     --transition: all 0.3s ease;
 }
@@ -73,15 +73,15 @@
 }
 
 .alert-danger {
-    background-color: white;
-    color: darkred;
-    border: 1px solid hotpink;
+    background-color: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
 }
 
 .alert-success {
-    background-color: white;
-    color: green;
-    border: 1px solid forestgreen;
+    background-color: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
 }
 .btn-close {
     background: none;
@@ -108,7 +108,7 @@
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 6px;
-    color: #374151;
+    color: #44403c;
 }
 
 .form-control {
@@ -123,7 +123,7 @@
 
 .form-control:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.15);
 }
 
 .input-group {
@@ -153,10 +153,10 @@
 }
 
 .card-footer {
-    background-color: #f9fafb;
+    background-color: #fdf6e3;
     padding: 15px 30px;
     text-align: center;
-    border-top: 1px solid #f3f4f6;
+    border-top: 1px solid #f3e8c8;
     font-size: 14px;
 }
 

@@ -18,7 +18,7 @@ public class AdminRoomTypeImageService {
 
     private final RoomTypeImageRepository imageRepository;
     private final RoomTypeRepository roomTypeRepository;
-    private final hsf.g3.hotel_booking_system.service.admin.ImageStorageService storageService;
+    private final ImageStorageService storageService;
 
     public List<RoomTypeImage> getImages(Integer roomTypeId) {
         return imageRepository.findByRoomType_RoomTypeIdOrderByDisplayOrderAsc(roomTypeId);
@@ -26,6 +26,11 @@ public class AdminRoomTypeImageService {
 
     @Transactional
     public void uploadImages(Integer roomTypeId, List<MultipartFile> files) throws IOException {
+        boolean hasFile = files != null && files.stream().anyMatch(file -> file != null && !file.isEmpty());
+        if (!hasFile) {
+            throw new IllegalArgumentException("Please select at least one image to upload.");
+        }
+
         RoomType roomType = roomTypeRepository.findById(roomTypeId)
                 .orElseThrow(() -> new IllegalArgumentException("Room type not found."));
 

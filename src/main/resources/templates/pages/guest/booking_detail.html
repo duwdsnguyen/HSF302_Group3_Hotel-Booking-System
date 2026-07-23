@@ -5,7 +5,7 @@
     <title>Booking Detail</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f0f2f5; }
+        body { font-family: Arial, sans-serif; margin: 20px; background: #fffdf5; }
         .page-container { max-width: 700px; margin: auto; }
 
         /* Header */
@@ -15,11 +15,11 @@
         }
         .header h2 { margin: 0; font-size: 22px; color: #333; }
         .btn-back {
-            background: #6c757d; color: white; border: none;
+            background: #78716c; color: white; border: none;
             padding: 8px 16px; border-radius: 4px; cursor: pointer;
             font-size: 14px; text-decoration: none; display: inline-block;
         }
-        .btn-back:hover { background: #545b62; }
+        .btn-back:hover { background: #57534e; }
 
         /* Alerts */
         .alert {
@@ -37,7 +37,7 @@
             margin-bottom: 20px;
         }
         .card-header {
-            background: #007bff; color: white;
+            background: #b45309; color: white;
             padding: 16px 20px;
             display: flex; justify-content: space-between; align-items: center;
         }
@@ -88,7 +88,7 @@
             border-top: 2px solid #dee2e6;
             font-size: 16px; font-weight: bold;
         }
-        .total-amount { color: #007bff; font-size: 20px; }
+        .total-amount { color: #b45309; font-size: 20px; }
 
         /* Actions */
         .actions { display: flex; gap: 12px; margin-top: 20px; }
@@ -98,17 +98,27 @@
         }
         .btn-cancel:hover { background: #b02a37; }
         .btn-secondary {
-            background: #6c757d; color: white; border: none;
+            background: #78716c; color: white; border: none;
             padding: 10px 24px; border-radius: 4px; cursor: pointer; font-size: 15px;
             text-decoration: none; display: inline-block;
         }
-        .btn-secondary:hover { background: #545b62; }
+        .btn-secondary:hover { background: #57534e; }
 
         /* Cancel notice */
         .cancel-notice {
             background: #fff3cd; border: 1px solid #ffc107;
             border-radius: 4px; padding: 10px 14px;
             font-size: 13px; color: #664d03; margin-top: 12px;
+        }
+
+        /* Room images */
+        .room-images {
+            display: flex; gap: 10px; overflow-x: auto;
+            padding: 16px 20px 0;
+        }
+        .room-images img {
+            width: 160px; height: 110px; object-fit: cover;
+            border-radius: 6px; flex-shrink: 0;
         }
     </style>
 </head>
@@ -131,6 +141,11 @@
             <h3>Booking #<span th:text="${booking.id}"></span></h3>
             <span th:class="'badge badge-' + ${booking.status.name()}"
                   th:text="${booking.status.name()}"></span>
+        </div>
+
+        <!-- Room images -->
+        <div class="room-images" th:if="${booking.roomImageUrls != null and !booking.roomImageUrls.isEmpty()}">
+            <img th:each="url : ${booking.roomImageUrls}" th:src="${url}" alt="Room image">
         </div>
 
         <div class="card-body">
