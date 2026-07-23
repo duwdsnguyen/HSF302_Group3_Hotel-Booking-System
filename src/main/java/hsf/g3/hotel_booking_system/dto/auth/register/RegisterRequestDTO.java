@@ -25,6 +25,8 @@ public class RegisterRequestDTO {
     String fullName;
 
     @NotBlank(message = "Số điện thoại không được để trống")
+    @Positive(message = "Phải là dãy số nguyên dương")
+    @Size(min = 5,message = "Số điện thoại phải lớn hơn 5")
     String phone;
 
 }

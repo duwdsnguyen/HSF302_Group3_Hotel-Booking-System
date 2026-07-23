@@ -1,6 +1,7 @@
 package hsf.g3.hotel_booking_system.exception;
 
 import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,6 +9,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice(basePackages = "hsf.g3.hotel_booking_system.controller")
 public class MyGlobalException {
+
+    @ExceptionHandler(AppException.class)
+    public String handleAppException(AppException exception,
+                                     HttpServletResponse response,
+                                     Model model) {
+        ErrorCode errorCode = exception.getErrorCode();
+        response.setStatus(errorCode.getHttpStatus().value());
+        model.addAttribute("errorCode", errorCode.getCode());
+        model.addAttribute("error", "[" + errorCode.getCode() + "] " + errorCode.getMessage());
+        return "pages/error/error_page";
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)

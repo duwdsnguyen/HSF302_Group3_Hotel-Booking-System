@@ -72,6 +72,33 @@
     </div>
   </div>
 
+  <section th:if="${roomChangeRequest != null}" class="room-form room-change-review">
+    <h3>Yêu Cầu Chuyển Phòng Đang Chờ Duyệt</h3>
+    <p>
+      Khách yêu cầu chuyển từ
+      <strong th:text="|phòng ${roomChangeRequest.oldRoom.roomNumber}|">phòng 101</strong>
+      sang
+      <strong th:text="|phòng ${roomChangeRequest.newRoom.roomNumber}|">phòng 202</strong>.
+    </p>
+    <p th:text="${roomChangeRequest.description}"></p>
+
+    <div class="review-actions">
+      <form method="post"
+            th:action="@{/v1/receptionist/bookings/{id}/room-change/approve(id=${booking.bookingId})}"
+            onsubmit="return confirm('Duyệt yêu cầu và thực hiện chuyển phòng?')">
+        <button type="submit" class="btn">Duyệt chuyển phòng</button>
+      </form>
+
+      <form method="post"
+            th:action="@{/v1/receptionist/bookings/{id}/room-change/reject(id=${booking.bookingId})}"
+            class="reject-form"
+            onsubmit="return confirm('Từ chối yêu cầu chuyển phòng này?')">
+        <input type="text" name="reason" maxlength="500" placeholder="Lý do từ chối (không bắt buộc)">
+        <button type="submit" class="btn danger">Từ chối</button>
+      </form>
+    </div>
+  </section>
+
   <div class="page-actions">
     <a th:if="${booking.status == 'PENDING'}"
        th:href="@{'/v1/receptionist/bookings/' + ${booking.bookingId} + '/confirm'}"

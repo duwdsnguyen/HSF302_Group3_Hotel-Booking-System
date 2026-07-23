@@ -2,6 +2,7 @@ package hsf.g3.hotel_booking_system.controller.guest;
 
 import hsf.g3.hotel_booking_system.config.AppConstants;
 import hsf.g3.hotel_booking_system.dto.guest.room.request.RoomChangeRequest;
+import hsf.g3.hotel_booking_system.dto.guest.room.response.RoomChangeHistoryDTO;
 import hsf.g3.hotel_booking_system.dto.guest.room.response.RoomDTO;
 import hsf.g3.hotel_booking_system.dto.guest.room.response.RoomResponse;
 import hsf.g3.hotel_booking_system.dto.user.UserInfoDTO;
@@ -10,7 +11,9 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
+import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
 import hsf.g3.hotel_booking_system.exception.ResourceNotFoundException;
+import hsf.g3.hotel_booking_system.exception.AppException;
 import hsf.g3.hotel_booking_system.service.guest.GuestRoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -109,10 +112,15 @@ public class GuestController {
         Room room = guestRoomService.getRoomById(roomId);
         UserInfoDTO userInfoDTO = getLoggedInUser(request);
         List<RoomDTO> checkedInRooms = guestRoomService.getCheckedInRooms(userInfoDTO);
+        List<RoomChangeHistoryDTO> changeHistory = guestRoomService.getRoomChangeHistory(userInfoDTO);
 
         model.addAttribute("room", room);
         model.addAttribute("bookedRooms", checkedInRooms);
-        model.addAttribute("changeHistory", guestRoomService.getRoomChangeHistory(userInfoDTO));
+        model.addAttribute("changeHistory", changeHistory);
+        model.addAttribute(
+                "hasPendingRoomChange",
+                changeHistory.stream()
+                        .anyMatch(history -> history.getStatus() == BookingStatus.ROOM_CHANGE_PENDING));
         model.addAttribute("canChange", room.getStatus() == RoomStatus.AVAILABLE && !checkedInRooms.isEmpty());
         model.addAttribute("pageNumber", pageNumber);
         model.addAttribute("pageSize", pageSize);
@@ -128,14 +136,18 @@ public class GuestController {
             HttpServletRequest request) {
         UserInfoDTO userInfoDTO = getLoggedInUser(request);
         try {
-            boolean isChangedSuccess = guestRoomService.changeRoom(roomChangeRequest, userInfoDTO);
-            if (isChangedSuccess) {
-                redirectAttributes.addFlashAttribute("success", "Your room was changed successfully.");
+            boolean isRequestedSuccess = guestRoomService.requestRoomChange(roomChangeRequest, userInfoDTO);
+            if (isRequestedSuccess) {
+                redirectAttributes.addFlashAttribute(
+                        "success",
+                        "Your room-change request was sent and is awaiting receptionist approval.");
             } else {
-                redirectAttributes.addFlashAttribute("error", "You need to sign in before changing rooms.");
+                redirectAttributes.addFlashAttribute("error", "You need to sign in before requesting a room change.");
             }
-        } catch (IllegalArgumentException | ResourceNotFoundException exception) {
-            redirectAttributes.addFlashAttribute("error", exception.getMessage());
+        } catch (AppException exception) {
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "[" + exception.getErrorCode().getCode() + "] " + exception.getMessage());
         }
 
         addListStateToRedirect(redirectAttributes, roomChangeRequest);

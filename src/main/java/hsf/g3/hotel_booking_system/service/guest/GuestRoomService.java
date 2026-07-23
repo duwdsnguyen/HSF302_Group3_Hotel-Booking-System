@@ -16,7 +16,7 @@ public interface GuestRoomService {
     RoomResponse getAllAvailableRoom(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
     List<RoomDTO> getCheckedInRooms(UserInfoDTO userInfoDTO);
     List<RoomChangeHistoryDTO> getRoomChangeHistory(UserInfoDTO userInfoDTO);
-    boolean changeRoom(RoomChangeRequest roomChangeRequest, UserInfoDTO userInfoDTO);
+    boolean requestRoomChange(RoomChangeRequest roomChangeRequest, UserInfoDTO userInfoDTO);
     List<Room> searchAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfGuests, BigDecimal minPrice, BigDecimal maxPrice, Integer roomTypeId);
     Room getRoomById(Integer roomId);
     List<hsf.g3.hotel_booking_system.entity.room.RoomType> getAllRoomTypes();

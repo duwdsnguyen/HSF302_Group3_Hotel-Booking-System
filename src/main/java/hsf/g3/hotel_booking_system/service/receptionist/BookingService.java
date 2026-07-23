@@ -3,6 +3,7 @@ package hsf.g3.hotel_booking_system.service.receptionist;
 import hsf.g3.hotel_booking_system.dto.receptionist.BookingDetailDTO;
 import hsf.g3.hotel_booking_system.dto.receptionist.BookingSummaryDTO;
 import hsf.g3.hotel_booking_system.entity.guest.Booking;
+import hsf.g3.hotel_booking_system.entity.guest.BookingHistory;
 import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
 import org.springframework.data.domain.Page;
 
@@ -23,6 +24,12 @@ public interface BookingService {
 
     void checkOut(int bookingId);
 
+    BookingHistory getPendingRoomChange(int bookingId);
+
+    void approveRoomChange(int bookingId, Long receptionistId);
+
+    void rejectRoomChange(int bookingId, Long receptionistId, String reason);
+
     BookingSummaryDTO getBookingSummary();
 
     Page<Booking> searchBookingPaged(
@@ -32,6 +39,6 @@ public interface BookingService {
             LocalDate checkOutFrom, LocalDate checkOutTo,
             BigDecimal minPrice, BigDecimal maxPrice,
             String sortField, String sortDir,
-            int page, int size
-    );
+             int page, int size
+     );
 }
