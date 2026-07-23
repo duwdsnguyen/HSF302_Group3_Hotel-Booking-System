@@ -18,7 +18,7 @@
             &larr; Back to available rooms
         </a>
     </div>
-    <p class="subtitle">Review this room before confirming your change.</p>
+    <p class="subtitle">Review this room and send a request for receptionist approval.</p>
 
     <div th:if="${success}" class="alert alert-success" role="status" aria-live="polite">
         <span class="alert-icon" aria-hidden="true">&#10003;</span>
@@ -67,10 +67,14 @@
         </article>
 
         <section class="change-panel" aria-labelledby="change-room-heading">
-            <h2 id="change-room-heading">Change to this room</h2>
-            <p>Select the checked-in room you want to replace.</p>
+            <h2 id="change-room-heading">Request this room</h2>
+            <p>Select the checked-in room you want to replace. Your room will only change after a receptionist approves the request.</p>
 
-            <div th:if="${#lists.isEmpty(bookedRooms)}" class="inline-notice">
+            <div th:if="${hasPendingRoomChange}" class="inline-notice">
+                Your current room-change request is awaiting receptionist approval. You cannot submit another request yet.
+            </div>
+
+            <div th:if="${!hasPendingRoomChange and #lists.isEmpty(bookedRooms)}" class="inline-notice">
                 You do not have a checked-in room that can be changed.
             </div>
 
@@ -97,7 +101,7 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Confirm room change</button>
+                <button type="submit" class="btn btn-primary">Send room-change request</button>
             </form>
         </section>
     </div>
@@ -105,15 +109,15 @@
     <section class="history-section" aria-labelledby="history-heading">
         <div class="section-heading">
             <div>
-                <p class="eyebrow">Activity</p>
-                <h2 id="history-heading">Your room-change history</h2>
+                <p class="eyebrow">Approval status</p>
+                <h2 id="history-heading">Your room-change requests</h2>
             </div>
             <span class="history-count" th:text="|${#lists.size(changeHistory)} change(s)|">0 changes</span>
         </div>
 
         <div class="empty compact-empty" th:if="${#lists.isEmpty(changeHistory)}">
-            <h3>No room changes yet</h3>
-            <p>Your completed room changes will appear here.</p>
+            <h3>No room-change requests yet</h3>
+            <p>Your pending and reviewed requests will appear here.</p>
         </div>
 
         <div class="table-wrap" th:if="${!#lists.isEmpty(changeHistory)}">
@@ -121,10 +125,12 @@
                 <caption class="sr-only">Room changes performed by the signed-in guest</caption>
                 <thead>
                 <tr>
-                    <th scope="col">Changed at</th>
+                    <th scope="col">Requested at</th>
                     <th scope="col">Booking</th>
                     <th scope="col">From</th>
                     <th scope="col">To</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Handled by</th>
                     <th scope="col">Details</th>
                 </tr>
                 </thead>
@@ -134,6 +140,12 @@
                     <td th:text="|${history.bookingId}|"></td>
                     <td th:text="|Room ${history.oldRoomNumber}|"></td>
                     <td th:text="|Room ${history.newRoomNumber}|"></td>
+                    <td>
+                        <span class="request-status"
+                              th:classappend="| status-${#strings.toLowerCase(history.status.name())}|"
+                              th:text="${history.status}"></span>
+                    </td>
+                    <td th:text="${history.changedByName}"></td>
                     <td th:text="${history.description}"></td>
                 </tr>
                 </tbody>

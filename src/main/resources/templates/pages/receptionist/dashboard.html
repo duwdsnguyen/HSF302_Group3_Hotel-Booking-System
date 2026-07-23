@@ -16,6 +16,9 @@
         <a th:href="@{/v1/receptionist/bookings}" class="btn">
             Truy cập Quản Lý Booking
         </a>
+        <a th:href="@{/v1/receptionist/bookings(status='ROOM_CHANGE_PENDING')}" class="btn secondary">
+            Booking đang chờ duyệt chuyển phòng
+        </a>
     </div>
 </main>
 

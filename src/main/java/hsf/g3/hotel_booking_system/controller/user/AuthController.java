@@ -9,10 +9,12 @@ import hsf.g3.hotel_booking_system.dto.user.UserInfoDTO;
 import hsf.g3.hotel_booking_system.enums.user.AppRole;
 import hsf.g3.hotel_booking_system.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -34,7 +36,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(Model model, @ModelAttribute("loginRequestDTO")LoginRequestDTO loginRequestDTO,HttpSession session){
+    public String login(@Valid @ModelAttribute("loginRequestDTO")LoginRequestDTO loginRequestDTO,BindingResult result,HttpSession session,Model model){
+        if(result.hasErrors()){
+            return "/pages/auth/login";
+        }
         UserInfoDTO userInfoDTO = userService.login(loginRequestDTO);
         LOGGER.info("User login with email: {} and password: {}",loginRequestDTO.getEmail(),loginRequestDTO.getPassword());
         if(userInfoDTO == null){
@@ -74,11 +79,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(Model model, RedirectAttributes redirectAttributes, @ModelAttribute("registerRequestDTO")RegisterRequestDTO registerRequestDTO){
+    public String register(@Valid @ModelAttribute("registerRequestDTO")RegisterRequestDTO registerRequestDTO, BindingResult bindingResult,Model model, RedirectAttributes redirectAttributes){
+        if(bindingResult.hasErrors()){
+            return "/pages/auth/register";
+        }
         UserInfoDTO userInfoDTO = userService.register(registerRequestDTO);
         if(userInfoDTO == null){
             model.addAttribute("error", "Không thể tạo tài khoản");
-            model.addAttribute("registerRequestDTO",registerRequestDTO);
             return "/pages/auth/register";
         }
         else{
@@ -91,11 +98,14 @@ public class AuthController {
     public String forgetPassword(Model model){
         LOGGER.info("Display forget password page");
         model.addAttribute("forgetPasswordRequest",new ForgetPasswordRequest());
-        return "/pages/auth/forget_password";
+        return "pages/auth/forget_password";
     }
 
     @PostMapping("/forget-password")
-    public String forgetPassword(Model model,@ModelAttribute("forgetPasswordRequest") ForgetPasswordRequest forgetPasswordRequest){
+    public String forgetPassword(@Valid @ModelAttribute("forgetPasswordRequest") ForgetPasswordRequest forgetPasswordRequest,BindingResult result,Model model){
+        if(result.hasErrors()){
+            return "pages/auth/forget_password";
+        }
         ForgetPasswordResponse forgetPasswordResponse = userService.forgetPassword(forgetPasswordRequest);
         if(forgetPasswordResponse != null){
             LOGGER.info("Link has been sent to your email: {}",forgetPasswordRequest.getEmail());
@@ -108,7 +118,7 @@ public class AuthController {
     }
 
     @GetMapping("/reset-password")
-    public String resetPassword(Model model,RedirectAttributes redirectAttributes,@RequestParam(value = "token",required = false) String token){
+    public String resetPassword(Model model,RedirectAttributes redirectAttributes,@RequestParam(value = "token") String token){
         if(token == null || !userService.isValidToken(token)){
             LOGGER.info("Password reset failed for token {}: Invalid or expired token",token);
             redirectAttributes.addFlashAttribute("error","Token của bạn đã hết hạn hoặc không phù hợp");
@@ -121,7 +131,10 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
-    public String resetPassword(RedirectAttributes redirectAttributes,@ModelAttribute("resetPasswordRequest")ResetPasswordRequest resetPasswordRequest,@RequestParam("token")String token){
+    public String resetPassword(@Valid @ModelAttribute("resetPasswordRequest")ResetPasswordRequest resetPasswordRequest,BindingResult bindingResult,@RequestParam("token")String token,RedirectAttributes redirectAttributes){
+        if(bindingResult.hasErrors()){
+            return "/pages/auth/reset_password";
+        }
         if(token == null || !userService.isValidToken(token)) {
             LOGGER.info("Password reset failed: Invalid or expired token");
             redirectAttributes.addFlashAttribute("error", "Token của bạn đã hết hạn hoặc không phù hợp");

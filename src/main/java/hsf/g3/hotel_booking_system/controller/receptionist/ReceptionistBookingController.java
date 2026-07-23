@@ -1,23 +1,27 @@
 package hsf.g3.hotel_booking_system.controller.receptionist;
 
 import hsf.g3.hotel_booking_system.dto.receptionist.BookingDetailDTO;
+import hsf.g3.hotel_booking_system.dto.receptionist.BookingSummaryDTO;
+import hsf.g3.hotel_booking_system.dto.user.UserInfoDTO;
 import hsf.g3.hotel_booking_system.entity.guest.Booking;
 import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
+import hsf.g3.hotel_booking_system.exception.AppException;
 import hsf.g3.hotel_booking_system.service.receptionist.BookingService;
-import hsf.g3.hotel_booking_system.dto.receptionist.BookingSummaryDTO;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.time.LocalDate;
 
 @Controller
@@ -84,6 +88,7 @@ public class ReceptionistBookingController {
         try {
             BookingDetailDTO booking = bookingService.getBookingDetailsById(bookingId);
             model.addAttribute("booking", booking);
+            model.addAttribute("roomChangeRequest", bookingService.getPendingRoomChange(bookingId));
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
         }
@@ -132,5 +137,54 @@ public class ReceptionistBookingController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/v1/receptionist/bookings/" + bookingId + "/detail";
+    }
+
+    @PostMapping("/{id}/room-change/approve")
+    public String approveRoomChange(
+            @PathVariable("id") int bookingId,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+        try {
+            bookingService.approveRoomChange(bookingId, getLoggedInUserId(request));
+            redirectAttributes.addFlashAttribute(
+                    "message",
+                    "Đã duyệt yêu cầu chuyển phòng của booking #" + bookingId);
+        } catch (AppException exception) {
+            addAppError(redirectAttributes, exception);
+        }
+        return "redirect:/v1/receptionist/bookings/" + bookingId + "/detail";
+    }
+
+    @PostMapping("/{id}/room-change/reject")
+    public String rejectRoomChange(
+            @PathVariable("id") int bookingId,
+            @RequestParam(required = false) String reason,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+        try {
+            bookingService.rejectRoomChange(bookingId, getLoggedInUserId(request), reason);
+            redirectAttributes.addFlashAttribute(
+                    "message",
+                    "Đã từ chối yêu cầu chuyển phòng của booking #" + bookingId);
+        } catch (AppException exception) {
+            addAppError(redirectAttributes, exception);
+        }
+        return "redirect:/v1/receptionist/bookings/" + bookingId + "/detail";
+    }
+
+    private Long getLoggedInUserId(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        UserInfoDTO loggedInUser = session == null
+                ? null
+                : (UserInfoDTO) session.getAttribute("loggedInUser");
+        return loggedInUser == null ? null : loggedInUser.getUserId();
+    }
+
+    private void addAppError(
+            RedirectAttributes redirectAttributes,
+            AppException exception) {
+        redirectAttributes.addFlashAttribute(
+                "error",
+                "[" + exception.getErrorCode().getCode() + "] " + exception.getMessage());
     }
 }
