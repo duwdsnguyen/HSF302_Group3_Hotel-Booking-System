@@ -9,10 +9,10 @@ import hsf.g3.hotel_booking_system.entity.guest.Booking;
 import hsf.g3.hotel_booking_system.entity.guest.BookingHistory;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 import hsf.g3.hotel_booking_system.entity.room.RoomType;
-import hsf.g3.hotel_booking_system.entity.user.User;
 import hsf.g3.hotel_booking_system.enums.room.BookingAction;
 import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
-import hsf.g3.hotel_booking_system.exception.ResourceNotFoundException;
+import hsf.g3.hotel_booking_system.exception.AppException;
+import hsf.g3.hotel_booking_system.exception.ErrorCode;
 import hsf.g3.hotel_booking_system.enums.room.RoomStatus;
 import hsf.g3.hotel_booking_system.repository.admin.RoomRepository;
 import hsf.g3.hotel_booking_system.repository.admin.RoomTypeRepository;
@@ -43,7 +43,12 @@ public class GuestRoomServiceImpl implements GuestRoomService {
     private final ModelMapper modelMapper;
     private final BookingHistoryRepository bookingHistoryRepository;
 
-    public GuestRoomServiceImpl(RoomRepository roomRepository,RoomTypeRepository roomTypeRepository,BookingRepository bookingRepository,UserRepository userRepository,ModelMapper modelMapper,BookingHistoryRepository bookingHistoryRepository) {
+    public GuestRoomServiceImpl(RoomRepository roomRepository,
+                                RoomTypeRepository roomTypeRepository,
+                                BookingRepository bookingRepository,
+                                UserRepository userRepository,
+                                ModelMapper modelMapper,
+                                BookingHistoryRepository bookingHistoryRepository) {
         this.roomRepository = roomRepository;
         this.roomTypeRepository = roomTypeRepository;
         this.bookingRepository = bookingRepository;
@@ -169,80 +174,90 @@ public class GuestRoomServiceImpl implements GuestRoomService {
                         .newRoomNumber(history.getNewRoom().getRoomNumber())
                         .changedAt(history.getChangedAt())
                         .description(history.getDescription())
+                        .status(history.getNewStatus())
+                        .changedByName(history.getChangedBy() == null
+                                ? null
+                                : history.getChangedBy().getFullName())
                         .build())
                 .toList();
     }
 
     @Transactional
     @Override
-    public boolean changeRoom(RoomChangeRequest roomChangeRequest, UserInfoDTO userInfoDTO) {
+    public boolean requestRoomChange(RoomChangeRequest roomChangeRequest, UserInfoDTO userInfoDTO) {
         if (userInfoDTO == null || userInfoDTO.getUserId() == null) {
-            return false;
+            throw new AppException(ErrorCode.ROOM_CHANGE_AUTHENTICATION_REQUIRED);
         }
 
         if (roomChangeRequest == null
                 || roomChangeRequest.getOldRoomId() == null
                 || roomChangeRequest.getNewRoomId() == null) {
-            throw new IllegalArgumentException("Please select your current room and the new room.");
+            throw new AppException(ErrorCode.ROOM_CHANGE_SELECTION_REQUIRED);
         }
 
         if (roomChangeRequest.getOldRoomId().equals(roomChangeRequest.getNewRoomId())) {
-            throw new IllegalArgumentException("The new room must be different from your current room.");
+            throw new AppException(ErrorCode.ROOM_CHANGE_SAME_ROOM);
         }
 
         Booking booking = bookingRepository
                 .getCheckedInBooking(userInfoDTO.getUserId(), roomChangeRequest.getOldRoomId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "The selected current room is not checked in under your account."));
+                .orElseThrow(() -> new AppException(
+                        ErrorCode.ROOM_CHANGE_CHECKED_IN_BOOKING_NOT_FOUND));
+
+        if (booking.getStatus() == BookingStatus.ROOM_CHANGE_PENDING) {
+            throw new AppException(ErrorCode.ROOM_CHANGE_REQUEST_ALREADY_PENDING);
+        }
+        if (booking.getStatus() != BookingStatus.CHECKED_IN) {
+            throw new AppException(ErrorCode.ROOM_CHANGE_BOOKING_NOT_CHECKED_IN);
+        }
 
         Room oldRoom = booking.getRoom();
-        Room newRoom = roomRepository.findRoomByRoomIdForUpdate(roomChangeRequest.getNewRoomId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Room", "roomId", roomChangeRequest.getNewRoomId()));
+        Room newRoom = roomRepository.findRoomByRoomId(roomChangeRequest.getNewRoomId())
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_CHANGE_ROOM_NOT_FOUND));
 
         if (newRoom.getStatus() != RoomStatus.AVAILABLE) {
-            throw new IllegalArgumentException("This room is no longer available. Please choose another room.");
+            throw new AppException(ErrorCode.ROOM_CHANGE_ROOM_NOT_AVAILABLE);
         }
 
         if (newRoom.getRoomType().getMaxGuests() < booking.getNumberOfGuests()) {
-            throw new IllegalArgumentException("This room does not have enough capacity for your booking.");
+            throw new AppException(ErrorCode.ROOM_CHANGE_CAPACITY_EXCEEDED);
         }
 
         LocalDate changeDate = LocalDate.now();
         if (!booking.getCheckOutDate().isAfter(changeDate)) {
-            throw new IllegalArgumentException("This booking is no longer eligible for a room change.");
+            throw new AppException(ErrorCode.ROOM_CHANGE_BOOKING_NOT_ELIGIBLE);
         }
 
         boolean hasBlockingBooking = bookingRepository.existsBlockingBooking(
                 newRoom.getRoomId(),
                 changeDate,
                 booking.getCheckOutDate(),
-                Set.of(BookingStatus.PENDING, BookingStatus.CONFIRMED, BookingStatus.CHECKED_IN));
+                Set.of(
+                        BookingStatus.PENDING,
+                        BookingStatus.CONFIRMED,
+                        BookingStatus.CHECKED_IN,
+                        BookingStatus.ROOM_CHANGE_PENDING));
         if (hasBlockingBooking) {
-            throw new IllegalArgumentException("This room is reserved during the remainder of your stay.");
+            throw new AppException(ErrorCode.ROOM_CHANGE_ROOM_RESERVED);
         }
 
-        BookingStatus bookingStatus = booking.getStatus();
-        oldRoom.setStatus(RoomStatus.AVAILABLE);
-        newRoom.setStatus(RoomStatus.OCCUPIED);
-        booking.setRoom(newRoom);
-
-        BookingHistory bookingHistory = BookingHistory.builder()
+        BookingHistory pendingRequest = BookingHistory.builder()
                 .booking(booking)
                 .changedBy(booking.getCustomer())
-                .oldStatus(bookingStatus)
-                .newStatus(bookingStatus)
+                .oldStatus(BookingStatus.CHECKED_IN)
+                .newStatus(BookingStatus.ROOM_CHANGE_PENDING)
                 .action(BookingAction.CHANGE_ROOM)
                 .oldRoom(oldRoom)
                 .newRoom(newRoom)
-                .description("Room " + oldRoom.getRoomNumber() + " changed to room " + newRoom.getRoomNumber() + ".")
+                .description("Room change from room " + oldRoom.getRoomNumber()
+                        + " to room " + newRoom.getRoomNumber()
+                        + " is awaiting receptionist approval.")
                 .changedAt(LocalDateTime.now())
                 .build();
 
-        roomRepository.save(oldRoom);
-        roomRepository.save(newRoom);
+        booking.setStatus(BookingStatus.ROOM_CHANGE_PENDING);
         bookingRepository.save(booking);
-        bookingHistoryRepository.save(bookingHistory);
+        bookingHistoryRepository.save(pendingRequest);
         return true;
     }
 

@@ -111,3 +111,33 @@ tr:last-child td {
     color: red;
     font-size: 14px;
 }
+
+.review-actions {
+    display: grid;
+    gap: 8px;
+    min-width: 210px;
+}
+
+.room-change-review {
+    max-width: none;
+    margin-bottom: 20px;
+    border-color: #f59e0b;
+    background: #fffbeb;
+}
+
+.room-change-review h3 {
+    margin: 0;
+    color: #92400e;
+}
+
+.reject-form {
+    display: flex;
+    gap: 6px;
+}
+
+.reject-form input {
+    min-width: 130px;
+    padding: 7px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}

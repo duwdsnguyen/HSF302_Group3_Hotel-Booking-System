@@ -1,5 +1,6 @@
 package hsf.g3.hotel_booking_system.dto.guest.room.response;
 
+import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,6 +24,8 @@ public class RoomChangeHistoryDTO {
     private String newRoomNumber;
     private LocalDateTime changedAt;
     private String description;
+    private BookingStatus status;
+    private String changedByName;
 
     public String getChangedAtDisplay() {
         return changedAt == null ? "" : changedAt.format(DISPLAY_FORMAT);

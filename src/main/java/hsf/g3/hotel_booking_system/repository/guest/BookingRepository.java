@@ -20,6 +20,10 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT b FROM Booking b WHERE b.id = :bookingId")
+    Optional<Booking> findByIdForUpdate(Integer bookingId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT b FROM Booking b " +
             "WHERE b.actualCheckIn IS NOT NULL " +
             "AND b.actualCheckOut IS NULL " +
@@ -30,6 +34,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("SELECT b.room FROM Booking b " +
             "WHERE b.actualCheckIn IS NOT NULL " +
             "AND b.actualCheckOut IS NULL " +
+            "AND b.status = hsf.g3.hotel_booking_system.enums.room.BookingStatus.CHECKED_IN " +
             "AND b.customer.userId = :userId " +
             "ORDER BY b.room.roomNumber")
     List<Room> getCheckedInRooms(Long userId);
