@@ -36,7 +36,7 @@
                 <h2>Room information</h2>
                 <span class="badge"
                       th:classappend="${room.status.name() == 'AVAILABLE'} ? ' badge-available' : (${room.status.name() == 'MAINTENANCE'} ? ' badge-maintenance' : ' badge-occupied')"
-                      th:text="${room.status}">AVAILABLE</span>
+                      th:text="${room.status.label}">AVAILABLE</span>
             </div>
 
             <dl class="room-facts">

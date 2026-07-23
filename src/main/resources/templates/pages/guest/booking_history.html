@@ -146,7 +146,7 @@
                     <option value="">-- All Statuses --</option>
                     <option th:each="s : ${allStatuses}"
                             th:value="${s.name()}"
-                            th:text="${s.name()}"
+                            th:text="${s.label}"
                             th:selected="${s.name() == selectedStatus}">
                     </option>
                 </select>
@@ -177,7 +177,7 @@
             <div class="booking-meta">
                 <div class="total">$<span th:text="${#numbers.formatDecimal(b.totalAmount, 1, 2)}"></span></div>
                 <span th:class="'badge badge-' + ${b.status.name()}"
-                      th:text="${b.status.name()}"></span>
+                      th:text="${b.status.label}"></span>
                 <br>
                 <a th:href="@{/v1/guest/booking/{id}(id=${b.id})}" class="btn-detail">View Details</a>
             </div>

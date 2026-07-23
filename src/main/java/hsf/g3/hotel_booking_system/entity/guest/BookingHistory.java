@@ -57,7 +57,7 @@ public class BookingHistory extends Base {
     @JoinColumn(name = "new_room_id")
     Room newRoom;
 
-    @Column(name = "description", columnDefinition = "TEXT")
+    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
     String description;
 
     @Column(name = "changed_at", nullable = false)

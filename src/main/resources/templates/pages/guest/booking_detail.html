@@ -140,7 +140,7 @@
         <div class="card-header">
             <h3>Booking #<span th:text="${booking.id}"></span></h3>
             <span th:class="'badge badge-' + ${booking.status.name()}"
-                  th:text="${booking.status.name()}"></span>
+                  th:text="${booking.status.label}"></span>
         </div>
 
         <!-- Room images -->

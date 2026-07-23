@@ -215,10 +215,10 @@
                 <select id="status" name="status">
                     <option value="">All</option>
                     <option value="ACTIVE"
-                            th:selected="${selectedStatus != null and selectedStatus.name() == 'ACTIVE'}">ACTIVE
+                            th:selected="${selectedStatus != null and selectedStatus.name() == 'ACTIVE'}">Đang hoạt động
                     </option>
                     <option value="INACTIVE"
-                            th:selected="${selectedStatus != null and selectedStatus.name() == 'INACTIVE'}">INACTIVE
+                            th:selected="${selectedStatus != null and selectedStatus.name() == 'INACTIVE'}">Ngừng hoạt động
                     </option>
                 </select>
             </div>
@@ -251,7 +251,7 @@
                 <td>
                     <span class="status-badge"
                           th:classappend="${service.status.name() == 'ACTIVE'} ? ' status-active' : ' status-inactive' "
-                          th:text="${service.status}">
+                          th:text="${service.status.label}">
                     ACTIVE
                     </span>
                 </td>

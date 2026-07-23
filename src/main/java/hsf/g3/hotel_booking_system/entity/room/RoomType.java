@@ -20,10 +20,10 @@ public class RoomType {
     @Column(name = "room_type_id")
     private Integer roomTypeId;
 
-    @Column(name = "type_name", nullable = false, unique = true, length = 100)
+    @Column(name = "type_name", nullable = false, unique = true, columnDefinition = "NVARCHAR(100)")
     private String typeName;
 
-    @Column(name = "description", length = 500)
+    @Column(name = "description", columnDefinition = "NVARCHAR(500)")
     private String description;
 
     @Column(name = "max_guests", nullable = false)

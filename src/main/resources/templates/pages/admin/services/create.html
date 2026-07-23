@@ -162,8 +162,8 @@
             <div class="form-group">
                 <label>Status:</label>
                 <select th:field="*{status}">
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="INACTIVE">INACTIVE</option>
+                    <option value="ACTIVE">Đang hoạt động</option>
+                    <option value="INACTIVE">Ngừng hoạt động</option>
                 </select>
                 <p th:if="${#fields.hasErrors('status')}"
                    th:errors="*{status}"

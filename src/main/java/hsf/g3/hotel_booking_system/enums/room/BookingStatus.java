@@ -1,10 +1,20 @@
 package hsf.g3.hotel_booking_system.enums.room;
 
 public enum BookingStatus {
-    PENDING,
-    CONFIRMED,
-    CHECKED_IN,
-    CHECKED_OUT,
-    COMPLETED,
-    CANCELLED
+    PENDING("Chờ xác nhận"),
+    CONFIRMED("Đã xác nhận"),
+    CHECKED_IN("Đã nhận phòng"),
+    CHECKED_OUT("Đã trả phòng"),
+    COMPLETED("Hoàn thành"),
+    CANCELLED("Đã hủy");
+
+    private final String label;
+
+    BookingStatus(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 }

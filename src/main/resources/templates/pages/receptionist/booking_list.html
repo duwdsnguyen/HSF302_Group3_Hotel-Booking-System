@@ -57,7 +57,7 @@
                 <option value="ALL" th:selected="${currentStatus == 'ALL'}">Tất cả</option>
                 <option th:each="enumStatus : ${bookingStatus}"
                         th:value="${enumStatus.name()}"
-                        th:text="${enumStatus.name()}"
+                        th:text="${enumStatus.label}"
                         th:selected="${currentStatus == enumStatus.name()}">
                 </option>
             </select>
@@ -167,7 +167,7 @@
             <td th:text="${#temporals.format(b.checkInDate, 'dd/MM/yyyy')}"></td>
             <td th:text="${#temporals.format(b.checkOutDate, 'dd/MM/yyyy')}"></td>
             <td th:text="${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
-            <td th:text="${b.status}"></td>
+            <td th:text="${b.status.label}"></td>
             <td>
                 <a th:href="@{'/v1/receptionist/bookings/' + ${b.id} + '/detail'}" class="btn secondary">Xem chi
                     tiết</a>

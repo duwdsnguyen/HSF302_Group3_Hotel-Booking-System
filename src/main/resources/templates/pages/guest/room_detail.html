@@ -154,7 +154,7 @@
                         <div class="info-item">
                             <strong>Status:</strong>
                             <span th:class="${room.status.name() == 'AVAILABLE'} ? 'status-badge status-available' : 'status-badge status-unavailable'"
-                                th:text="${room.status}"></span>
+                                th:text="${room.status.label}"></span>
                         </div>
                         <div class="info-item" style="margin-top: 15px;">
                             <strong>Description:</strong> 
