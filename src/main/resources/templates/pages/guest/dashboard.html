@@ -3,90 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <title>Guest Dashboard</title>
+    <link rel="stylesheet" href="/css/auth/style.css">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .dashboard-container { max-width: 800px; margin: auto; }
-        .search-box {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .dashboard-wrapper {
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
         }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="date"], input[type="number"], select {
-            width: 100%; padding: 8px; box-sizing: border-box;
-            border: 1px solid #ccc; border-radius: 4px;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
         }
-        button {
-            background-color: #007bff; color: white; border: none;
-            padding: 10px 15px; border-radius: 4px; cursor: pointer;
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .filter-row .form-group {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 15px;
+        }
+        hr {
+            border: 0;
+            border-top: 1px solid #e5e7eb;
+            margin: 20px 0;
+        }
+        .section-title {
             font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
         }
-        button:hover { background-color: #0056b3; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     </style>
 </head>
-<body>
-    <div class="dashboard-container">
-        <div class="header">
-            <h2>Guest Dashboard</h2>
+<body class="login-body">
+<div class="dashboard-wrapper">
+    <div class="header">
+        <h2 class="login-title" style="margin: 0;">Guest Dashboard</h2>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <a th:href="@{/v1/guest/booking/history}" class="btn-login" style="background-color: #10b981; padding: 10px 20px; width: auto; text-decoration: none;">🗓️ My Bookings</a>
             <form th:action="@{/v1/auth/logout}" method="get">
-                <button type="submit" style="background-color: #dc3545;">Logout</button>
-            </form>
-        </div>
-
-        <div class="search-box">
-            <h3>Find a Room</h3>
-            <div th:if="${error}" class="alert alert-danger" style="color: red; margin-bottom: 15px;">
-                <span th:text="${error}"></span>
-            </div>
-            <form th:action="@{/v1/guest/search-rooms}" method="GET">
-                <div class="form-group">
-                    <label for="checkInDate">Check-in Date:</label>
-                    <input type="date" id="checkInDate" name="checkInDate" th:value="${checkIn}" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="checkOutDate">Check-out Date:</label>
-                    <input type="date" id="checkOutDate" name="checkOutDate" th:value="${checkOut}" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="numberOfGuests">Number of Guests:</label>
-                    <input type="number" id="numberOfGuests" name="numberOfGuests" min="1" th:value="${guests != null ? guests : 1}" required>
-                </div>
-                
-                <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
-                <h4 style="margin-top: 0;">Optional Filters</h4>
-
-                <div style="display: flex; gap: 15px;">
-                    <div class="form-group" style="flex: 1;">
-                        <label for="minPrice">Min Price ($):</label>
-                        <input type="number" id="minPrice" name="minPrice" th:value="${minPrice}" min="0" step="0.01">
-                    </div>
-
-                    <div class="form-group" style="flex: 1;">
-                        <label for="maxPrice">Max Price ($):</label>
-                        <input type="number" id="maxPrice" name="maxPrice" th:value="${maxPrice}" min="0" step="0.01">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="roomTypeId">Room Type:</label>
-                    <select id="roomTypeId" name="roomTypeId">
-                        <option value="">-- All Types --</option>
-                        <option th:each="type : ${roomTypes}"
-                                th:value="${type.roomTypeId}"
-                                th:selected="${roomTypeId == type.roomTypeId}"
-                                th:text="${type.typeName}">
-                        </option>
-                    </select>
-                </div>
-                
-                <button type="submit" style="width: 100%; margin-top: 10px;">Search Rooms</button>
+                <button type="submit" class="btn-login" style="background-color: #dc3545; padding: 10px 20px; width: auto;">Logout</button>
             </form>
         </div>
     </div>
+
+    <div class="login-card">
+        <div class="login-content">
+            <div class="login-header">
+                <h3 class="login-title">Find a Room</h3>
+                <p class="login-subtitle">Search for available rooms for your stay</p>
+            </div>
+            
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close"></button>
+            </div>
+
+            <form th:action="@{/v1/guest/search-rooms}" method="GET">
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="checkInDate" class="form-label">Check-in Date:</label>
+                        <input type="date" id="checkInDate" name="checkInDate" th:value="${checkIn}" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="checkOutDate" class="form-label">Check-out Date:</label>
+                        <input type="date" id="checkOutDate" name="checkOutDate" th:value="${checkOut}" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="numberOfGuests" class="form-label">Number of Guests:</label>
+                        <input type="number" id="numberOfGuests" name="numberOfGuests" min="1" th:value="${guests != null ? guests : 1}" class="form-control" required>
+                    </div>
+                </div>
+                
+                <hr>
+                <h4 class="section-title">Optional Filters</h4>
+
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="minPrice" class="form-label">Min Price ($):</label>
+                        <input type="number" id="minPrice" name="minPrice" th:value="${minPrice}" min="0" step="0.01" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maxPrice" class="form-label">Max Price ($):</label>
+                        <input type="number" id="maxPrice" name="maxPrice" th:value="${maxPrice}" min="0" step="0.01" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="roomTypeId" class="form-label">Room Type:</label>
+                        <div class="input-group">
+                            <select id="roomTypeId" name="roomTypeId" class="form-control">
+                                <option value="">-- All Types --</option>
+                                <option th:each="type : ${roomTypes}"
+                                        th:value="${type.roomTypeId}"
+                                        th:selected="${roomTypeId == type.roomTypeId}"
+                                        th:text="${type.typeName}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-login">Search Rooms</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

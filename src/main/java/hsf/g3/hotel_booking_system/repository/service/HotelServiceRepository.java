@@ -13,4 +13,6 @@ public interface HotelServiceRepository extends JpaRepository<HotelService, Long
     List<HotelService> findByServiceNameContainingIgnoreCase(String keyword);
     List<HotelService> findByStatus(ServiceStatus status);
     List<HotelService> findByServiceNameContainingIgnoreCaseAndStatus(String keyword, ServiceStatus status);
+    boolean existsByServiceNameIgnoreCase(String serviceName);
+    boolean existsByServiceNameIgnoreCaseAndServiceIdNot(String serviceName, Long serviceId);
 }

@@ -59,9 +59,10 @@ public class RoomTypeController {
     }
 
     @GetMapping("/edit/{id}")
-    public String showUpdateForm(@PathVariable Integer id, Model model){
+    public String showUpdateForm(@PathVariable Integer id, Model model) {
         model.addAttribute("roomType", roomTypeService.getRoomTypeById(id));
         model.addAttribute("formAction", "/v1/admin/room-types/edit/" + id);
+        model.addAttribute("roomTypeId", id);
         return "/pages/admin/room/room-type-form";
     }
 

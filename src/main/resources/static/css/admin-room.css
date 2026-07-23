@@ -1,7 +1,7 @@
 body {
     margin: 0;
-    background: #f5f7fb;
-    color: #1f2937;
+    background: #fffdf5;
+    color: #292524;
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -12,7 +12,7 @@ main {
 
 h1 {
     margin: 0 0 18px;
-    color: #111827;
+    color: #1c1410;
 }
 
 .page-actions,
@@ -29,7 +29,7 @@ h1 {
 .room-form {
     padding: 16px;
     background: #ffffff;
-    border: 1px solid #dbe1ea;
+    border: 1px solid #f0e2b6;
     border-radius: 8px;
 }
 
@@ -40,7 +40,7 @@ h1 {
 .room-form textarea {
     min-height: 36px;
     padding: 7px 10px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid #e6d7a8;
     border-radius: 6px;
     background: #ffffff;
 }
@@ -65,18 +65,27 @@ h1 {
     display: inline-block;
     min-height: 36px;
     padding: 8px 12px;
-    border: 1px solid #2563eb;
+    border: 1px solid #b45309;
     border-radius: 6px;
-    background: #2563eb;
+    background: #b45309;
     color: #ffffff;
     text-decoration: none;
     cursor: pointer;
 }
 
+.btn:hover {
+    background: #92400e;
+    border-color: #92400e;
+}
+
 .btn.secondary {
-    border-color: #94a3b8;
+    border-color: #a89a78;
     background: #ffffff;
-    color: #334155;
+    color: #57534e;
+}
+
+.btn.secondary:hover {
+    background: #fef8ea;
 }
 
 .btn.danger {
@@ -84,23 +93,28 @@ h1 {
     background: #dc2626;
 }
 
+.btn.danger:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
     background: #ffffff;
-    border: 1px solid #dbe1ea;
+    border: 1px solid #f0e2b6;
 }
 
 th,
 td {
     padding: 10px 12px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #f3e8c8;
     text-align: left;
 }
 
 th {
-    background: #eef2f7;
-    color: #374151;
+    background: #fef3c7;
+    color: #78350f;
 }
 
 tr:last-child td {
@@ -108,7 +122,7 @@ tr:last-child td {
 }
 
 .error {
-    color: red;
+    color: #dc2626;
     font-size: 14px;
 }
 

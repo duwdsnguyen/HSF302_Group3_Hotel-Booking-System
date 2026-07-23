@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Bookings</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; margin: 20px; background: #fffdf5; }
+        .page-container { max-width: 960px; margin: auto; }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .header h2 { margin: 0; font-size: 22px; color: #333; }
+        .btn-back {
+            background: #78716c; color: white; border: none;
+            padding: 8px 16px; border-radius: 4px; cursor: pointer;
+            font-size: 14px; text-decoration: none; display: inline-block;
+        }
+        .btn-back:hover { background: #57534e; }
+
+        /* Alerts */
+        .alert {
+            padding: 12px 16px; border-radius: 4px; margin-bottom: 16px; font-size: 14px;
+        }
+        .alert-danger  { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+        .alert-success { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+
+        /* Filter bar */
+        .filter-bar {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filter-bar .form-group { flex: 1; min-width: 160px; margin: 0; }
+        .filter-bar label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #555; }
+        .filter-bar input,
+        .filter-bar select {
+            width: 100%; padding: 8px 10px;
+            border: 1px solid #ccc; border-radius: 4px; font-size: 14px;
+        }
+        .btn-search {
+            background: #b45309; color: white; border: none;
+            padding: 8px 20px; border-radius: 4px; cursor: pointer;
+            font-size: 14px; white-space: nowrap; align-self: flex-end;
+        }
+        .btn-search:hover { background: #92400e; }
+        .btn-reset {
+            background: white; color: #78716c; border: 1px solid #ccc;
+            padding: 8px 16px; border-radius: 4px; cursor: pointer;
+            font-size: 14px; text-decoration: none; display: inline-block; white-space: nowrap;
+        }
+        .btn-reset:hover { background: #f8f9fa; }
+
+        /* Booking cards */
+        .booking-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            margin-bottom: 14px;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .booking-card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+
+        .booking-info { flex: 1; min-width: 200px; }
+        .booking-info .booking-id { font-size: 13px; color: #888; margin-bottom: 4px; }
+        .booking-info .room-name { font-size: 17px; font-weight: bold; color: #333; margin-bottom: 6px; }
+        .booking-info .dates { font-size: 13px; color: #555; }
+        .booking-info .guests { font-size: 13px; color: #555; margin-top: 2px; }
+
+        .booking-meta { text-align: right; }
+        .booking-meta .total { font-size: 18px; font-weight: bold; color: #b45309; margin-bottom: 8px; }
+
+        /* Status badges */
+        .badge {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .badge-PENDING     { background: #fff3cd; color: #856404; }
+        .badge-CONFIRMED   { background: #cff4fc; color: #055160; }
+        .badge-CHECKED_IN  { background: #d1e7dd; color: #0f5132; }
+        .badge-CHECKED_OUT { background: #e2e3e5; color: #41464b; }
+        .badge-COMPLETED   { background: #d1e7dd; color: #0f5132; }
+        .badge-CANCELLED   { background: #f8d7da; color: #842029; }
+
+        .btn-detail {
+            margin-top: 10px; display: inline-block;
+            background: #b45309; color: white; border: none;
+            padding: 7px 16px; border-radius: 4px; cursor: pointer;
+            font-size: 13px; text-decoration: none;
+        }
+        .btn-detail:hover { background: #92400e; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center; padding: 60px 20px;
+            background: white; border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            color: #888;
+        }
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-state p { font-size: 15px; margin: 0; }
+    </style>
+</head>
+<body>
+<div class="page-container">
+
+    <!-- Header -->
+    <div class="header">
+        <h2>My Bookings</h2>
+        <a th:href="@{/v1/guest/dashboard}" class="btn-back">← Back to Dashboard</a>
+    </div>
+
+    <!-- Flash messages -->
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+        <form th:action="@{/v1/guest/booking/history}" method="GET"
+              style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; width:100%;">
+
+            <div class="form-group">
+                <label>Search (room number / type)</label>
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="e.g. 101, Deluxe...">
+            </div>
+
+            <div class="form-group" style="max-width:200px;">
+                <label>Status</label>
+                <select name="status">
+                    <option value="">-- All Statuses --</option>
+                    <option th:each="s : ${allStatuses}"
+                            th:value="${s.name()}"
+                            th:text="${s.name()}"
+                            th:selected="${s.name() == selectedStatus}">
+                    </option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-search">Search</button>
+            <a th:href="@{/v1/guest/booking/history}" class="btn-reset">Reset</a>
+        </form>
+    </div>
+
+    <!-- Booking list -->
+    <div th:if="${bookings != null and !bookings.isEmpty()}">
+        <div th:each="b : ${bookings}" class="booking-card">
+            <div class="booking-info">
+                <div class="booking-id">Booking #<span th:text="${b.id}"></span></div>
+                <div class="room-name">
+                    Room <span th:text="${b.roomNumber}"></span>
+                    <span style="font-weight:normal; font-size:14px; color:#666;"
+                          th:text="'— ' + ${b.roomTypeName}"></span>
+                </div>
+                <div class="dates">
+                    📅 <span th:text="${b.checkInDate}"></span>
+                    → <span th:text="${b.checkOutDate}"></span>
+                </div>
+                <div class="guests">👤 <span th:text="${b.numberOfGuests}"></span> guest(s)</div>
+            </div>
+
+            <div class="booking-meta">
+                <div class="total">$<span th:text="${#numbers.formatDecimal(b.totalAmount, 1, 2)}"></span></div>
+                <span th:class="'badge badge-' + ${b.status.name()}"
+                      th:text="${b.status.name()}"></span>
+                <br>
+                <a th:href="@{/v1/guest/booking/{id}(id=${b.id})}" class="btn-detail">View Details</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty state -->
+    <div th:if="${bookings == null or bookings.isEmpty()}" class="empty-state">
+        <div class="icon">🗓️</div>
+        <p>No bookings found. <a th:href="@{/v1/guest/dashboard}">Find a room</a> to get started.</p>
+    </div>
+
+</div>
+</body>
+</html>
