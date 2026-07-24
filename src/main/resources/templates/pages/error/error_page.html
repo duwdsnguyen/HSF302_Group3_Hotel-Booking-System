@@ -26,11 +26,11 @@
     </div>
 
     <div class="button-row">
-        <button onclick="window.location.reload();" class="btn btn-secondary">
+        <button onclick="window.history.back();" class="btn btn-secondary">
             Thử tải lại trang
         </button>
 
-        <a th:href="@{/}" class="btn btn-primary">
+        <a th:href="@{/v1/auth/login}" class="btn btn-primary">
             Về trang đăng nhập
         </a>
     </div>

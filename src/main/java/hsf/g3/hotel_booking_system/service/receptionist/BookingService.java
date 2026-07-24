@@ -1,9 +1,9 @@
 package hsf.g3.hotel_booking_system.service.receptionist;
 
 import hsf.g3.hotel_booking_system.dto.receptionist.BookingDetailDTO;
+import hsf.g3.hotel_booking_system.dto.receptionist.BookingHistoryDTO;
 import hsf.g3.hotel_booking_system.dto.receptionist.BookingSummaryDTO;
 import hsf.g3.hotel_booking_system.entity.guest.Booking;
-import hsf.g3.hotel_booking_system.entity.guest.BookingHistory;
 import hsf.g3.hotel_booking_system.enums.room.BookingStatus;
 import org.springframework.data.domain.Page;
 
@@ -24,7 +24,7 @@ public interface BookingService {
 
     void checkOut(int bookingId);
 
-    BookingHistory getPendingRoomChange(int bookingId);
+    BookingHistoryDTO getPendingRoomChange(int bookingId);
 
     void approveRoomChange(int bookingId, Long receptionistId);
 

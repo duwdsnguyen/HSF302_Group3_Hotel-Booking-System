@@ -10,6 +10,8 @@ import hsf.g3.hotel_booking_system.entity.user.ResetToken;
 import hsf.g3.hotel_booking_system.entity.user.Role;
 import hsf.g3.hotel_booking_system.entity.user.User;
 import hsf.g3.hotel_booking_system.enums.user.AppRole;
+import hsf.g3.hotel_booking_system.exception.AppException;
+import hsf.g3.hotel_booking_system.exception.ErrorCode;
 import hsf.g3.hotel_booking_system.repository.user.ResetTokenRepository;
 import hsf.g3.hotel_booking_system.repository.user.RoleRepository;
 import hsf.g3.hotel_booking_system.repository.user.UserRepository;
@@ -46,12 +48,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfoDTO login(LoginRequestDTO loginRequestDTO) {
-        User userFromDTO = userRepository.findUserByEmailWithRoles(loginRequestDTO.getEmail()).orElse(null);
-        if(userFromDTO == null || !PasswordUtil.checkPassword(loginRequestDTO.getPassword(), userFromDTO.getPassword())){
+        User userFromDB = userRepository.findUserByEmailWithRoles(loginRequestDTO.getEmail()).orElse(null);
+        if(userFromDB == null || !PasswordUtil.checkPassword(loginRequestDTO.getPassword(), userFromDB.getPassword())){
             return null;
         }
 
-        return modelMapper.map(userFromDTO,UserInfoDTO.class);
+        return modelMapper.map(userFromDB,UserInfoDTO.class);
     }
 
     @Override
@@ -88,7 +90,7 @@ public class UserServiceImpl implements UserService {
         ResetToken resetToken = new ResetToken();
         resetToken.setToken(UUID.randomUUID().toString());
         resetToken.setEmail(email);
-        User user = userRepository.findUserByEmail(email).orElse(null);
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         resetToken.setUser(user);
         resetToken.setExpiredAt(LocalDateTime.now().plusHours(24));
         return resetTokenRepository.save(resetToken);

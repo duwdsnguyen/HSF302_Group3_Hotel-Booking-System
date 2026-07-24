@@ -102,6 +102,7 @@ public class GuestBookingServiceImpl implements GuestBookingService {
         booking.setNumberOfGuests(guests);
         booking.setTotalAmount(totalAmount);
         booking.setStatus(BookingStatus.PENDING);
+        selectedRoom.setStatus(RoomStatus.OCCUPIED);
 
         List<hsf.g3.hotel_booking_system.entity.guest.BookingService> bookingServices = selectedServices.stream()
                 .map(service -> {
