@@ -14,9 +14,7 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS("AUTHENTICATION","Email đã được sử dụng",HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND("AUTHENTICATION","Không tìm thấy người dùng",HttpStatus.NOT_FOUND),
     UNAUTHORIZED("AUTHENTICATION","Không có quyền", HttpStatus.BAD_REQUEST),
-
-    ROOM_CHANGE_AUTHENTICATION_REQUIRED(
-            "ROOM_CHANGE_001", "Bạn cần đăng nhập để yêu cầu chuyển phòng", HttpStatus.UNAUTHORIZED),
+    
     ROOM_CHANGE_SELECTION_REQUIRED(
             "ROOM_CHANGE_002", "Vui lòng chọn phòng hiện tại và phòng muốn chuyển đến", HttpStatus.BAD_REQUEST),
     ROOM_CHANGE_SAME_ROOM(
