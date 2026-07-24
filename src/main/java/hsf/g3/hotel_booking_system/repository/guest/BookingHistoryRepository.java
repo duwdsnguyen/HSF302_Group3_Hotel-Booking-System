@@ -29,10 +29,7 @@ public interface BookingHistoryRepository extends JpaRepository<BookingHistory,L
             "AND h.action = :action " +
             "AND h.newStatus = :status " +
             "ORDER BY h.changedAt DESC, h.bookingHistoryId DESC")
-    List<BookingHistory> findRoomChanges(
-            @Param("bookingId") Integer bookingId,
-            @Param("action") BookingAction action,
-            @Param("status") BookingStatus status);
+    List<BookingHistory> findRoomChanges(Integer bookingId, BookingAction action, BookingStatus status);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT h FROM BookingHistory h " +
@@ -40,8 +37,5 @@ public interface BookingHistoryRepository extends JpaRepository<BookingHistory,L
             "AND h.action = :action " +
             "AND h.newStatus = :status " +
             "ORDER BY h.changedAt DESC, h.bookingHistoryId DESC")
-    List<BookingHistory> findRoomChangesForUpdate(
-            @Param("bookingId") Integer bookingId,
-            @Param("action") BookingAction action,
-            @Param("status") BookingStatus status);
+    List<BookingHistory> findRoomChangesForUpdate(Integer bookingId, BookingAction action, BookingStatus status);
 }

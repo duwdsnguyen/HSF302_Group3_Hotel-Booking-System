@@ -116,10 +116,7 @@ public class GuestRoomServiceImpl implements GuestRoomService {
     }
 
 
-    @Override
-    public List<Room> searchAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfGuests) {
-        return List.of();
-    }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -186,7 +183,7 @@ public class GuestRoomServiceImpl implements GuestRoomService {
     @Override
     public boolean requestRoomChange(RoomChangeRequest roomChangeRequest, UserInfoDTO userInfoDTO) {
         if (userInfoDTO == null || userInfoDTO.getUserId() == null) {
-            throw new AppException(ErrorCode.ROOM_CHANGE_AUTHENTICATION_REQUIRED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         if (roomChangeRequest == null

@@ -12,7 +12,6 @@ import hsf.g3.hotel_booking_system.dto.user.UserInfoDTO;
 import hsf.g3.hotel_booking_system.entity.room.Room;
 
 public interface GuestRoomService {
-    List<Room> searchAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfGuests);
     RoomResponse getAllAvailableRoom(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
     List<RoomDTO> getCheckedInRooms(UserInfoDTO userInfoDTO);
     List<RoomChangeHistoryDTO> getRoomChangeHistory(UserInfoDTO userInfoDTO);
