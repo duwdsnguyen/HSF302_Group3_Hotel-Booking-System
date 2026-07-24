@@ -1,6 +1,7 @@
 package hsf.g3.hotel_booking_system.service.receptionist;
 
 import hsf.g3.hotel_booking_system.dto.receptionist.BookingDetailDTO;
+import hsf.g3.hotel_booking_system.dto.receptionist.BookingHistoryDTO;
 import hsf.g3.hotel_booking_system.dto.receptionist.BookingSummaryDTO;
 import hsf.g3.hotel_booking_system.entity.guest.Booking;
 import hsf.g3.hotel_booking_system.entity.guest.BookingHistory;
@@ -141,20 +142,64 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public BookingHistory getPendingRoomChange(int bookingId) {
-        List<BookingHistory> requests = bookingHistoryRepository.findRoomChanges(
-                bookingId,
-                BookingAction.CHANGE_ROOM,
-                BookingStatus.ROOM_CHANGE_PENDING);
-        return requests.isEmpty() ? null : requests.getFirst();
+    public BookingHistoryDTO getPendingRoomChange(int bookingId) {
+        return bookingHistoryRepository.findRoomChanges(
+                        bookingId,
+                        BookingAction.CHANGE_ROOM,
+                        BookingStatus.ROOM_CHANGE_PENDING)
+                .stream()
+                .findFirst()
+                .map(this::toBookingHistoryDTO)
+                .orElse(null);
+    }
+
+    private BookingHistoryDTO toBookingHistoryDTO(BookingHistory history) {
+        return BookingHistoryDTO.builder()
+                .bookingHistoryId(history.getBookingHistoryId())
+                .bookingId(history.getBooking().getId())
+                .changedById(history.getChangedBy() == null
+                        ? null
+                        : history.getChangedBy().getUserId())
+                .changedByName(history.getChangedBy() == null
+                        ? null
+                        : history.getChangedBy().getFullName())
+                .oldStatus(history.getOldStatus())
+                .newStatus(history.getNewStatus())
+                .action(history.getAction())
+                .oldRoomId(history.getOldRoom() == null
+                        ? null
+                        : history.getOldRoom().getRoomId())
+                .oldRoomNumber(history.getOldRoom() == null
+                        ? null
+                        : history.getOldRoom().getRoomNumber())
+                .newRoomId(history.getNewRoom() == null
+                        ? null
+                        : history.getNewRoom().getRoomId())
+                .newRoomNumber(history.getNewRoom() == null
+                        ? null
+                        : history.getNewRoom().getRoomNumber())
+                .description(history.getDescription())
+                .changedAt(history.getChangedAt())
+                .build();
     }
 
     @Override
     public void approveRoomChange(int bookingId, Long receptionistId) {
-        User receptionist = getReceptionist(receptionistId);
-        Booking booking = getPendingRoomChangeBooking(bookingId);
-        BookingHistory request = getPendingRoomChangeForUpdate(bookingId);
-
+        User receptionist =  userRepository.findById(receptionistId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Booking booking = bookingRepository.findByIdForUpdate(bookingId)
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_CHANGE_BOOKING_NOT_FOUND));
+        if (booking.getStatus() != BookingStatus.ROOM_CHANGE_PENDING) {
+            throw new AppException(ErrorCode.ROOM_CHANGE_REQUEST_NOT_PENDING);
+        }
+        List<BookingHistory> requests = bookingHistoryRepository.findRoomChangesForUpdate(
+                bookingId,
+                BookingAction.CHANGE_ROOM,
+                BookingStatus.ROOM_CHANGE_PENDING);
+        if (requests.isEmpty()) {
+            throw new AppException(ErrorCode.ROOM_CHANGE_REQUEST_NOT_FOUND);
+        }
+        BookingHistory request = requests.getFirst();
         if (booking.getActualCheckIn() == null || booking.getActualCheckOut() != null) {
             throw new AppException(ErrorCode.ROOM_CHANGE_BOOKING_NOT_CHECKED_IN);
         }
@@ -171,84 +216,15 @@ public class BookingServiceImpl implements BookingService {
             throw new AppException(ErrorCode.ROOM_CHANGE_ROOM_NOT_FOUND);
         }
 
-        Room oldRoom = findRoom(lockedRooms, oldRoomId);
-        Room newRoom = findRoom(lockedRooms, newRoomId);
-        validateTargetRoom(booking, newRoom);
-
-        oldRoom.setStatus(RoomStatus.AVAILABLE);
-        newRoom.setStatus(RoomStatus.OCCUPIED);
-        booking.setRoom(newRoom);
-        booking.setStatus(BookingStatus.CHECKED_IN);
-
-        request.setChangedBy(receptionist);
-        request.setNewStatus(BookingStatus.ROOM_CHANGE_APPROVED);
-        request.setDescription("Receptionist approved room change from room "
-                + oldRoom.getRoomNumber() + " to room " + newRoom.getRoomNumber() + ".");
-
-        roomRepository.save(oldRoom);
-        roomRepository.save(newRoom);
-        bookingRepository.save(booking);
-        bookingHistoryRepository.save(request);
-    }
-
-    @Override
-    public void rejectRoomChange(int bookingId, Long receptionistId, String reason) {
-        User receptionist = getReceptionist(receptionistId);
-        Booking booking = getPendingRoomChangeBooking(bookingId);
-        BookingHistory request = getPendingRoomChangeForUpdate(bookingId);
-        String normalizedReason = reason == null ? "" : reason.trim();
-        if (normalizedReason.length() > 500) {
-            throw new AppException(ErrorCode.ROOM_CHANGE_REJECTION_REASON_TOO_LONG);
-        }
-
-        booking.setStatus(BookingStatus.CHECKED_IN);
-        request.setChangedBy(receptionist);
-        request.setNewStatus(BookingStatus.ROOM_CHANGE_REJECTED);
-        request.setDescription("Receptionist rejected room change from room "
-                + request.getOldRoom().getRoomNumber() + " to room "
-                + request.getNewRoom().getRoomNumber()
-                + (normalizedReason.isEmpty() ? "." : ". Reason: " + normalizedReason));
-
-        bookingRepository.save(booking);
-        bookingHistoryRepository.save(request);
-    }
-
-    private Booking getPendingRoomChangeBooking(int bookingId) {
-        Booking booking = bookingRepository.findByIdForUpdate(bookingId)
-                .orElseThrow(() -> new AppException(ErrorCode.ROOM_CHANGE_BOOKING_NOT_FOUND));
-        if (booking.getStatus() != BookingStatus.ROOM_CHANGE_PENDING) {
-            throw new AppException(ErrorCode.ROOM_CHANGE_REQUEST_NOT_PENDING);
-        }
-        return booking;
-    }
-
-    private BookingHistory getPendingRoomChangeForUpdate(int bookingId) {
-        List<BookingHistory> requests = bookingHistoryRepository.findRoomChangesForUpdate(
-                bookingId,
-                BookingAction.CHANGE_ROOM,
-                BookingStatus.ROOM_CHANGE_PENDING);
-        if (requests.isEmpty()) {
-            throw new AppException(ErrorCode.ROOM_CHANGE_REQUEST_NOT_FOUND);
-        }
-        return requests.getFirst();
-    }
-
-    private User getReceptionist(Long receptionistId) {
-        if (receptionistId == null) {
-            throw new AppException(ErrorCode.ROOM_CHANGE_RECEPTIONIST_SESSION_INVALID);
-        }
-        return userRepository.findById(receptionistId)
-                .orElseThrow(() -> new AppException(ErrorCode.ROOM_CHANGE_RECEPTIONIST_NOT_FOUND));
-    }
-
-    private Room findRoom(List<Room> rooms, Integer roomId) {
-        return rooms.stream()
-                .filter(room -> room.getRoomId().equals(roomId))
+        Room oldRoom =  lockedRooms.stream()
+                .filter(room -> room.getRoomId().equals(oldRoomId))
                 .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_CHANGE_ROOM_NOT_FOUND));
-    }
+        Room newRoom =  lockedRooms.stream()
+                .filter(room -> room.getRoomId().equals(newRoomId))
+                .findFirst()
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_CHANGE_ROOM_NOT_FOUND));
 
-    private void validateTargetRoom(Booking booking, Room newRoom) {
         if (newRoom.getStatus() != RoomStatus.AVAILABLE) {
             throw new AppException(ErrorCode.ROOM_CHANGE_ROOM_NOT_AVAILABLE);
         }
@@ -273,7 +249,63 @@ public class BookingServiceImpl implements BookingService {
         if (hasBlockingBooking) {
             throw new AppException(ErrorCode.ROOM_CHANGE_ROOM_RESERVED);
         }
+
+        oldRoom.setStatus(RoomStatus.AVAILABLE);
+        newRoom.setStatus(RoomStatus.OCCUPIED);
+        booking.setRoom(newRoom);
+        booking.setStatus(BookingStatus.CHECKED_IN);
+
+        request.setChangedBy(receptionist);
+        request.setNewStatus(BookingStatus.ROOM_CHANGE_APPROVED);
+        request.setDescription("Receptionist approved room change from room "
+                + oldRoom.getRoomNumber() + " to room " + newRoom.getRoomNumber() + ".");
+
+        roomRepository.save(oldRoom);
+        roomRepository.save(newRoom);
+        bookingRepository.save(booking);
+        bookingHistoryRepository.save(request);
     }
+
+    @Override
+    public void rejectRoomChange(int bookingId, Long receptionistId, String reason) {
+        User receptionist =  userRepository.findById(receptionistId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Booking booking = bookingRepository.findByIdForUpdate(bookingId)
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_CHANGE_BOOKING_NOT_FOUND));
+        if (booking.getStatus() != BookingStatus.ROOM_CHANGE_PENDING) {
+            throw new AppException(ErrorCode.ROOM_CHANGE_REQUEST_NOT_PENDING);
+        }
+        List<BookingHistory> requests = bookingHistoryRepository.findRoomChangesForUpdate(
+                bookingId,
+                BookingAction.CHANGE_ROOM,
+                BookingStatus.ROOM_CHANGE_PENDING);
+        if (requests.isEmpty()) {
+            throw new AppException(ErrorCode.ROOM_CHANGE_REQUEST_NOT_FOUND);
+        }
+        BookingHistory request = requests.getFirst();
+        String normalizedReason = reason == null ? "" : reason.trim();
+        if (normalizedReason.length() > 500) {
+            throw new AppException(ErrorCode.ROOM_CHANGE_REJECTION_REASON_TOO_LONG);
+        }
+
+        booking.setStatus(BookingStatus.CHECKED_IN);
+        request.setChangedBy(receptionist);
+        request.setNewStatus(BookingStatus.ROOM_CHANGE_REJECTED);
+        request.setDescription("Receptionist rejected room change from room "
+                + request.getOldRoom().getRoomNumber() + " to room "
+                + request.getNewRoom().getRoomNumber()
+                + (normalizedReason.isEmpty() ? "." : ". Reason: " + normalizedReason));
+
+        bookingRepository.save(booking);
+        bookingHistoryRepository.save(request);
+    }
+
+
+
+
+
+
+
 
     private BookingDetailDTO toDto(Booking booking) {
         BookingDetailDTO dto = new BookingDetailDTO();
