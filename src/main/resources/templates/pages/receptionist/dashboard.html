@@ -3,23 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Receptionist Dashboard</title>
-    <link rel="stylesheet" th:href="@{/css/admin-room.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}">
 </head>
 <body>
 <div th:replace="~{layout/header :: header}"></div>
 
-<main>
-    <h1>Trang Chủ Lễ Tân (Dashboard)</h1>
-    <p>Chào mừng bạn đến với hệ thống quản lý khách sạn.</p>
-    
-    <div style="margin-top: 20px;">
-        <a th:href="@{/v1/receptionist/bookings}" class="btn">
-            Truy cập Quản Lý Booking
-        </a>
-        <a th:href="@{/v1/receptionist/bookings(status='ROOM_CHANGE_PENDING')}" class="btn secondary">
-            Booking đang chờ duyệt chuyển phòng
-        </a>
-    </div>
+<main class="dashboard">
+    <section class="dashboard-header">
+        <div>
+            <h1>Receptionist Dashboard</h1>
+            <p>Quản lý đặt phòng, check-in/out, và yêu cầu chuyển phòng.</p>
+        </div>
+    </section>
+
+    <section class="module-grid">
+        <article class="module-card">
+            <h2>Quản Lý Đặt Phòng</h2>
+            <p>Xem, tìm kiếm, lọc, xác nhận, hủy, check-in, check-out các đơn đặt phòng.</p>
+            <div class="module-actions">
+                <a class="btn" th:href="@{/v1/receptionist/bookings}">Danh sách Booking</a>
+            </div>
+        </article>
+
+        <article class="module-card">
+            <h2>Yêu Cầu Chuyển Phòng</h2>
+            <p>Xem và duyệt/từ chối các yêu cầu đổi phòng từ khách hàng.</p>
+            <div class="module-actions">
+                <a class="btn" th:href="@{/v1/receptionist/bookings(status='ROOM_CHANGE_PENDING')}">Booking chờ
+                    duyệt</a>
+            </div>
+        </article>
+    </section>
 </main>
 
 <div th:replace="~{layout/footer :: footer}"></div>

@@ -4,6 +4,121 @@
     <meta charset="UTF-8">
     <title>Quản Lý Đơn Đặt Phòng</title>
     <link rel="stylesheet" th:href="@{/css/admin-room.css}">
+    <style>
+
+        .summary-grid {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 130px;
+            background: #ffffff;
+            border: 1px solid #f0e2b6;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1c1410;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: #78716c;
+        }
+
+        .filter-card {
+            padding: 16px;
+            background: #ffffff;
+            border: 1px solid #f0e2b6;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .filter-grid {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #57534e;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 7px 10px;
+            border: 1px solid #e6d7a8;
+            border-radius: 6px;
+            background: #ffffff;
+            min-height: 36px;
+            font-size: 14px;
+            color: #292524;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            min-height: 32px;
+            font-size: 13px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 6px 10px;
+            min-height: 32px;
+            font-size: 13px;
+        }
+
+        .page-info {
+            padding: 4px 10px;
+            font-size: 13px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        .pagination .btn {
+            padding: 6px 10px;
+            font-size: 13px;
+        }
+
+        .pagination .page-info {
+            padding: 6px 12px;
+            font-size: 14px;
+            color: #57534e;
+        }
+
+        .btn.disabled {
+            opacity: 0.45;
+            cursor: default;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="~{layout/header :: header}"></div>
@@ -11,137 +126,129 @@
 <main>
     <h1>Quản Lý Đơn Đặt Phòng</h1>
 
+    <div class="page-actions">
+        <a class="btn secondary" th:href="@{/v1/receptionist/dashboard}">← Back to Dashboard</a>
+    </div>
+
     <div th:if="${message}" class="error" style="color: green;" th:text="${message}"></div>
     <div th:if="${error}" class="error" th:text="${error}"></div>
 
-    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
-        <div style="flex: 1; min-width: 130px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
-            <div style="font-size: 22px; font-weight: bold;" th:text="${summary.totalBookings}">0</div>
-            <div style="font-size: 13px; color: #555;">Tổng đơn</div>
+    <div class="summary-grid">
+        <div class="stat-card">
+            <div class="number" th:text="${summary.totalBookings}">0</div>
+            <div class="label">Tổng đơn</div>
         </div>
-        <div style="flex: 1; min-width: 130px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
-            <div style="font-size: 22px; font-weight: bold; color: #d97706;" th:text="${summary.pendingCount}">0</div>
-            <div style="font-size: 13px; color: #555;">Chờ xác nhận</div>
+        <div class="stat-card">
+            <div class="number" th:text="${summary.pendingCount}">0</div>
+            <div class="label">Chờ xác nhận</div>
         </div>
-        <div style="flex: 1; min-width: 130px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
-            <div style="font-size: 22px; font-weight: bold; color: #2563eb;" th:text="${summary.confirmedCount}">0</div>
-            <div style="font-size: 13px; color: #555;">Đã xác nhận</div>
+        <div class="stat-card">
+            <div class="number" th:text="${summary.confirmedCount}">0</div>
+            <div class="label">Đã xác nhận</div>
         </div>
-        <div style="flex: 1; min-width: 130px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
-            <div style="font-size: 22px; font-weight: bold; color: #16a34a;" th:text="${summary.checkedInCount}">0</div>
-            <div style="font-size: 13px; color: #555;">Đã check-in</div>
+        <div class="stat-card">
+            <div class="number" th:text="${summary.checkedInCount}">0</div>
+            <div class="label">Đã check-in</div>
         </div>
-        <div style="flex: 1; min-width: 130px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
-            <div style="font-size: 22px; font-weight: bold; color: #6b7280;" th:text="${summary.checkedOutCount}">0
+        <div class="stat-card">
+            <div class="number" th:text="${summary.checkedOutCount}">0</div>
+            <div class="label">Đã check-out</div>
+        </div>
+        <div class="stat-card" style="min-width: 150px;">
+            <div class="number" style="font-size: 20px;">
+                <span th:text="${#numbers.formatDecimal(summary.totalRevenue, 0, 'COMMA', 0, 'POINT')}">0</span>
+                <span style="font-size: 12px;"> VNĐ</span>
             </div>
-            <div style="font-size: 13px; color: #555;">Đã check-out</div>
-        </div>
-        <div style="flex: 1; min-width: 130px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
-            <div style="font-size: 22px; font-weight: bold; color: #dc2626;" th:text="${summary.cancelledCount}">0</div>
-            <div style="font-size: 13px; color: #555;">Đã hủy</div>
-        </div>
-        <div style="flex: 1; min-width: 150px; background: #fff; border: 1px solid #dbe1ea; border-radius: 8px; padding: 12px; text-align: center;">
-            <div style="font-size: 20px; font-weight: bold;">
-                <span th:text="${#numbers.formatDecimal(summary.totalRevenue, 0, 'COMMA', 0, 'POINT')}">0</span><span
-                    style="font-size: 12px;"> VNĐ</span>
-            </div>
-            <div style="font-size: 13px; color: #555;">Doanh thu</div>
+            <div class="label">Doanh thu</div>
         </div>
     </div>
 
-    <form action="/v1/receptionist/bookings" method="get"
-          style="display: flex; gap: 15px; margin-bottom: 25px; align-items: flex-end; flex-wrap: wrap;">
-        <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-weight: bold; font-size: 14px;">Trạng thái</label>
-            <select name="status" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; min-width: 150px;">
-                <option value="ALL" th:selected="${currentStatus == 'ALL'}">Tất cả</option>
-                <option th:each="enumStatus : ${bookingStatus}"
-                        th:value="${enumStatus.name()}"
-                        th:text="${enumStatus.label}"
-                        th:selected="${currentStatus == enumStatus.name()}">
-                </option>
-            </select>
-        </div>
+    <div class="filter-card">
+        <form th:action="@{/v1/receptionist/bookings}" method="get" class="filter-grid">
+            <div class="filter-group">
+                <label>Trạng thái</label>
+                <select name="status" style="min-width: 150px;">
+                    <option value="ALL" th:selected="${currentStatus == 'ALL'}">Tất cả</option>
+                    <option th:each="enumStatus : ${bookingStatus}"
+                            th:value="${enumStatus.name()}"
+                            th:text="${enumStatus.label}"
+                            th:selected="${currentStatus == enumStatus.name()}">
+                    </option>
+                </select>
+            </div>
 
-        <div style="display: flex; flex-direction: column; gap: 15px;">
-            <label style="font-weight: bold; font-size: 14px;">Khách hàng</label>
-            <input type="text" name="customerName" placeholder="Tên khách hàng..." th:value="${customerName}"
-                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-        </div>
+            <div class="filter-group">
+                <label>Khách hàng</label>
+                <input type="text" name="customerName" placeholder="Tên khách hàng..." th:value="${customerName}">
+            </div>
 
-        <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-weight: bold; font-size: 14px;">Giá từ</label>
-            <input type="number" name="minPrice" placeholder="VD: 1000000" step="1000000" th:value="${minPrice}"
-                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-        </div>
+            <div class="filter-group">
+                <label>Giá từ</label>
+                <input type="number" name="minPrice" placeholder="VD: 1000000" step="1000000" th:value="${minPrice}">
+            </div>
 
-        <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-weight: bold; font-size: 14px;">Đến mức giá</label>
-            <input type="number" name="maxPrice" placeholder="VD: 5000000" step="1000000" th:value="${maxPrice}"
-                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-        </div>
+            <div class="filter-group">
+                <label>Đến mức giá</label>
+                <input type="number" name="maxPrice" placeholder="VD: 5000000" step="1000000" th:value="${maxPrice}">
+            </div>
 
-        <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-weight: bold; font-size: 14px;">Mã đơn</label>
-            <input type="number" name="bookingId" placeholder="VD: 1" th:value="${bookingId}"
-                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; min-width: 100px;">
-        </div>
+            <div class="filter-group">
+                <label>Mã đơn</label>
+                <input type="number" name="bookingId" placeholder="VD: 1" th:value="${bookingId}"
+                       style="min-width: 100px;">
+            </div>
 
-        <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-weight: bold; font-size: 14px;">SĐT khách</label>
-            <input type="text" name="phone" placeholder="Số điện thoại..." th:value="${phone}"
-                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-        </div>
+            <div class="filter-group">
+                <label>SĐT khách</label>
+                <input type="text" name="phone" placeholder="Số điện thoại..." th:value="${phone}">
+            </div>
 
-        <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-weight: bold; font-size: 14px;">Check-in từ</label>
-            <input type="date" name="checkInFrom"
-                   th:value="${checkInFrom != null ? #temporals.format(checkInFrom, 'yyyy-MM-dd') : ''}"
-                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-        </div>
+            <div class="filter-group">
+                <label>Check-in từ</label>
+                <input type="date" name="checkInFrom"
+                       th:value="${checkInFrom != null ? #temporals.format(checkInFrom, 'yyyy-MM-dd') : ''}">
+            </div>
 
-        <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-weight: bold; font-size: 14px;">Check-in đến</label>
-            <input type="date" name="checkInTo"
-                   th:value="${checkInTo != null ? #temporals.format(checkInTo, 'yyyy-MM-dd') : ''}"
-                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-        </div>
+            <div class="filter-group">
+                <label>Check-in đến</label>
+                <input type="date" name="checkInTo"
+                       th:value="${checkInTo != null ? #temporals.format(checkInTo, 'yyyy-MM-dd') : ''}">
+            </div>
 
-        <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-weight: bold; font-size: 14px;">Check-out từ</label>
-            <input type="date" name="checkOutFrom"
-                   th:value="${checkOutFrom != null ? #temporals.format(checkOutFrom, 'yyyy-MM-dd') : ''}"
-                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-        </div>
+            <div class="filter-group">
+                <label>Check-out từ</label>
+                <input type="date" name="checkOutFrom"
+                       th:value="${checkOutFrom != null ? #temporals.format(checkOutFrom, 'yyyy-MM-dd') : ''}">
+            </div>
 
-        <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-weight: bold; font-size: 14px;">Check-out đến</label>
-            <input type="date" name="checkOutTo"
-                   th:value="${checkOutTo != null ? #temporals.format(checkOutTo, 'yyyy-MM-dd') : ''}"
-                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-        </div>
+            <div class="filter-group">
+                <label>Check-out đến</label>
+                <input type="date" name="checkOutTo"
+                       th:value="${checkOutTo != null ? #temporals.format(checkOutTo, 'yyyy-MM-dd') : ''}">
+            </div>
 
-        <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-weight: bold; font-size: 14px;">Sắp xếp</label>
-            <select name="sortField" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                <option value="">Mặc định</option>
-                <option value="totalAmount" th:selected="${sortField == 'totalAmount'}">Tổng tiền</option>
-                <option value="checkInDate" th:selected="${sortField == 'checkInDate'}">Ngày check-in</option>
-                <option value="checkOutDate" th:selected="${sortField == 'checkOutDate'}">Ngày check-out</option>
-                <option value="createdAt" th:selected="${sortField == 'createdAt'}">Ngày tạo</option>
-            </select>
-        </div>
+            <div class="filter-group">
+                <label>Sắp xếp</label>
+                <select name="sortField">
+                    <option value="">Mặc định</option>
+                    <option value="totalAmount" th:selected="${sortField == 'totalAmount'}">Tổng tiền</option>
+                    <option value="checkInDate" th:selected="${sortField == 'checkInDate'}">Ngày check-in</option>
+                    <option value="checkOutDate" th:selected="${sortField == 'checkOutDate'}">Ngày check-out</option>
+                    <option value="createdAt" th:selected="${sortField == 'createdAt'}">Ngày tạo</option>
+                </select>
+            </div>
 
-        <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-weight: bold; font-size: 14px;">Thứ tự</label>
-            <select name="sortDir" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                <option value="desc" th:selected="${sortDir == 'desc'}">Giảm dần</option>
-                <option value="asc" th:selected="${sortDir == 'asc'}">Tăng dần</option>
-            </select>
-        </div>
+            <div class="filter-group">
+                <label>Thứ tự</label>
+                <select name="sortDir">
+                    <option value="desc" th:selected="${sortDir == 'desc'}">Giảm dần</option>
+                    <option value="asc" th:selected="${sortDir == 'asc'}">Tăng dần</option>
+                </select>
+            </div>
 
-        <button type="submit" class="btn">Tìm kiếm</button>
-    </form>
+            <button type="submit" class="btn">Tìm kiếm</button>
+        </form>
+    </div>
 
     <table>
         <thead>
@@ -176,26 +283,30 @@
         </tbody>
     </table>
 
-    <div style="display: flex; justify-content: center; gap: 5px; margin-top: 20px; align-items: center;">
-        <a th:href="@{/v1/receptionist/bookings(status=${currentStatus}, customerName=${customerName}, phone=${phone}, bookingId=${bookingId}, checkInFrom=${checkInFrom}, checkInTo=${checkInTo}, checkOutFrom=${checkOutFrom}, checkOutTo=${checkOutTo}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortField=${sortField}, sortDir=${sortDir}, page=0, size=${pageSize})}"
-           class="btn secondary" style="padding: 6px 10px; font-size: 13px;"
-           th:disabled="${currentPage == 0}">« Đầu</a>
+    <div class="pagination">
+        <span th:if="${currentPage == 0}" class="btn secondary disabled">« Đầu</span>
+        <a th:if="${currentPage != 0}"
+           th:href="@{/v1/receptionist/bookings(status=${currentStatus}, customerName=${customerName}, phone=${phone}, bookingId=${bookingId}, checkInFrom=${checkInFrom}, checkInTo=${checkInTo}, checkOutFrom=${checkOutFrom}, checkOutTo=${checkOutTo}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortField=${sortField}, sortDir=${sortDir}, page=0, size=${pageSize})}"
+           class="btn secondary">« Đầu</a>
 
-        <a th:href="@{/v1/receptionist/bookings(status=${currentStatus}, customerName=${customerName}, phone=${phone}, bookingId=${bookingId}, checkInFrom=${checkInFrom}, checkInTo=${checkInTo}, checkOutFrom=${checkOutFrom}, checkOutTo=${checkOutTo}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortField=${sortField}, sortDir=${sortDir}, page=${currentPage - 1}, size=${pageSize})}"
-           class="btn secondary" style="padding: 6px 10px; font-size: 13px;"
-           th:disabled="${currentPage == 0}">‹ Trước</a>
+        <span th:if="${currentPage == 0}" class="btn secondary disabled">‹ Trước</span>
+        <a th:if="${currentPage != 0}"
+           th:href="@{/v1/receptionist/bookings(status=${currentStatus}, customerName=${customerName}, phone=${phone}, bookingId=${bookingId}, checkInFrom=${checkInFrom}, checkInTo=${checkInTo}, checkOutFrom=${checkOutFrom}, checkOutTo=${checkOutTo}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortField=${sortField}, sortDir=${sortDir}, page=${currentPage - 1}, size=${pageSize})}"
+           class="btn secondary">‹ Trước</a>
 
-        <span style="padding: 6px 12px; font-size: 14px;"
-              th:text="'Trang ' + (currentPage + 1) + ' / ' + (totalPages == 0 ? 1 : totalPages)">
+        <span class="page-info"
+              th:text="|${currentPage + 1}/${totalPages == 0 ? 1 : totalPages}|">
         </span>
 
-        <a th:href="@{/v1/receptionist/bookings(status=${currentStatus}, customerName=${customerName}, phone=${phone}, bookingId=${bookingId}, checkInFrom=${checkInFrom}, checkInTo=${checkInTo}, checkOutFrom=${checkOutFrom}, checkOutTo=${checkOutTo}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortField=${sortField}, sortDir=${sortDir}, page=${currentPage + 1}, size=${pageSize})}"
-           class="btn secondary" style="padding: 6px 10px; font-size: 13px;"
-           th:disabled="${currentPage + 1 >= totalPages}">Sau ›</a>
+        <span th:if="${currentPage + 1 >= totalPages}" class="btn secondary disabled">Sau ›</span>
+        <a th:if="${currentPage + 1 < totalPages}"
+           th:href="@{/v1/receptionist/bookings(status=${currentStatus}, customerName=${customerName}, phone=${phone}, bookingId=${bookingId}, checkInFrom=${checkInFrom}, checkInTo=${checkInTo}, checkOutFrom=${checkOutFrom}, checkOutTo=${checkOutTo}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortField=${sortField}, sortDir=${sortDir}, page=${currentPage + 1}, size=${pageSize})}"
+           class="btn secondary">Sau ›</a>
 
-        <a th:href="@{/v1/receptionist/bookings(status=${currentStatus}, customerName=${customerName}, phone=${phone}, bookingId=${bookingId}, checkInFrom=${checkInFrom}, checkInTo=${checkInTo}, checkOutFrom=${checkOutFrom}, checkOutTo=${checkOutTo}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortField=${sortField}, sortDir=${sortDir}, page=${totalPages - 1}, size=${pageSize})}"
-           class="btn secondary" style="padding: 6px 10px; font-size: 13px;"
-           th:disabled="${currentPage + 1 >= totalPages}">Cuối »</a>
+        <span th:if="${currentPage + 1 >= totalPages}" class="btn secondary disabled">Cuối »</span>
+        <a th:if="${currentPage + 1 < totalPages}"
+           th:href="@{/v1/receptionist/bookings(status=${currentStatus}, customerName=${customerName}, phone=${phone}, bookingId=${bookingId}, checkInFrom=${checkInFrom}, checkInTo=${checkInTo}, checkOutFrom=${checkOutFrom}, checkOutTo=${checkOutTo}, minPrice=${minPrice}, maxPrice=${maxPrice}, sortField=${sortField}, sortDir=${sortDir}, page=${totalPages - 1}, size=${pageSize})}"
+           class="btn secondary">Cuối »</a>
     </div>
 </main>
 

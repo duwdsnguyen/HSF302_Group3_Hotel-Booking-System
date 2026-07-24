@@ -7,12 +7,12 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
-    INTERNAL_SYSTEM_ERROR("COMMON","Lỗi hệ thống",HttpStatus.INTERNAL_SERVER_ERROR),
+    INTERNAL_SYSTEM_ERROR("COMMON", "Lỗi hệ thống", HttpStatus.INTERNAL_SERVER_ERROR),
 
 
-    INVALID_CREDENTIAL("AUTHENTICATION","Email hoặc mật khẩu không chính xác",HttpStatus.BAD_REQUEST),
-    EMAIL_ALREADY_EXISTS("AUTHENTICATION","Email đã được sử dụng",HttpStatus.BAD_REQUEST),
-    USER_NOT_FOUND("AUTHENTICATION","Không tìm thấy người dùng",HttpStatus.NOT_FOUND),
+    INVALID_CREDENTIAL("AUTHENTICATION", "Email hoặc mật khẩu không chính xác", HttpStatus.BAD_REQUEST),
+    EMAIL_ALREADY_EXISTS("AUTHENTICATION", "Email đã được sử dụng", HttpStatus.BAD_REQUEST),
+    USER_NOT_FOUND("AUTHENTICATION", "Không tìm thấy người dùng", HttpStatus.NOT_FOUND),
 
     ROOM_CHANGE_AUTHENTICATION_REQUIRED(
             "ROOM_CHANGE_001", "Bạn cần đăng nhập để yêu cầu chuyển phòng", HttpStatus.UNAUTHORIZED),
@@ -80,8 +80,20 @@ public enum ErrorCode {
     BOOKING_NOT_FOUND(
             "BOOKING_001", "Không tìm thấy đơn đặt phòng", HttpStatus.NOT_FOUND),
     BOOKING_CANCEL_NOT_ALLOWED(
-            "BOOKING_002", "Chỉ có thể hủy đơn đặt phòng đang ở trạng thái chờ xác nhận hoặc đã xác nhận", HttpStatus.CONFLICT);
+            "BOOKING_002", "Chỉ có thể hủy đơn đặt phòng đang ở trạng thái chờ xác nhận hoặc đã xác nhận", HttpStatus.CONFLICT),
 
+
+    SERVICE_NOT_FOUND("SERVICE_001","Không tìm thấy dịch vụ",HttpStatus.NOT_FOUND),
+
+    SERVICE_NAME_REQUIRED("SERVICE_002","Tên dịch vụ không được để trống",HttpStatus.BAD_REQUEST),
+
+    SERVICE_NAME_DUPLICATE("SERVICE_003","Tên dịch vụ đã tồn tại",HttpStatus.CONFLICT),
+
+    SERVICE_PRICE_REQUIRED("SERVICE_004","Giá dịch vụ không được để trống",HttpStatus.BAD_REQUEST),
+
+    SERVICE_PRICE_INVALID("SERVICE_005","Giá dịch vụ không được âm",HttpStatus.BAD_REQUEST),
+
+    SERVICE_DATA_NULL("SERVICE_006","Dữ liệu dịch vụ không được null",HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String message;

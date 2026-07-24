@@ -200,7 +200,10 @@
             <h1>Service Management</h1>
             <p>Manage hotel services, pricing, and availability status.</p>
         </div>
-        <a th:href="@{/v1/admin/services/add}" class="btn btn-primary">Add New Service</a>
+        <div class="form-actions">
+            <a th:href="@{/v1/admin/services/add}" class="btn btn-primary">Add New Service</a>
+            <a th:href="@{/v1/admin/dashboard}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
     </div>
 
     <div class="filter-card">
@@ -218,7 +221,8 @@
                             th:selected="${selectedStatus != null and selectedStatus.name() == 'ACTIVE'}">Đang hoạt động
                     </option>
                     <option value="INACTIVE"
-                            th:selected="${selectedStatus != null and selectedStatus.name() == 'INACTIVE'}">Ngừng hoạt động
+                            th:selected="${selectedStatus != null and selectedStatus.name() == 'INACTIVE'}">Ngừng hoạt
+                        động
                     </option>
                 </select>
             </div>

@@ -4,6 +4,7 @@ package hsf.g3.hotel_booking_system.controller.admin;
 import hsf.g3.hotel_booking_system.dto.service.ServiceFormDTO;
 import hsf.g3.hotel_booking_system.entity.service.HotelService;
 import hsf.g3.hotel_booking_system.enums.service.ServiceStatus;
+import hsf.g3.hotel_booking_system.exception.AppException;
 import hsf.g3.hotel_booking_system.service.services.HotelServiceService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -40,33 +41,45 @@ public class AdminServiceController {
 
     @GetMapping("/edit/{id}")
     public String showEditServiceForm(@PathVariable("id") Long serviceId, Model model) {
-        HotelService hotelService = hotelServiceService.getServiceById(serviceId);
+        try {
+            HotelService hotelService = hotelServiceService.getServiceById(serviceId);
 
-        ServiceFormDTO serviceFormDTO = new ServiceFormDTO();
-        serviceFormDTO.setServiceName(hotelService.getServiceName());
-        serviceFormDTO.setDescription(hotelService.getDescription());
-        serviceFormDTO.setPrice(hotelService.getPrice());
-        serviceFormDTO.setStatus(hotelService.getStatus());
+            ServiceFormDTO serviceFormDTO = new ServiceFormDTO();
+            serviceFormDTO.setServiceName(hotelService.getServiceName());
+            serviceFormDTO.setDescription(hotelService.getDescription());
+            serviceFormDTO.setPrice(hotelService.getPrice());
+            serviceFormDTO.setStatus(hotelService.getStatus());
 
-        model.addAttribute("serviceForm", serviceFormDTO);
-        model.addAttribute("serviceId", serviceId);
+            model.addAttribute("serviceForm", serviceFormDTO);
+            model.addAttribute("serviceId", serviceId);
 
-        return "pages/admin/services/edit";
+            return "pages/admin/services/edit";
+        } catch (AppException e) {
+            model.addAttribute("error", "[" + e.getErrorCode().getCode() + "] " + e.getMessage());
+            return "redirect:/v1/admin/services/list";
+        }
     }
+
 
     @PostMapping("/add")
     public String createService(@Valid @ModelAttribute("serviceForm") ServiceFormDTO serviceFormDTO, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "pages/admin/services/create";
         }
-        HotelService hotelService = new HotelService();
-        hotelService.setServiceName(serviceFormDTO.getServiceName());
-        hotelService.setDescription(serviceFormDTO.getDescription());
-        hotelService.setPrice(serviceFormDTO.getPrice());
-        hotelService.setStatus(serviceFormDTO.getStatus());
+        try {
+            HotelService hotelService = new HotelService();
+            hotelService.setServiceName(serviceFormDTO.getServiceName());
+            hotelService.setDescription(serviceFormDTO.getDescription());
+            hotelService.setPrice(serviceFormDTO.getPrice());
+            hotelService.setStatus(serviceFormDTO.getStatus());
 
-        hotelServiceService.createService(hotelService);
-        return "redirect:/v1/admin/services/list";
+            hotelServiceService.createService(hotelService);
+            return "redirect:/v1/admin/services/list";
+        } catch (AppException e) {
+            model.addAttribute("error", "[" + e.getErrorCode().getCode() + "] " + e.getMessage());
+            model.addAttribute("serviceForm", serviceFormDTO);
+            return "pages/admin/services/create";
+        }
     }
 
     @PostMapping("/edit/{id}")
@@ -77,14 +90,21 @@ public class AdminServiceController {
         if (result.hasErrors()) {
             return "pages/admin/services/edit";
         }
-        HotelService hotelService = new HotelService();
-        hotelService.setServiceName(serviceFormDTO.getServiceName());
-        hotelService.setDescription(serviceFormDTO.getDescription());
-        hotelService.setPrice(serviceFormDTO.getPrice());
-        hotelService.setStatus(serviceFormDTO.getStatus());
+        try {
+            HotelService hotelService = new HotelService();
+            hotelService.setServiceName(serviceFormDTO.getServiceName());
+            hotelService.setDescription(serviceFormDTO.getDescription());
+            hotelService.setPrice(serviceFormDTO.getPrice());
+            hotelService.setStatus(serviceFormDTO.getStatus());
 
-        hotelServiceService.updateService(serviceId, hotelService);
-        return "redirect:/v1/admin/services/list";
+            hotelServiceService.updateService(serviceId, hotelService);
+            return "redirect:/v1/admin/services/list";
+        } catch (AppException e) {
+            model.addAttribute("error", "[" + e.getErrorCode().getCode() + "] " + e.getMessage());
+            model.addAttribute("serviceForm", serviceFormDTO);
+            model.addAttribute("serviceId", serviceId);
+            return "pages/admin/services/edit";
+        }
     }
 
     @PostMapping("/activate/{id}")
